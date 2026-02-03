@@ -3,6 +3,7 @@
 Este proyecto consiste en el desarrollo de una aplicación en Java que simula las funcionalidades principales de la plataforma Steam, gestionando usuarios, videojuegos, compras, bibliotecas, reseñas y logros. El sistema está diseñado para ser modular, escalable y seguir buenas prácticas de validación y gestión de datos.
 
 🧩 Entidades Principales
+
 👤 Usuario
 
 Datos: ID único, nombre de usuario, email, contraseña, nombre real, país, fecha de nacimiento, fecha de registro, avatar, saldo, estado de cuenta.
