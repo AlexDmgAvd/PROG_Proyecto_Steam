@@ -1,6 +1,7 @@
 package Modelo.Dto;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public class ResenhaDTO {
     private long id;
@@ -15,5 +16,18 @@ public class ResenhaDTO {
     private LocalDate ultimaFechaEdicion;
     private enum state {PUBLICADA,OCULTA,BORRADA};
 
-
+    public ResenhaDTO(long id, long idUsuario, Optional <UsuarioDTO> usuario, long idJuego,
+                      Optional <JuegoDTO> juego, boolean recomendado, String textoAnalisis, float horasJugadas,
+                      LocalDate fechaPublicacion, LocalDate ultimaFechaEdicion) {
+        this.id = id;
+        this.idUsuario = idUsuario;
+        this.usuario = usuario.orElse(null);
+        this.idJuego = idJuego;
+        this.juego = juego.orElse(null);
+        this.recomendado = recomendado;
+        this.textoAnalisis = textoAnalisis;
+        this.horasJugadas = horasJugadas;
+        this.fechaPublicacion = fechaPublicacion;
+        this.ultimaFechaEdicion = ultimaFechaEdicion;
+    }
 }
