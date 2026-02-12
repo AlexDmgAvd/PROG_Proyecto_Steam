@@ -1,5 +1,7 @@
 package Modelo.Dto;
 
+import Modelo.Enum.EstadoCuentaENUM;
+
 import java.time.LocalDate;
 
 public class UsuarioDTO {
@@ -13,7 +15,7 @@ public class UsuarioDTO {
     private LocalDate fechaRegistro;
     private String avatar;
     private float creditoSteam;
-    private enum estadoCuenta {ACTIVA, SUSPENDIDA, BANEADA}
+    private EstadoCuentaENUM estadoCuenta;
 
     public UsuarioDTO(long id, String nombreUsuario, String email, String contrasenha,
                       String nombreReal, String pais, LocalDate cumpleanhos, LocalDate fechaRegistro,

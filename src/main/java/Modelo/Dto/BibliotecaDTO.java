@@ -1,5 +1,7 @@
 package Modelo.Dto;
 
+import Modelo.Enum.EstadoInstalacionENUM;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +15,7 @@ public class BibliotecaDTO {
     private JuegoDTO juego;
     private float horasJugadasTotal;
     private LocalDate ultimaFechaDeJuego;
-    private enum estadoInstalacion {INSTALADO, NO_INSTALADO}
+    private EstadoInstalacionENUM estadoInstalacion;
 
     public BibliotecaDTO(long id, long idUsuario, Optional <UsuarioDTO> usuario, long idJuego, Optional <JuegoDTO> juego,
                          float horasJugadasTotal, LocalDate ultimaFechaDeJuego) {
