@@ -33,4 +33,84 @@ public class JuegoDTO {
         this.rangoEdad = rangoEdad;
         this.estado = estado;
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getDesarrolladora() {
+        return desarrolladora;
+    }
+
+    public void setDesarrolladora(String desarrolladora) {
+        this.desarrolladora = desarrolladora;
+    }
+
+    public LocalDate getFechaPublicacion() {
+        return fechaPublicacion;
+    }
+
+    public void setFechaPublicacion(LocalDate fechaPublicacion) {
+        this.fechaPublicacion = fechaPublicacion;
+    }
+
+    public float getPrecioBase() {
+        return precioBase;
+    }
+
+    public void setPrecioBase(float precioBase) {
+        this.precioBase = precioBase;
+    }
+
+    public int getDescuentoActual() {
+        return descuentoActual;
+    }
+
+    public void setDescuentoActual(int descuentoActual) {
+        this.descuentoActual = descuentoActual;
+    }
+
+    public String getGenero() {
+        return genero;
+    }
+
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    public EstadoENUM getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoENUM estado) {
+        this.estado = estado;
+    }
+
+    public PegiENUM getRangoEdad() {
+        return rangoEdad;
+    }
+
+    public void setRangoEdad(PegiENUM rangoEdad) {
+        this.rangoEdad = rangoEdad;
+    }
 }

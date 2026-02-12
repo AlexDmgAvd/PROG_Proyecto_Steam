@@ -30,4 +30,84 @@ public class ResenhaDTO {
         this.fechaPublicacion = fechaPublicacion;
         this.ultimaFechaEdicion = ultimaFechaEdicion;
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public UsuarioDTO getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UsuarioDTO usuario) {
+        this.usuario = usuario;
+    }
+
+    public long getIdJuego() {
+        return idJuego;
+    }
+
+    public void setIdJuego(long idJuego) {
+        this.idJuego = idJuego;
+    }
+
+    public JuegoDTO getJuego() {
+        return juego;
+    }
+
+    public void setJuego(JuegoDTO juego) {
+        this.juego = juego;
+    }
+
+    public boolean isRecomendado() {
+        return recomendado;
+    }
+
+    public void setRecomendado(boolean recomendado) {
+        this.recomendado = recomendado;
+    }
+
+    public String getTextoAnalisis() {
+        return textoAnalisis;
+    }
+
+    public void setTextoAnalisis(String textoAnalisis) {
+        this.textoAnalisis = textoAnalisis;
+    }
+
+    public float getHorasJugadas() {
+        return horasJugadas;
+    }
+
+    public void setHorasJugadas(float horasJugadas) {
+        this.horasJugadas = horasJugadas;
+    }
+
+    public LocalDate getFechaPublicacion() {
+        return fechaPublicacion;
+    }
+
+    public void setFechaPublicacion(LocalDate fechaPublicacion) {
+        this.fechaPublicacion = fechaPublicacion;
+    }
+
+    public LocalDate getUltimaFechaEdicion() {
+        return ultimaFechaEdicion;
+    }
+
+    public void setUltimaFechaEdicion(LocalDate ultimaFechaEdicion) {
+        this.ultimaFechaEdicion = ultimaFechaEdicion;
+    }
 }

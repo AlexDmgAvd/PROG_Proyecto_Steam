@@ -30,4 +30,84 @@ public class UsuarioDTO {
         this.avatar = avatar;
         this.creditoSteam = creditoSteam;
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getNombreReal() {
+        return nombreReal;
+    }
+
+    public void setNombreReal(String nombreReal) {
+        this.nombreReal = nombreReal;
+    }
+
+    public String getContrasenha() {
+        return contrasenha;
+    }
+
+    public void setContrasenha(String contrasenha) {
+        this.contrasenha = contrasenha;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public LocalDate getCumpleanhos() {
+        return cumpleanhos;
+    }
+
+    public void setCumpleanhos(LocalDate cumpleanhos) {
+        this.cumpleanhos = cumpleanhos;
+    }
+
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public float getCreditoSteam() {
+        return creditoSteam;
+    }
+
+    public void setCreditoSteam(float creditoSteam) {
+        this.creditoSteam = creditoSteam;
+    }
 }

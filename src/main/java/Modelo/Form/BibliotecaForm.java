@@ -24,35 +24,6 @@ public class BibliotecaForm {
         this.estadoInstalacion = estadoInstalacion;
     }
 
-    // Getters
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public Long getJuegoId() {
-        return juegoId;
-    }
-
-    public LocalDateTime getFechaAdquisicion() {
-        return fechaAdquisicion;
-    }
-
-    public Double getTiempoJuegoTotal() {
-        return tiempoJuegoTotal;
-    }
-
-    public LocalDateTime getUltimaFechaJuego() {
-        return ultimaFechaJuego;
-    }
-
-    public String getEstadoInstalacion() {
-        return estadoInstalacion;
-    }
-
-    // Estados válidos de instalación
-    private static final List<String> ESTADOS_INSTALACION = Arrays.asList(
-            "INSTALADO", "NO_INSTALADO"
-    );
 
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();
@@ -71,14 +42,19 @@ public class BibliotecaForm {
         // Fecha de adquisición
         if (fechaAdquisicion == null) {
             errores.add(new ErrorDto("fechaAdquisicion", ErrorType.REQUERIDO));
-        } else if (fechaAdquisicion.isAfter(LocalDateTime.now())) {
+        }
+        if (fechaAdquisicion.isAfter(LocalDateTime.now())) {
             errores.add(new ErrorDto("fechaAdquisicion", ErrorType.FECHA_FUTURA));
         }
 
-        // Tiempo de juego total (opcional)
-        if (tiempoJuegoTotal != null) {
-            if (tiempoJuegoTotal < 0) {
+        // Tiempo de juego total
+        if (tiempoJuegoTotal != null && tiempoJuegoTotal < 0) {
                 errores.add(new ErrorDto("tiempoJuegoTotal", ErrorType.VALOR_NEGATIVO));
+            }
+
+        if (tiempoJuegoTotal != null ){
+            if (Math.round(tiempoJuegoTotal * 10) != tiempoJuegoTotal * 10) {
+                errores.add(new ErrorDto("tiempoJuegoTotal", ErrorType.FORMATO_INVALIDO));
             }
         }
 
@@ -92,10 +68,6 @@ public class BibliotecaForm {
             }
         }
 
-        // Estado de instalación (opcional)
-        if (estadoInstalacion != null && !ESTADOS_INSTALACION.contains(estadoInstalacion)) {
-            errores.add(new ErrorDto("estadoInstalacion", ErrorType.ESTADO_INVALIDO));
-        }
 
         return errores;
     }
