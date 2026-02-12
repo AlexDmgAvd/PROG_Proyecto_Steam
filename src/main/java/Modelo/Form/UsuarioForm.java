@@ -35,11 +35,15 @@ public class UsuarioForm {
             errores.add(new ErrorDto("nombreUsuario", ErrorType.REQUERIDO));
         }
 
-        if (!nombreUsuario.contains("^[a-zA-Z][a-zA-Z0-9_-]*$")) {
+        if (nombreUsuario.length() < 3 || nombreUsuario.length() > 20){
+            errores.add(new ErrorDto("nombreUsuario", ErrorType.LONGITUD_INVALIDA));
+        }
+
+        if (!nombreUsuario.matches("^[a-zA-Z][a-zA-Z0-9_-]*$")) {
             errores.add(new ErrorDto("nombreUsuario", ErrorType.FORMATO_INVALIDO));
         }
 
-        if (!nombreUsuario.startsWith("^[a-zA-Z].*")) {
+        if (nombreUsuario.startsWith("^[^0-9].*")) {
             errores.add((new ErrorDto("nombreUsuario", ErrorType.FORMATO_INVALIDO)));
         }
 
@@ -49,9 +53,13 @@ public class UsuarioForm {
             errores.add(new ErrorDto("email", ErrorType.REQUERIDO));
         }
 
-        if (!email.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,6}$")) {
             errores.add(new ErrorDto("email", ErrorType.FORMATO_INVALIDO));
         }
+
+        //Contrasenha
+
+
 
 
 

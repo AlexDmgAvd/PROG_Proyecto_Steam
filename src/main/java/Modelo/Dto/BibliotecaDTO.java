@@ -28,4 +28,59 @@ public class BibliotecaDTO {
         this.ultimaFechaDeJuego = ultimaFechaDeJuego;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public UsuarioDTO getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UsuarioDTO usuario) {
+        this.usuario = usuario;
+    }
+
+    public long getIdJuego() {
+        return idJuego;
+    }
+
+    public void setIdJuego(long idJuego) {
+        this.idJuego = idJuego;
+    }
+
+    public JuegoDTO getJuego() {
+        return juego;
+    }
+
+    public void setJuego(JuegoDTO juego) {
+        this.juego = juego;
+    }
+
+    public float getHorasJugadasTotal() {
+        return horasJugadasTotal;
+    }
+
+    public void setHorasJugadasTotal(float horasJugadasTotal) {
+        this.horasJugadasTotal = horasJugadasTotal;
+    }
+
+    public LocalDate getUltimaFechaDeJuego() {
+        return ultimaFechaDeJuego;
+    }
+
+    public void setUltimaFechaDeJuego(LocalDate ultimaFechaDeJuego) {
+        this.ultimaFechaDeJuego = ultimaFechaDeJuego;
+    }
 }
