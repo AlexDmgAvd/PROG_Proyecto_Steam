@@ -25,15 +25,6 @@ public class CompraForm {
         this.estado = estado;
     }
 
-    // Getters
-    public Long getUsuarioId() { return usuarioId; }
-    public Long getJuegoId() { return juegoId; }
-    public LocalDateTime getFechaCompra() { return fechaCompra; }
-    public String getMetodoPago() { return metodoPago; }
-    public Double getPrecioSinDescuento() { return precioSinDescuento; }
-    public Integer getPrecioFinal() { return precioFinal; }
-    public String getEstado() { return estado; }
-
 
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();

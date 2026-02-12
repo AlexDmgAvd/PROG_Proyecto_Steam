@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class JuegoDTO {
+
     private long id;
     private String titulo;
     private String descripcion;
