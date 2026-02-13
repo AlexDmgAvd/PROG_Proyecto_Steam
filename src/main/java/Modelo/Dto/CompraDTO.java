@@ -1,5 +1,8 @@
 package Modelo.Dto;
 
+import Modelo.Enum.EstadoCompraENUM;
+import Modelo.Enum.MetodoPagoENUM;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -10,10 +13,10 @@ public class CompraDTO {
     private UsuarioDTO usuario;
     private long idJuego;
     private JuegoDTO juego;
-    private enum metodoDePago {TARJETA_CREDITO, PAYPAL, CARTERA_STEAM, TRANSFERENCIA, OTROS};
+    private MetodoPagoENUM metodoDePago;
     private float precioCompleto;
     private int descuentoAplicado;
-    private enum estado {COMPLETADO, REEMBOLSADO};
+    private EstadoCompraENUM estado;
 
     public CompraDTO(long id, long idUsuario, Optional <UsuarioDTO> usuario, long idJuego,
                      Optional <JuegoDTO> juego, float precioCompleto, int descuentoAplicado) {

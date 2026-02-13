@@ -1,5 +1,7 @@
 package Modelo.Dto;
 
+import Modelo.Enum.EstadoResenhaENUM;
+
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -14,7 +16,7 @@ public class ResenhaDTO {
     private float horasJugadas;
     private LocalDate fechaPublicacion;
     private LocalDate ultimaFechaEdicion;
-    private enum state {PUBLICADA,OCULTA,BORRADA};
+    private EstadoResenhaENUM estado;
 
     public ResenhaDTO(long id, long idUsuario, Optional <UsuarioDTO> usuario, long idJuego,
                       Optional <JuegoDTO> juego, boolean recomendado, String textoAnalisis, float horasJugadas,
