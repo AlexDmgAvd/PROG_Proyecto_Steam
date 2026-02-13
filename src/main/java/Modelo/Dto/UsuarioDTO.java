@@ -8,7 +8,6 @@ public class UsuarioDTO {
     private long id;
     private String nombreUsuario;
     private String email;
-    private String contrasenha;
     private String nombreReal;
     private String pais;
     private LocalDate cumpleanhos;
