@@ -24,6 +24,31 @@ public class BibliotecaForm {
         this.estadoInstalacion = estadoInstalacion;
     }
 
+    // Getters
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public Long getJuegoId() {
+        return juegoId;
+    }
+
+    public Double getTiempoJuegoTotal() {
+        return tiempoJuegoTotal;
+    }
+
+    public LocalDateTime getFechaAdquisicion() {
+        return fechaAdquisicion;
+    }
+
+    public LocalDateTime getUltimaFechaJuego() {
+        return ultimaFechaJuego;
+    }
+
+    public String getEstadoInstalacion() {
+        return estadoInstalacion;
+    }
+
 
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();

@@ -25,6 +25,35 @@ public class CompraForm {
         this.estado = estado;
     }
 
+    // Getters
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public Long getJuegoId() {
+        return juegoId;
+    }
+
+    public LocalDateTime getFechaCompra() {
+        return fechaCompra;
+    }
+
+    public String getMetodoPago() {
+        return metodoPago;
+    }
+
+    public Double getPrecioSinDescuento() {
+        return precioSinDescuento;
+    }
+
+    public Integer getPrecioFinal() {
+        return precioFinal;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
 
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();
@@ -40,6 +69,10 @@ public class CompraForm {
         }
 
         // Fecha de compra
+        if (fechaCompra != null) {
+            errores.add(new ErrorDto("fechaCompra", ErrorType.REQUERIDO));
+        }
+
         if (fechaCompra != null && fechaCompra.isAfter(LocalDateTime.now())) {
             errores.add(new ErrorDto("fechaCompra", ErrorType.FECHA_FUTURA));
         }
