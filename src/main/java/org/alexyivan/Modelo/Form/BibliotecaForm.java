@@ -1,5 +1,6 @@
 package org.alexyivan.Modelo.Form;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,13 +8,13 @@ import java.util.List;
 public class BibliotecaForm {
     private Long usuarioId;
     private Long juegoId;
-    private LocalDateTime fechaAdquisicion;
-    private Double tiempoJuegoTotal;
-    private LocalDateTime ultimaFechaJuego;
+    private LocalDate fechaAdquisicion;
+    private Float tiempoJuegoTotal;
+    private LocalDate ultimaFechaJuego;
     private String estadoInstalacion;
 
     // Constructor
-    public BibliotecaForm(Long usuarioId, Long juegoId, LocalDateTime fechaAdquisicion, Double tiempoJuegoTotal, LocalDateTime ultimaFechaJuego, String estadoInstalacion) {
+    public BibliotecaForm(Long usuarioId, Long juegoId, LocalDate fechaAdquisicion, Float tiempoJuegoTotal, LocalDate ultimaFechaJuego, String estadoInstalacion) {
         this.usuarioId = usuarioId;
         this.juegoId = juegoId;
         this.fechaAdquisicion = fechaAdquisicion;
@@ -31,15 +32,15 @@ public class BibliotecaForm {
         return juegoId;
     }
 
-    public Double getTiempoJuegoTotal() {
+    public Float getTiempoJuegoTotal() {
         return tiempoJuegoTotal;
     }
 
-    public LocalDateTime getFechaAdquisicion() {
+    public LocalDate getFechaAdquisicion() {
         return fechaAdquisicion;
     }
 
-    public LocalDateTime getUltimaFechaJuego() {
+    public LocalDate getUltimaFechaJuego() {
         return ultimaFechaJuego;
     }
 
@@ -66,7 +67,7 @@ public class BibliotecaForm {
         if (fechaAdquisicion == null) {
             errores.add(new ErrorDto("fechaAdquisicion", ErrorType.REQUERIDO));
         }
-        if (fechaAdquisicion.isAfter(LocalDateTime.now())) {
+        if (fechaAdquisicion.isAfter(LocalDate.now())) {
             errores.add(new ErrorDto("fechaAdquisicion", ErrorType.FECHA_FUTURA));
         }
 
@@ -83,7 +84,7 @@ public class BibliotecaForm {
 
         // Última fecha de juego (opcional)
         if (ultimaFechaJuego != null) {
-            if (ultimaFechaJuego.isAfter(LocalDateTime.now())) {
+            if (ultimaFechaJuego.isAfter(LocalDate.now())) {
                 errores.add(new ErrorDto("ultimaFechaJuego", ErrorType.FECHA_FUTURA));
             }
             if (fechaAdquisicion != null && ultimaFechaJuego.isBefore(fechaAdquisicion)) {

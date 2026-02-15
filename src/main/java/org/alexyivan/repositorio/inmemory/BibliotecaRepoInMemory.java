@@ -15,8 +15,10 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
 
     @Override
     public Optional<BibliotecaEntidad> crear(BibliotecaForm bibliotecaForm) {
-        //var new BibliotecaEntidad(idCounter++,)
-        return Optional.empty();
+        var biblioteca = new BibliotecaEntidad(idCounter++, bibliotecaForm.getUsuarioId(), bibliotecaForm.getJuegoId(),
+                bibliotecaForm.getTiempoJuegoTotal(), bibliotecaForm.getUltimaFechaJuego());
+        bibliotecas.add(biblioteca);
+        return Optional.of(biblioteca);
     }
 
     @Override
@@ -28,16 +30,24 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
 
     @Override
     public List<BibliotecaEntidad> obtenerTodos() {
-        return new ArrayList<BibliotecaEntidad>(bibliotecas);
+        return new ArrayList<>(bibliotecas);
     }
 
     @Override
     public Optional<BibliotecaEntidad> actualizar(Long id, BibliotecaForm bibliotecaForm) {
-        return Optional.empty();
+        var bibliotecaOpt = obtenerPorId(id);
+        if (bibliotecaOpt.isEmpty()) {
+            throw new IllegalArgumentException("Biblioteca no encontrada");
+        }
+        var bibliotecaActualizada = new BibliotecaEntidad(id, bibliotecaForm.getUsuarioId(), bibliotecaForm.getJuegoId(),
+                bibliotecaForm.getTiempoJuegoTotal(), bibliotecaForm.getUltimaFechaJuego());
+        bibliotecas.removeIf(b -> b.id() == id);
+        bibliotecas.add(bibliotecaActualizada);
+        return Optional.of(bibliotecaActualizada);
     }
 
     @Override
     public boolean eliminar(Long id) {
-        return bibliotecas.removeIf(b -> b.id() ==id);
+        return bibliotecas.removeIf(b -> b.id() == id);
     }
 }

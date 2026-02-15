@@ -13,7 +13,7 @@ public class CompraDTO {
     private long idJuego;
     private JuegoDTO juego;
     private MetodoPagoENUM metodoDePago;
-    private float precioCompleto;
+    private float precioSinDescuento;
     private int descuentoAplicado;
     private EstadoCompraENUM estado;
 
@@ -24,7 +24,7 @@ public class CompraDTO {
         this.usuario = usuario.orElse(null);
         this.idJuego = idJuego;
         this.juego = juego.orElse(null);
-        this.precioCompleto = precioCompleto;
+        this.precioSinDescuento = precioCompleto;
         this.descuentoAplicado = descuentoAplicado;
     }
 
@@ -68,12 +68,12 @@ public class CompraDTO {
         this.juego = juego;
     }
 
-    public float getPrecioCompleto() {
-        return precioCompleto;
+    public float getPrecioSinDescuento() {
+        return precioSinDescuento;
     }
 
-    public void setPrecioCompleto(float precioCompleto) {
-        this.precioCompleto = precioCompleto;
+    public void setPrecioSinDescuento(float precioSinDescuento) {
+        this.precioSinDescuento = precioSinDescuento;
     }
 
     public int getDescuentoAplicado() {

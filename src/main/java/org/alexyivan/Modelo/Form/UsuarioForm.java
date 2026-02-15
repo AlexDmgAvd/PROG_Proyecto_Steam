@@ -13,18 +13,60 @@ public class UsuarioForm {
     String nombreReal;
     String pais;
     LocalDate fechaNacimiento;
+    LocalDate fechaRegistro;
     String avatar;
-    Double saldo;
+    Float saldo;
 
-    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombreReal, String pais, LocalDate fechaNacimiento, String avatar, Double saldo) {
+    public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombreReal, String pais,
+                       LocalDate fechaNacimiento,LocalDate fechaRegistro, String avatar, Float saldo) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.contrasena = contrasena;
         this.nombreReal = nombreReal;
         this.pais = pais;
         this.fechaNacimiento = fechaNacimiento;
+        this.fechaRegistro=fechaRegistro;
         this.avatar = avatar;
         this.saldo = saldo;
+    }
+
+    //Getters
+
+
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public String getNombreReal() {
+        return nombreReal;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public Float getSaldo() {
+        return saldo;
     }
 
     public List<ErrorDto> validar() {

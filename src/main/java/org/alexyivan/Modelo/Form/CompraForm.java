@@ -13,7 +13,7 @@ public class CompraForm {
     private Long juegoId;
     private LocalDateTime fechaCompra;
     private MetodoPagoENUM metodoPago;
-    private Double precioSinDescuento;
+    private Float precioSinDescuento;
     private Integer descuento;
     private Double precioFinal;
     private EstadoCompraENUM estado;
@@ -21,7 +21,7 @@ public class CompraForm {
 
     // Constructor
 
-    public CompraForm(Long usuarioId, Long juegoId, LocalDateTime fechaCompra, MetodoPagoENUM metodoPago, Double precioSinDescuento, Integer descuento, Double precioFinal, EstadoCompraENUM estado) {
+    public CompraForm(Long usuarioId, Long juegoId, LocalDateTime fechaCompra, MetodoPagoENUM metodoPago, Float precioSinDescuento, Integer descuento, Double precioFinal, EstadoCompraENUM estado) {
         this.usuarioId = usuarioId;
         this.juegoId = juegoId;
         this.fechaCompra = fechaCompra;
@@ -55,7 +55,7 @@ public class CompraForm {
         return fechaCompra;
     }
 
-    public Double getPrecioSinDescuento() {
+    public Float getPrecioSinDescuento() {
         return precioSinDescuento;
     }
 

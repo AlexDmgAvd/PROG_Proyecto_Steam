@@ -16,14 +16,13 @@ public class UsuarioDTO {
     private float creditoSteam;
     private EstadoCuentaENUM estadoCuenta;
 
-    public UsuarioDTO(long id, String nombreUsuario, String email, String contrasenha,
+    public UsuarioDTO(long id, String nombreUsuario, String email,
                       String nombreReal, String pais, LocalDate cumpleanhos, LocalDate fechaRegistro,
                       String avatar, float creditoSteam) {
 
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
-        this.contrasenha = contrasenha;
         this.nombreReal = nombreReal;
         this.pais = pais;
         this.cumpleanhos = cumpleanhos;
@@ -62,14 +61,6 @@ public class UsuarioDTO {
 
     public void setNombreReal(String nombreReal) {
         this.nombreReal = nombreReal;
-    }
-
-    public String getContrasenha() {
-        return contrasenha;
-    }
-
-    public void setContrasenha(String contrasenha) {
-        this.contrasenha = contrasenha;
     }
 
     public String getPais() {
