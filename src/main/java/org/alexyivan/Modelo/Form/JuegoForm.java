@@ -9,6 +9,15 @@ import java.util.List;
 
 public class JuegoForm {
 
+    public static final int LONGITUD_MAX_CARACTERES_TITULO = 100;
+    public static final int LONGITUD_MIN_CARACTERES_TITULO = 1;
+    public static final int LONGITUD_MAX_CARACTERES_DESCRIP = 2000;
+    public static final int LONGITUD_MAX_CARACTERES_DESARROLL = 100;
+    public static final int LONGITUD_MIN_CARACTERES_DESARROLL = 2;
+    public static final int CONSTANTE_CERO = 0;
+    public static final double RANGO_MAX_PRECIOBASE = 999.99;
+    public static final int CONSTANTE_CIEN = 100;
+    public static final int CONSTANTE_DOSCIENTOS = 200;
     private String titulo;
     private String descripcion;
     private String desarrolladora;
@@ -81,32 +90,76 @@ public class JuegoForm {
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();
 
+
         // Titulo
         if (titulo == null || titulo.isBlank()) {
             errores.add(new ErrorDto("titulo", ErrorType.REQUERIDO));
         }
 
-        if (titulo.length() < 1 || titulo.length() > 100) {
+        if (titulo.length() < LONGITUD_MIN_CARACTERES_TITULO || titulo.length() > LONGITUD_MAX_CARACTERES_TITULO) {
             errores.add(new ErrorDto("titulo", ErrorType.LONGITUD_INVALIDA));
         }
 
 
         // Descripcion
-        if (descripcion.length() > 2000) {
+        if (descripcion.length() > LONGITUD_MAX_CARACTERES_DESCRIP) {
             errores.add(new ErrorDto("descripcion", ErrorType.LONGITUD_INVALIDA));
         }
+
 
         // Desarrolladora
         if (desarrolladora == null || desarrolladora.isBlank()) {
             errores.add(new ErrorDto("desarrolladora", ErrorType.REQUERIDO));
         }
 
-        if (desarrolladora.length() < 2 || desarrolladora.length() > 100) {
+        if (desarrolladora.length() < LONGITUD_MIN_CARACTERES_DESARROLL || desarrolladora.length() > LONGITUD_MAX_CARACTERES_DESARROLL) {
             errores.add(new ErrorDto("desarrolladora", ErrorType.LONGITUD_INVALIDA));
         }
 
-        // FechaLanzamineto
 
+        // fecha publicacion
+        if (fechaPublicacion == null) {
+            errores.add(new ErrorDto("fechaPublicacion", ErrorType.REQUERIDO));
+        }
+
+
+        // precio base
+        if (precioBase < CONSTANTE_CERO) {
+            errores.add(new ErrorDto("precioBase", ErrorType.VALOR_NEGATIVO));
+        }
+        if (precioBase > RANGO_MAX_PRECIOBASE) {
+            errores.add(new ErrorDto("precioBase", ErrorType.VALOR_DEMASIADO_ALTO));
+        }
+
+        if (Math.round(precioBase * CONSTANTE_CIEN) != precioBase * CONSTANTE_CIEN) {
+            errores.add(new ErrorDto("precioBase", ErrorType.FORMATO_INVALIDO));
+        }
+
+
+
+        // descuento actual
+        if (descuentoActual < CONSTANTE_CERO || descuentoActual > CONSTANTE_CIEN) {
+            errores.add(new ErrorDto("descuentoActual", ErrorType.DESCUENTO_INVALIDO));
+        }
+
+
+
+        // rango de Edad
+        if (rangoEdad == null) {
+            errores.add(new ErrorDto("rangoEdad", ErrorType.REQUERIDO));
+        }
+
+
+
+        // idiomas
+        if (idiomasDisponibles != null) {
+            if (idiomasDisponibles.length() > CONSTANTE_DOSCIENTOS) {
+                errores.add(new ErrorDto("idiomasDisponibles", ErrorType.VALOR_DEMASIADO_ALTO));
+            }
+            if (idiomasDisponibles.isBlank()) {
+                errores.add(new ErrorDto("idiomasDisponibles", ErrorType.FORMATO_INVALIDO));
+            }
+        }
 
         return errores;
     }

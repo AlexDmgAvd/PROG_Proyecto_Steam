@@ -5,16 +5,22 @@ import org.alexyivan.Modelo.Dto.UsuarioDTO;
 import org.alexyivan.Modelo.Enum.EstadoResenhaENUM;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResenhaForm {
+    public static final int LONGITUD_MIN_CARACTERES = 50;
+    public static final int LONGITUD_MAX_CARACTERES = 8000;
+    public static final int CONSTANTE_CERO = 0;
+    public static final int CONSTANTE_DIEZ = 10;
 
-    private long idUsuario;
+    private Long idUsuario;
     private UsuarioDTO usuario;
-    private long idJuego;
+    private Long idJuego;
     private JuegoDTO juego;
-    private boolean recomendado;
+    private Boolean recomendado;
     private String textoAnalisis;
-    private float horasJugadas;
+    private Float horasJugadas;
     private LocalDate fechaPublicacion;
     private LocalDate ultimaFechaEdicion;
     private EstadoResenhaENUM estado;
@@ -34,6 +40,7 @@ public class ResenhaForm {
         this.estado = estado;
     }
 
+    // Getters
     public long getIdUsuario() {
         return idUsuario;
     }
@@ -73,4 +80,92 @@ public class ResenhaForm {
     public EstadoResenhaENUM getEstado() {
         return estado;
     }
+
+    public List<ErrorDto> validar() {
+        List<ErrorDto> errores = new ArrayList<>();
+
+
+        // usuarioId
+        if (idUsuario == null) {
+            errores.add(new ErrorDto("usuarioId", ErrorType.REQUERIDO));
+        }
+
+
+
+        // juegoId
+        if (idJuego == null) {
+            errores.add(new ErrorDto("juegoId", ErrorType.REQUERIDO));
+        }
+
+
+
+        // recomendado
+        if (recomendado == null) {
+            errores.add(new ErrorDto("recomendado", ErrorType.REQUERIDO));
+        }
+
+
+
+        // texto analisis
+        if (textoAnalisis == null || textoAnalisis.isBlank()) {
+            errores.add(new ErrorDto("textoAnalisis", ErrorType.REQUERIDO));
+        }
+
+        if (textoAnalisis != null){
+            
+            if (textoAnalisis.length() < LONGITUD_MIN_CARACTERES) {
+                errores.add(new ErrorDto("textoAnalisis", ErrorType.VALOR_DEMASIADO_BAJO));
+            }
+            if (textoAnalisis.length() > LONGITUD_MAX_CARACTERES) {
+                errores.add(new ErrorDto("textoAnalisis", ErrorType.VALOR_DEMASIADO_ALTO));
+            }
+            
+        }
+
+
+        // horas jugadas
+        if (horasJugadas == null) {
+            errores.add(new ErrorDto("horasJugadas", ErrorType.REQUERIDO));
+        }
+
+        if (horasJugadas != null) {
+
+            if (horasJugadas < CONSTANTE_CERO) {
+                errores.add(new ErrorDto("horasJugadas", ErrorType.VALOR_NEGATIVO));
+            }
+
+            if (Math.round(horasJugadas * CONSTANTE_DIEZ) != horasJugadas * CONSTANTE_DIEZ) {
+                errores.add(new ErrorDto("horasJugadas", ErrorType.FORMATO_INVALIDO));
+            }
+        }
+
+
+        // fecha publicacion
+        if (fechaPublicacion == null) {
+            errores.add(new ErrorDto("fechaPublicacion", ErrorType.REQUERIDO));
+        }
+
+        if (fechaPublicacion != null) {
+
+            if (fechaPublicacion.isAfter(LocalDate.now())) {
+                errores.add(new ErrorDto("fechaPublicacion", ErrorType.FECHA_FUTURA));
+            }
+        }
+
+
+        // ultima fecha edicion
+        if (ultimaFechaEdicion != null) {
+
+            if (ultimaFechaEdicion.isAfter(LocalDate.now())) {
+                errores.add(new ErrorDto("ultimaFechaEdicion", ErrorType.FECHA_FUTURA));
+            }
+
+            if (fechaPublicacion != null && ultimaFechaEdicion.isBefore(fechaPublicacion)) {
+                errores.add(new ErrorDto("ultimaFechaEdicion", ErrorType.FECHA_FUTURA));
+            }
+        }
+
+        return errores;
+    }
+
 }

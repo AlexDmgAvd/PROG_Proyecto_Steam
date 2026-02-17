@@ -1,9 +1,9 @@
 package org.alexyivan.Modelo.Form;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class BibliotecaForm {
     private Long usuarioId;
@@ -19,7 +19,7 @@ public class BibliotecaForm {
         this.juegoId = juegoId;
         this.fechaAdquisicion = fechaAdquisicion;
         this.tiempoJuegoTotal = tiempoJuegoTotal;
-        this.ultimaFechaJuego = ultimaFechaJuego;
+        this.ultimaFechaJuego = ultimaFechaJuego;;
         this.estadoInstalacion = estadoInstalacion;
     }
 
@@ -53,12 +53,12 @@ public class BibliotecaForm {
         List<ErrorDto> errores = new ArrayList<>();
 
 
-        // Usuario ID (requerido)
+        // Usuario ID
         if (usuarioId == null) {
             errores.add(new ErrorDto("usuarioId", ErrorType.REQUERIDO));
         }
 
-        // Juego ID (requerido)
+        // Juego ID
         if (juegoId == null) {
             errores.add(new ErrorDto("juegoId", ErrorType.REQUERIDO));
         }
@@ -82,7 +82,7 @@ public class BibliotecaForm {
             }
         }
 
-        // Última fecha de juego (opcional)
+        // Última fecha de juego
         if (ultimaFechaJuego != null) {
             if (ultimaFechaJuego.isAfter(LocalDate.now())) {
                 errores.add(new ErrorDto("ultimaFechaJuego", ErrorType.FECHA_FUTURA));
