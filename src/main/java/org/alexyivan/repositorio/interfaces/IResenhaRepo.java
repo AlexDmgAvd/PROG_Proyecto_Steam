@@ -1,7 +1,7 @@
 package org.alexyivan.repositorio.interfaces;
 
-import org.alexyivan.Modelo.Entidad.ResenhaEntidad;
-import org.alexyivan.Modelo.Form.ResenhaForm;
+import org.alexyivan.modelo.entidad.ResenhaEntidad;
+import org.alexyivan.modelo.form.ResenhaForm;
 
 public interface IResenhaRepo extends ICrud<ResenhaEntidad, ResenhaForm, Long> {
 }

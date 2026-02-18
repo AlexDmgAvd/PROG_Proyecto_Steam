@@ -1,8 +1,7 @@
 package org.alexyivan.repositorio.inmemory;
 
-import org.alexyivan.Modelo.Entidad.ResenhaEntidad;
-import org.alexyivan.Modelo.Entidad.UsuarioEntidad;
-import org.alexyivan.Modelo.Form.UsuarioForm;
+import org.alexyivan.modelo.entidad.UsuarioEntidad;
+import org.alexyivan.modelo.form.UsuarioForm;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
 import java.util.ArrayList;

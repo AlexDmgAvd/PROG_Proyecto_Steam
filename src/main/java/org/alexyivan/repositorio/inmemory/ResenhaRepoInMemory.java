@@ -1,9 +1,7 @@
 package org.alexyivan.repositorio.inmemory;
 
-import org.alexyivan.Modelo.Entidad.JuegoEntidad;
-import org.alexyivan.Modelo.Entidad.ResenhaEntidad;
-import org.alexyivan.Modelo.Form.JuegoForm;
-import org.alexyivan.Modelo.Form.ResenhaForm;
+import org.alexyivan.modelo.entidad.ResenhaEntidad;
+import org.alexyivan.modelo.form.ResenhaForm;
 import org.alexyivan.repositorio.interfaces.IResenhaRepo;
 
 import java.util.ArrayList;

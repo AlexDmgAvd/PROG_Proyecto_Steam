@@ -1,8 +1,7 @@
 package org.alexyivan.repositorio.inmemory;
 
-import org.alexyivan.Modelo.Entidad.CompraEntidad;
-import org.alexyivan.Modelo.Entidad.JuegoEntidad;
-import org.alexyivan.Modelo.Form.JuegoForm;
+import org.alexyivan.modelo.entidad.JuegoEntidad;
+import org.alexyivan.modelo.form.JuegoForm;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 
 import java.util.ArrayList;
