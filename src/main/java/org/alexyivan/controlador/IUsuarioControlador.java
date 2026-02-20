@@ -1,5 +1,6 @@
 package org.alexyivan.controlador;
 
+import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.modelo.dto.UsuarioDTO;
 import org.alexyivan.modelo.form.UsuarioForm;
 
@@ -8,14 +9,13 @@ import java.util.Optional;
 
 public interface IUsuarioControlador {
 
-    Optional<UsuarioForm> registrarUsuario (String nombreUsuario, String email, String contrasenha, String nombreReal,
-                           String pais, LocalDate fechaNacimiento);
+    Optional<UsuarioDTO> registrarUsuario (UsuarioForm usuarioForm) throws ValidacionException;
 
-    Optional<UsuarioDTO> consultarUsuario(Optional<Integer> id, Optional<String> nombreUsuario);
+    Optional<UsuarioDTO> consultarUsuario(Optional<Integer> id, Optional<String> nombreUsuario) throws ValidacionException;
 
-    void anhadirSaldo (int id, float cantidad);
+    void anhadirSaldo (int id, float cantidad) throws ValidacionException;
 
-    Optional<UsuarioDTO> consultarSaldo (int id);
+    Optional<UsuarioDTO> consultarSaldo (int id) throws ValidacionException;
 
 
 }

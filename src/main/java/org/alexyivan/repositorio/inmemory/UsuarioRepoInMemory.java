@@ -27,6 +27,10 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     public Optional<UsuarioEntidad> obtenerPorId(Long id) {
         return usuarios.stream().filter(u -> u.id() == id).findFirst();
     }
+    @Override
+    public Optional<UsuarioEntidad> obtenerPorEmail (String email){
+        return usuarios.stream().filter(u -> u.email().equals(email)).findFirst();
+    }
 
     @Override
     public List<UsuarioEntidad> obtenerTodos() {
