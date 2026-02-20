@@ -1,7 +1,7 @@
 package org.alexyivan.repositorio.interfaces;
 
-import org.alexyivan.Modelo.Entidad.UsuarioEntidad;
-import org.alexyivan.Modelo.Form.UsuarioForm;
+import org.alexyivan.modelo.entidad.UsuarioEntidad;
+import org.alexyivan.modelo.form.UsuarioForm;
 
 public interface IUsuarioRepo extends ICrud<UsuarioEntidad, UsuarioForm, Long> {
 }

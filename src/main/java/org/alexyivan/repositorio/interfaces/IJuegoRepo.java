@@ -1,7 +1,7 @@
 package org.alexyivan.repositorio.interfaces;
 
-import org.alexyivan.Modelo.Entidad.JuegoEntidad;
-import org.alexyivan.Modelo.Form.JuegoForm;
+import org.alexyivan.modelo.entidad.JuegoEntidad;
+import org.alexyivan.modelo.form.JuegoForm;
 
 public interface IJuegoRepo extends ICrud<JuegoEntidad, JuegoForm, Long> {
 }
