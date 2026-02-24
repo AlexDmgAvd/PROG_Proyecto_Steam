@@ -3,16 +3,24 @@ package org.alexyivan.controlador;
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
 import org.alexyivan.modelo.dto.UsuarioDTO;
+import org.alexyivan.modelo.enums.EstadoCuentaENUM;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.modelo.form.UsuarioForm;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import static org.alexyivan.repositorio.inmemory.UsuarioRepoInMemory.listaPaises;
 
 public class UsuarioControlador implements IUsuarioControlador {
 
+    public static final int CONST_CERO = 0;
+    public static final double SALDO_MINIMO = 5.00;
+    public static final double SALDO_MAXIMO = 500.00;
     private final IUsuarioRepo usuarioRepo;
 
 
@@ -23,15 +31,33 @@ public class UsuarioControlador implements IUsuarioControlador {
 
     @Override
     public Optional<UsuarioDTO> registrarUsuario(UsuarioForm usuarioForm) throws ValidacionException {
+
         //Validar formulario
         var errores = usuarioForm.validar();
+
+        //Validación de email en repositorio
         var usuario = usuarioRepo.obtenerPorEmail(usuarioForm.getEmail());
         if (usuario.isPresent())
             errores.add(new ErrorDto("email", ErrorType.EMAIL_INVALIDO));
 
-        if(!errores.isEmpty())
+        //Validación de que el nombre no existe en el repositorio
+        usuario = usuarioRepo.obtenerPorNombre(usuarioForm.getNombreUsuario());
+        if (usuario.isPresent()) {
+            errores.add(new ErrorDto("nombre", ErrorType.NOMBRE_EXISTENTE));
+        }
+
+        //Validación de que el país está permitido en el repositorio
+        if (!listaPaises.contains(usuarioForm.getPais())) {
+            errores.add(new ErrorDto("pais", ErrorType.PAIS_INEXISTENTE));
+
+        }
+
+        //Si la lista de errores no está vacía manda los errores
+        if (!errores.isEmpty())
             throw new ValidacionException(errores);
-        //Ejecutar
+
+
+        //Ejecuta la función
         var usuarioCreado = usuarioRepo.crear(usuarioForm);
 
 
@@ -40,16 +66,71 @@ public class UsuarioControlador implements IUsuarioControlador {
 
     @Override
     public Optional<UsuarioDTO> consultarUsuario(Optional<Integer> id, Optional<String> nombreUsuario) throws ValidacionException {
+        if (id != null) {
+
+
+        }
+
+        //Hace falta DTO de estadísticas de juego
+
         return Optional.empty();
     }
 
     @Override
-    public void anhadirSaldo(int id, float cantidad) throws ValidacionException {
+    public void anhadirSaldo(long id, float cantidad) throws ValidacionException {
+        List<ErrorDto> errores = new ArrayList<>();
+
+        //Validaciones
+
+
+        //Comprobar que el saldo cumple las validaciones
+        if (cantidad < CONST_CERO) {
+
+            errores.add(new ErrorDto("cantidad", ErrorType.FORMATO_INVALIDO));
+        }
+
+        if (cantidad < SALDO_MINIMO || cantidad > SALDO_MAXIMO) {
+            errores.add(new ErrorDto("cantidad", ErrorType.SALDO_INVALIDO));
+        }
+
+        //Comprobar que el usuario existe en el repositorio
+        var usuario = usuarioRepo.obtenerPorId(id);
+        if (usuario.isEmpty()) {
+            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+        }
+
+        if (usuario.get().estado() != EstadoCuentaENUM.ACTIVA) {
+            errores.add(new ErrorDto("cuenta", ErrorType.ESTADO_CUENTA));
+        }
+
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
+
+        usuarioRepo.actualizar(id, new UsuarioForm(usuario.get().nombreUsuario(), usuario.get().email(),
+                usuario.get().contrasenha(), usuario.get().nombreReal(), usuario.get().pais(), usuario.get().cumpleanhos(), usuario.get().fechaRegistro(),
+                usuario.get().avatar(), cantidad, usuario.get().estado()));
+
 
     }
 
+
     @Override
-    public Optional<UsuarioDTO> consultarSaldo(int id) throws ValidacionException {
-        return Optional.empty();
+    public Optional<UsuarioDTO> consultarSaldo(long id) throws ValidacionException {
+        List<ErrorDto> errores = new ArrayList<>();
+
+        var usuario = usuarioRepo.obtenerPorId(id);
+
+        if (usuario.isEmpty()) {
+            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+        }
+
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
+
+        return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
     }
 }

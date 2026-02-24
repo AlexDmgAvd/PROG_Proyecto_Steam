@@ -1,6 +1,6 @@
 package org.alexyivan.modelo.dto;
 
-import org.alexyivan.modelo.enums.EstadoENUM;
+import org.alexyivan.modelo.enums.EstadoJuegoENUM;
 import org.alexyivan.modelo.enums.PegiENUM;
 
 import java.time.LocalDate;
@@ -16,11 +16,11 @@ public class JuegoDTO {
     private int descuentoActual;
     private String genero;
     private PegiENUM rangoEdad;
-    private EstadoENUM estado;
+    private EstadoJuegoENUM estado;
 
     public JuegoDTO(long id, String titulo, String descripcion, String desarrolladora,
                     LocalDate fechaPublicacion, float precioBase, int descuentoActual,
-                    String genero, PegiENUM rangoEdad, EstadoENUM estado) {
+                    String genero, PegiENUM rangoEdad, EstadoJuegoENUM estado) {
 
         this.id = id;
         this.titulo = titulo;
@@ -98,11 +98,11 @@ public class JuegoDTO {
         this.genero = genero;
     }
 
-    public EstadoENUM getEstado() {
+    public EstadoJuegoENUM getEstado() {
         return estado;
     }
 
-    public void setEstado(EstadoENUM estado) {
+    public void setEstado(EstadoJuegoENUM estado) {
         this.estado = estado;
     }
 

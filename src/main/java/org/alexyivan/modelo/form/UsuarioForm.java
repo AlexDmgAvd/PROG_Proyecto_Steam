@@ -1,5 +1,7 @@
 package org.alexyivan.modelo.form;
 
+import org.alexyivan.modelo.enums.EstadoCuentaENUM;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +25,11 @@ public class UsuarioForm {
     LocalDate fechaRegistro;
     String avatar;
     Float saldo;
+    EstadoCuentaENUM estado;
 
     //Constructor
     public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombreReal, String pais,
-                       LocalDate fechaNacimiento, LocalDate fechaRegistro, String avatar, Float saldo) {
+                       LocalDate fechaNacimiento, LocalDate fechaRegistro, String avatar, Float saldo, EstadoCuentaENUM estado) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.contrasena = contrasena;
@@ -36,11 +39,16 @@ public class UsuarioForm {
         this.fechaRegistro = fechaRegistro;
         this.avatar = avatar;
         this.saldo = saldo;
+        this.estado = estado;
     }
 
     //Getters
     public LocalDate getFechaRegistro() {
         return fechaRegistro;
+    }
+
+    public EstadoCuentaENUM getEstado() {
+        return estado;
     }
 
     public String getNombreUsuario() {
