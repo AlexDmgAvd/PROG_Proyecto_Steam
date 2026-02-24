@@ -1,6 +1,7 @@
 package org.alexyivan.repositorio.inmemory;
 
 import org.alexyivan.modelo.entidad.UsuarioEntidad;
+import org.alexyivan.modelo.enums.EstadoCuentaENUM;
 import org.alexyivan.modelo.form.UsuarioForm;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
@@ -12,13 +13,14 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     private static List<UsuarioEntidad> usuarios = new ArrayList<>();
     private static long idCounter = usuarios.size() + 1;
+    public static List<String> listaPaises = List.of("España", "Alemania", "Irlanda", "Reino Unido");
 
 
     @Override
     public Optional<UsuarioEntidad> crear(UsuarioForm usuarioForm) {
         var usuario = new UsuarioEntidad(idCounter++, usuarioForm.getNombreUsuario(), usuarioForm.getEmail(), usuarioForm.getContrasena(),
                 usuarioForm.getNombreReal(), usuarioForm.getPais(), usuarioForm.getFechaNacimiento(), usuarioForm.getFechaRegistro(),
-                usuarioForm.getAvatar(), usuarioForm.getSaldo());
+                usuarioForm.getAvatar(), usuarioForm.getSaldo(), EstadoCuentaENUM.ACTIVA);
         usuarios.add(usuario);
         return Optional.of(usuario);
     }
@@ -33,6 +35,12 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     }
 
     @Override
+    public Optional<UsuarioEntidad> obtenerPorNombre(String nombre) {
+        return usuarios.stream().filter(u -> u.nombreUsuario().equals(nombre)).findFirst();
+    }
+
+
+    @Override
     public List<UsuarioEntidad> obtenerTodos() {
         return new ArrayList<>(usuarios);
     }
@@ -45,7 +53,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
         }
         var usuarioActualizado = new UsuarioEntidad(id, usuarioForm.getNombreUsuario(), usuarioForm.getEmail(), usuarioForm.getContrasena(),
                 usuarioForm.getNombreReal(), usuarioForm.getPais(), usuarioForm.getFechaNacimiento(), usuarioForm.getFechaRegistro(),
-                usuarioForm.getAvatar(), usuarioForm.getSaldo());
+                usuarioForm.getAvatar(), usuarioForm.getSaldo(), usuarioForm.getEstado());
         usuarios.removeIf(u -> u.id() == id);
         usuarios.add(usuarioActualizado);
         return Optional.of(usuarioActualizado);

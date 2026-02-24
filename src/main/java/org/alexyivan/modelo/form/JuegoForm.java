@@ -1,6 +1,6 @@
 package org.alexyivan.modelo.form;
 
-import org.alexyivan.modelo.enums.EstadoENUM;
+import org.alexyivan.modelo.enums.EstadoJuegoENUM;
 import org.alexyivan.modelo.enums.PegiENUM;
 
 import java.time.LocalDate;
@@ -27,11 +27,11 @@ public class JuegoForm {
     private String genero;
     private PegiENUM rangoEdad;
     private String idiomasDisponibles;
-    private EstadoENUM estado;
+    private EstadoJuegoENUM estado;
 
     public JuegoForm(String titulo, String descripcion, String desarrolladora, LocalDate fechaPublicacion,
                      float precioBase, int descuentoActual, String genero, PegiENUM rangoEdad, String idiomasDisponibles,
-                     EstadoENUM estado) {
+                     EstadoJuegoENUM estado) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.desarrolladora = desarrolladora;
@@ -83,7 +83,7 @@ public class JuegoForm {
         return idiomasDisponibles;
     }
 
-    public EstadoENUM getEstado() {
+    public EstadoJuegoENUM getEstado() {
         return estado;
     }
 

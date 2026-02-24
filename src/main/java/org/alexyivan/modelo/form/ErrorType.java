@@ -27,6 +27,10 @@ public enum ErrorType {
     USUARIO_SIN_PERMISO("El usuario no tiene permiso para realizar esta acción"),
     COMPRA_NO_VERIFICADA("No se encontró una compra verificada para este juego"),
     HORAS_INSUFICIENTES("Horas de juego insuficientes para esta operación"),
+    SALDO_INVALIDO("No se puede añadir esa cantidad de fondos"),
+    ESTADO_CUENTA("El estado de la cuenta no permite esa acción"),
+    NOMBRE_EXISTENTE("Ese nombre de usuario ya existe en el sistema"),
+    PAIS_INEXISTENTE("El país no se encuentra en la lista"),
     PLAZO_EXPIRADO("El plazo para esta operación ha expirado");
 
     private final String mensaje;

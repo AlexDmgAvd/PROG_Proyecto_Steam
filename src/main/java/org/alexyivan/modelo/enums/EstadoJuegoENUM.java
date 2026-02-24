@@ -1,5 +1,5 @@
 package org.alexyivan.modelo.enums;
 
-public enum EstadoENUM {
+public enum EstadoJuegoENUM {
     DISPONIBLE,PRECOMPRA,ACCESO_ANTICIPADO,NO_DISPONIBLE
 }
