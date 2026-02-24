@@ -10,21 +10,25 @@ public class EstadisticasJuegoDTO {
     private JuegoDTO juego;
     private long idUsuario;
     private UsuarioDTO usuario;
+    private int totalJuegos;
     private float horasJugadas;
-    private int logrosObtenidos;
-    private LocalDate ultimaSesion;
+    private int juegosInstalados;
+    private long juegoMasJugados;
+    private float valorTotal;
+    private long juegosNuncaJugados;
 
-    public EstadisticasJuegoDTO(long id,long idJuego, Optional<JuegoDTO> juego,
-                                long idUsuario, Optional<UsuarioDTO> usuario, float horasJugadas,
-                                int logrosObtenidos, LocalDate ultimaSesion) {
+    public EstadisticasJuegoDTO(long id, long idJuego, JuegoDTO juego, long idUsuario, UsuarioDTO usuario, int totalJuegos, float horasJugadas, int juegosInstalados, long juegoMasJugados, float valorTotal, long juegosNuncaJugados) {
         this.id = id;
         this.idJuego = idJuego;
-        this.juego = juego.orElse(null);
+        this.juego = juego;
         this.idUsuario = idUsuario;
-        this.usuario = usuario.orElse(null);
+        this.usuario = usuario;
+        this.totalJuegos = totalJuegos;
         this.horasJugadas = horasJugadas;
-        this.logrosObtenidos = logrosObtenidos;
-        this.ultimaSesion = ultimaSesion;
+        this.juegosInstalados = juegosInstalados;
+        this.juegoMasJugados = juegoMasJugados;
+        this.valorTotal = valorTotal;
+        this.juegosNuncaJugados = juegosNuncaJugados;
     }
 
     public long getId() {
@@ -47,15 +51,28 @@ public class EstadisticasJuegoDTO {
         return usuario;
     }
 
+    public int getTotalJuegos() {
+        return totalJuegos;
+    }
+
     public float getHorasJugadas() {
         return horasJugadas;
     }
 
-    public int getLogrosObtenidos() {
-        return logrosObtenidos;
+    public int getJuegosInstalados() {
+        return juegosInstalados;
     }
 
-    public LocalDate getUltimaSesion() {
-        return ultimaSesion;
+    public long getJuegoMasJugados() {
+        return juegoMasJugados;
+    }
+
+    public float getValorTotal() {
+        return valorTotal;
+    }
+
+    public long getJuegosNuncaJugados() {
+        return juegosNuncaJugados;
     }
 }
+
