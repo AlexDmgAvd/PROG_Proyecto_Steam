@@ -21,6 +21,7 @@ public enum ErrorType {
     METODO_PAGO_INVALIDO("El método de pago no es válido"),
     SALDO_INSUFICIENTE("Saldo insuficiente"),
     JUEGO_NO_COMPRABLE("El juego no está disponible para compra"),
+    JUEGO_EXISTENTE("Ya existe un juego con ese título"),
     RESENA_DUPLICADA("Ya existe una reseña para este juego"),
     FECHA_ANTERIOR_REGISTRO("La fecha no puede ser anterior al registro del usuario"),
     JUEGO_NO_EN_BIBLIOTECA("El juego no está en la biblioteca del usuario"),

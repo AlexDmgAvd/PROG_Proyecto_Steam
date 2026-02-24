@@ -149,6 +149,13 @@ public class JuegoForm {
             errores.add(new ErrorDto("rangoEdad", ErrorType.REQUERIDO));
         }
 
+        //estado
+        if(estado == null){
+
+            estado = EstadoJuegoENUM.DISPONIBLE;
+
+        }
+
 
 
         // idiomas

@@ -1,6 +1,7 @@
 package org.alexyivan.repositorio.inmemory;
 
 import org.alexyivan.modelo.entidad.JuegoEntidad;
+import org.alexyivan.modelo.enums.EstadoJuegoENUM;
 import org.alexyivan.modelo.form.JuegoForm;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 
@@ -14,6 +15,8 @@ public class JuegoRepoInMemory implements IJuegoRepo {
 
     @Override
     public Optional<JuegoEntidad> crear(JuegoForm juegoForm) {
+
+
         var juego = new JuegoEntidad(idCounter++, juegoForm.getTitulo(), juegoForm.getDescripcion(), juegoForm.getDesarrolladora(), juegoForm.getFechaPublicacion(),
                 juegoForm.getPrecioBase(), juegoForm.getDescuentoActual(), juegoForm.getGenero(), juegoForm.getRangoEdad(), juegoForm.getEstado());
         juegos.add(juego);
@@ -25,6 +28,38 @@ public class JuegoRepoInMemory implements IJuegoRepo {
         return juegos.stream()
                 .filter(j -> j.id() == id)
                 .findFirst();
+    }
+
+    @Override
+    public Optional<JuegoEntidad> obtenerTitulo(String titulo) {
+        return juegos.stream()
+                .filter(j -> j.titulo().equalsIgnoreCase(titulo))
+                .findFirst();
+    }
+
+    @Override
+    public List<Optional<JuegoEntidad>> buscarTexto(String texto) {
+        return List.of();
+    }
+
+    @Override
+    public List<Optional<JuegoEntidad>> buscarCategoria(String categoria) {
+        return List.of();
+    }
+
+    @Override
+    public List<Optional<JuegoEntidad>> buscarRangoPrecio(float minPrecio, float maxPrecio) {
+        return List.of();
+    }
+
+    @Override
+    public List<Optional<JuegoEntidad>> buscarClasificacion(String clasificacion) {
+        return List.of();
+    }
+
+    @Override
+    public List<Optional<JuegoEntidad>> buscarEstado(String estado) {
+        return List.of();
     }
 
     @Override
@@ -52,4 +87,6 @@ var juegoActualizado = new JuegoEntidad(id,juegoForm.getTitulo(), juegoForm.getD
     public boolean eliminar(Long id) {
         return juegos.removeIf(j -> j.id() == id);
     }
+
+
 }
