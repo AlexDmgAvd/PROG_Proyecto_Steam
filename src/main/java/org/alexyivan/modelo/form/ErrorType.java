@@ -23,6 +23,7 @@ public enum ErrorType {
     JUEGO_NO_COMPRABLE("El juego no está disponible para compra"),
     JUEGO_EXISTENTE("Ya existe un juego con ese título"),
     RESENA_DUPLICADA("Ya existe una reseña para este juego"),
+    BUSQUEDA_INVALIDA("No se pueden realizar búsquedas vacías"),
     FECHA_ANTERIOR_REGISTRO("La fecha no puede ser anterior al registro del usuario"),
     JUEGO_NO_EN_BIBLIOTECA("El juego no está en la biblioteca del usuario"),
     USUARIO_SIN_PERMISO("El usuario no tiene permiso para realizar esta acción"),

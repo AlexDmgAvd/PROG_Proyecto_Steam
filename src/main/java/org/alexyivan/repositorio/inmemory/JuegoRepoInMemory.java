@@ -37,30 +37,8 @@ public class JuegoRepoInMemory implements IJuegoRepo {
                 .findFirst();
     }
 
-    @Override
-    public List<Optional<JuegoEntidad>> buscarTexto(String texto) {
-        return List.of();
-    }
 
-    @Override
-    public List<Optional<JuegoEntidad>> buscarCategoria(String categoria) {
-        return List.of();
-    }
 
-    @Override
-    public List<Optional<JuegoEntidad>> buscarRangoPrecio(float minPrecio, float maxPrecio) {
-        return List.of();
-    }
-
-    @Override
-    public List<Optional<JuegoEntidad>> buscarClasificacion(String clasificacion) {
-        return List.of();
-    }
-
-    @Override
-    public List<Optional<JuegoEntidad>> buscarEstado(String estado) {
-        return List.of();
-    }
 
     @Override
     public List<JuegoEntidad> obtenerTodos() {

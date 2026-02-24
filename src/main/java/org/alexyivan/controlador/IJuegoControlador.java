@@ -14,9 +14,9 @@ public interface IJuegoControlador {
 
     Optional<JuegoDTO> anhadirJuegoCatalogo(JuegoForm formulario) throws ValidacionException;
 
-    List<Optional<JuegoDTO>> buscarJuegos(String titulo, String genero, float precio, PegiENUM pegi, EstadoJuegoENUM estado) throws ValidacionException;
+    List<JuegoDTO> buscarJuegos(String titulo, String genero, float precio, String pegi, String estado) throws ValidacionException;
 
-    List<Optional<JuegoDTO>> listarTodosJuegos(OrdenENUM orden) throws ValidacionException;
+    List<JuegoDTO> listarTodosJuegos(OrdenENUM orden) throws ValidacionException;
 
     Optional<JuegoDTO> consultarJuego(long id) throws ValidacionException;
 

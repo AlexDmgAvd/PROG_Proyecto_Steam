@@ -65,13 +65,16 @@ public class UsuarioControlador implements IUsuarioControlador {
     }
 
     @Override
-    public Optional<UsuarioDTO> consultarUsuario(Optional<Integer> id, Optional<String> nombreUsuario) throws ValidacionException {
-        if (id != null) {
+    public Optional<UsuarioDTO> consultarUsuario(Long id, String nombreUsuario) throws ValidacionException {
+        List<ErrorDto> errores = new ArrayList<>();
 
+        if (id == null && nombreUsuario.isEmpty()) {
+            errores.add(new ErrorDto("vacio", ErrorType.BUSQUEDA_INVALIDA));
 
         }
+        var usuario = usuarioRepo.obtenerPorId(id);
 
-        //Hace falta DTO de estadísticas de juego
+        //TODO Hace falta DTO de estadísticas de juego
 
         return Optional.empty();
     }

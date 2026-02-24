@@ -11,7 +11,7 @@ public interface IUsuarioControlador {
 
     Optional<UsuarioDTO> registrarUsuario (UsuarioForm usuarioForm) throws ValidacionException;
 
-    Optional<UsuarioDTO> consultarUsuario(Optional<Integer> id, Optional<String> nombreUsuario) throws ValidacionException;
+    Optional<UsuarioDTO> consultarUsuario(Long id, String nombreUsuario) throws ValidacionException;
 
     void anhadirSaldo (long id, float cantidad) throws ValidacionException;
 
