@@ -5,6 +5,7 @@ import org.alexyivan.modelo.dto.JuegoDTO;
 import org.alexyivan.modelo.enums.EstadoJuegoENUM;
 import org.alexyivan.modelo.enums.OrdenENUM;
 import org.alexyivan.modelo.enums.PegiENUM;
+import org.alexyivan.modelo.form.BusquedaJuegosForm;
 import org.alexyivan.modelo.form.JuegoForm;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface IJuegoControlador {
 
     Optional<JuegoDTO> anhadirJuegoCatalogo(JuegoForm formulario) throws ValidacionException;
 
-    List<JuegoDTO> buscarJuegos(String titulo, String genero, float precio, String pegi, String estado) throws ValidacionException;
+    List<JuegoDTO> buscarJuegos(BusquedaJuegosForm busquedaJuegos) throws ValidacionException;
 
     List<JuegoDTO> listarTodosJuegos(OrdenENUM orden) throws ValidacionException;
 
