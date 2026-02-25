@@ -1,5 +1,5 @@
 package org.alexyivan.modelo.enums;
 
-public enum OrdenENUM {
+public enum OrdenBusquedaJuegoENUM {
     ALFABETICO, PRECIO, FECHA
 }

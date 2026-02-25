@@ -3,8 +3,7 @@ package org.alexyivan.controlador;
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.modelo.dto.JuegoDTO;
 import org.alexyivan.modelo.enums.EstadoJuegoENUM;
-import org.alexyivan.modelo.enums.OrdenENUM;
-import org.alexyivan.modelo.enums.PegiENUM;
+import org.alexyivan.modelo.enums.OrdenBusquedaJuegoENUM;
 import org.alexyivan.modelo.form.BusquedaJuegosForm;
 import org.alexyivan.modelo.form.JuegoForm;
 
@@ -17,7 +16,7 @@ public interface IJuegoControlador {
 
     List<JuegoDTO> buscarJuegos(BusquedaJuegosForm busquedaJuegos) throws ValidacionException;
 
-    List<JuegoDTO> listarTodosJuegos(OrdenENUM orden) throws ValidacionException;
+    List<JuegoDTO> listarTodosJuegos(OrdenBusquedaJuegoENUM orden) throws ValidacionException;
 
     Optional<JuegoDTO> consultarJuego(long id) throws ValidacionException;
 

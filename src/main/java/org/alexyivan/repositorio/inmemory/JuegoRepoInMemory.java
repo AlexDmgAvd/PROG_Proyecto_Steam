@@ -38,8 +38,6 @@ public class JuegoRepoInMemory implements IJuegoRepo {
     }
 
 
-
-
     @Override
     public List<JuegoEntidad> obtenerTodos() {
         return new ArrayList<>(juegos);

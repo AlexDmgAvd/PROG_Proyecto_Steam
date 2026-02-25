@@ -5,8 +5,7 @@ import org.alexyivan.mapper.Mapper;
 import org.alexyivan.modelo.dto.JuegoDTO;
 import org.alexyivan.modelo.entidad.JuegoEntidad;
 import org.alexyivan.modelo.enums.EstadoJuegoENUM;
-import org.alexyivan.modelo.enums.OrdenENUM;
-import org.alexyivan.modelo.enums.PegiENUM;
+import org.alexyivan.modelo.enums.OrdenBusquedaJuegoENUM;
 import org.alexyivan.modelo.form.BusquedaJuegosForm;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
@@ -60,7 +59,7 @@ public class JuegoControlador implements IJuegoControlador {
             throw new ValidacionException(errores);
         }
 
-        List<JuegoEntidad> juegosFiltrados = new ArrayList<>();
+        List<JuegoEntidad> juegosFiltrados;
         juegosFiltrados = juegoRepo.obtenerTodos();
         var jf = juegosFiltrados.stream();
 
@@ -90,33 +89,42 @@ public class JuegoControlador implements IJuegoControlador {
     }
 
     @Override
-    public List<JuegoDTO> listarTodosJuegos(OrdenENUM orden) throws ValidacionException {
+    public List<JuegoDTO> listarTodosJuegos(OrdenBusquedaJuegoENUM orden) throws ValidacionException {
 
-        List<JuegoEntidad> juegosOriginales = new ArrayList<>();
-        List<ErrorDto> errores = new ArrayList<>();
+        List<JuegoEntidad> juegosOriginales;
 
 
-        if (orden == null) {
-            juegosOriginales = juegoRepo.obtenerTodos();
-            return juegosOriginales.stream().map(Mapper::mapJuegoEntidadADto).toList();
+        //Todo hacer la búsqueda por parámetros y devolver la lista de juegos ordenada.
+
+        if (orden.equals(OrdenBusquedaJuegoENUM.ALFABETICO)) {
+            List<JuegoDTO> juegosFiltrados = juegoRepo.obtenerTodos().
+                    stream().map(Mapper::mapJuegoEntidadADto).toList();
+            juegosFiltrados.sort(Comparator.comparing(JuegoDTO::getTitulo));
+
+            return juegosFiltrados;
         }
 
-        if (orden.equals(OrdenENUM.ALFABETICO)) {
-            // List<JuegoDTO> juegosFiltrados = new ArrayList<>();
-            // juegosOriginales = juegoRepo.obtenerTodos();
-            // juegosOriginales.stream().map(Mapper::mapJuegoEntidadADto).toList();
-            // return juegosFiltrados.sort(juegosOriginales);
-        }
 
-        if (orden.equals(OrdenENUM.PRECIO)) {
+        if (orden.equals(OrdenBusquedaJuegoENUM.PRECIO)) {
+            List<JuegoDTO> juegosFiltrados = juegoRepo.obtenerTodos().
+                    stream().map(Mapper::mapJuegoEntidadADto).toList();
+            juegosFiltrados.sort(Comparator.comparing(JuegoDTO::getPrecioBase));
 
-        }
-
-        if (orden.equals(OrdenENUM.FECHA)) {
-
+            return juegosFiltrados;
 
         }
 
+        if (orden.equals(OrdenBusquedaJuegoENUM.FECHA)) {
+            List<JuegoDTO> juegosFiltrados = juegoRepo.obtenerTodos().
+                    stream().map(Mapper::mapJuegoEntidadADto).toList();
+            juegosFiltrados.sort(Comparator.comparing(JuegoDTO::getFechaPublicacion));
+
+            return juegosFiltrados;
+
+        }
+
+        juegosOriginales = juegoRepo.obtenerTodos();
+        return juegosOriginales.stream().map(Mapper::mapJuegoEntidadADto).toList();
 
     }
 
@@ -141,7 +149,7 @@ public class JuegoControlador implements IJuegoControlador {
     public Optional<JuegoDTO> actualizarDescuento(long id, int descuento) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
-        if (descuento < DESCUENTO_MIN || descuento > DESCUENTO_MAX){
+        if (descuento < DESCUENTO_MIN || descuento > DESCUENTO_MAX) {
             errores.add(new ErrorDto("descuento", ErrorType.DESCUENTO_INVALIDO));
 
         }
@@ -159,12 +167,11 @@ public class JuegoControlador implements IJuegoControlador {
         }
 
 
-        juegoRepo.actualizar(id,new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
-                juego.get().fechaPublicacion(),juego.get().precioBase(),descuento,juego.get().genero(),
-                juego.get().rangoEdad(),juego.get().idiomasDisponibles(), juego.get().estado()));
+        juegoRepo.actualizar(id, new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
+                juego.get().fechaPublicacion(), juego.get().precioBase(), descuento, juego.get().genero(),
+                juego.get().rangoEdad(), juego.get().idiomasDisponibles(), juego.get().estado()));
 
         return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juego.orElse(null)));
-
 
 
     }
@@ -173,7 +180,7 @@ public class JuegoControlador implements IJuegoControlador {
     public boolean cambiarEstado(long id, EstadoJuegoENUM estado) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
-        if (estado == null || estado.toString().equals(EstadoJuegoENUM.)){
+        if (estado == null) {
             errores.add(new ErrorDto("estado", ErrorType.ESTADO_INVALIDO));
 
         }
@@ -181,18 +188,20 @@ public class JuegoControlador implements IJuegoControlador {
         var juego = juegoRepo.obtenerPorId(id);
 
         if (juego.isEmpty()) {
-
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+
         }
 
 
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
+
         }
 
 
-        juegoRepo.actualizar(id,new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
-                juego.get().fechaPublicacion(),juego.get().precioBase(),descuento,juego.get().genero(),
-                juego.get().rangoEdad(),juego.get().idiomasDisponibles(), juego.get().estado()));
+        juegoRepo.actualizar(id, new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
+                juego.get().fechaPublicacion(), juego.get().precioBase(), juego.get().descuentoActual(), juego.get().genero(),
+                juego.get().rangoEdad(), juego.get().idiomasDisponibles(), estado));
+        return true;
     }
 }
