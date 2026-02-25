@@ -17,8 +17,10 @@ public class JuegoRepoInMemory implements IJuegoRepo {
     public Optional<JuegoEntidad> crear(JuegoForm juegoForm) {
 
 
-        var juego = new JuegoEntidad(idCounter++, juegoForm.getTitulo(), juegoForm.getDescripcion(), juegoForm.getDesarrolladora(), juegoForm.getFechaPublicacion(),
-                juegoForm.getPrecioBase(), juegoForm.getDescuentoActual(), juegoForm.getGenero(), juegoForm.getRangoEdad(), juegoForm.getEstado());
+        var juego = new JuegoEntidad(idCounter++, juegoForm.getTitulo(), juegoForm.getDescripcion(),
+                juegoForm.getDesarrolladora(), juegoForm.getFechaPublicacion(),
+                juegoForm.getPrecioBase(), juegoForm.getDescuentoActual(), juegoForm.getGenero(),
+                juegoForm.getRangoEdad(), juegoForm.getIdiomasDisponibles(), juegoForm.getEstado());
         juegos.add(juego);
         return Optional.of(juego);
     }
@@ -52,7 +54,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
 var juegoActualizado = new JuegoEntidad(id,juegoForm.getTitulo(), juegoForm.getDescripcion(),
         juegoForm.getDesarrolladora(), juegoForm.getFechaPublicacion(),
         juegoForm.getPrecioBase(), juegoForm.getDescuentoActual(), juegoForm.getGenero(),
-        juegoForm.getRangoEdad(), juegoForm.getEstado());
+        juegoForm.getRangoEdad(), juegoForm.getIdiomasDisponibles(), juegoForm.getEstado());
         juegos.removeIf(j -> j.id()== id);
         juegos.add(juegoActualizado);
         return Optional.of(juegoActualizado);
