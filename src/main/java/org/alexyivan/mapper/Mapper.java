@@ -15,7 +15,11 @@ public class Mapper {
                 entidad.idJuego(),
                 null,
                 entidad.horasJugadasTotal(),
-                entidad.ultimaFechaDeJuego());
+                entidad.ultimaFechaDeJuego(),
+                entidad.estadoInstalacion(),
+                entidad.fechaAdquisicion());
+
+
 
     }
 
@@ -65,7 +69,8 @@ public class Mapper {
                 entidad.ultimaFechaEdicion());
 
     }
-    public static UsuarioDTO mapUsuarioEntidadADto(UsuarioEntidad entidad){
+
+    public static UsuarioDTO mapUsuarioEntidadADto(UsuarioEntidad entidad) {
         if (entidad == null)
             return null;
 
@@ -79,7 +84,6 @@ public class Mapper {
                 entidad.avatar(),
                 entidad.creditoSteam());
     }
-
 
 
 }

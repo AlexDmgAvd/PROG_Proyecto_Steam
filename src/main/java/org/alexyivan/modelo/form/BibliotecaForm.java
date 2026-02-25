@@ -1,5 +1,7 @@
 package org.alexyivan.modelo.form;
 
+import org.alexyivan.modelo.enums.EstadoInstalacionENUM;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +13,12 @@ public class BibliotecaForm {
     private LocalDate fechaAdquisicion;
     private Float tiempoJuegoTotal;
     private LocalDate ultimaFechaJuego;
-    private String estadoInstalacion;
+    private EstadoInstalacionENUM estadoInstalacion;
+
 
     // Constructor
-    public BibliotecaForm(Long usuarioId, Long juegoId, LocalDate fechaAdquisicion, Float tiempoJuegoTotal, LocalDate ultimaFechaJuego, String estadoInstalacion) {
+    public BibliotecaForm(Long usuarioId, Long juegoId, LocalDate fechaAdquisicion, Float tiempoJuegoTotal,
+                          LocalDate ultimaFechaJuego, EstadoInstalacionENUM estadoInstalacion) {
         this.usuarioId = usuarioId;
         this.juegoId = juegoId;
         this.fechaAdquisicion = fechaAdquisicion;
@@ -44,7 +48,7 @@ public class BibliotecaForm {
         return ultimaFechaJuego;
     }
 
-    public String getEstadoInstalacion() {
+    public EstadoInstalacionENUM getEstadoInstalacion() {
         return estadoInstalacion;
     }
 

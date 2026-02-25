@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface IBibliotecaControlador {
 
 
-    List<JuegoDTO> verBibliotecaPersonal(long id, OrdenBusquedaBibliotecaENUM busquedaBiblioteca);
+    List<BibliotecaDTO> verBibliotecaPersonal(long id, OrdenBusquedaBibliotecaENUM busquedaBiblioteca);
 
     boolean anhadirJuego(CompraForm compra);
 

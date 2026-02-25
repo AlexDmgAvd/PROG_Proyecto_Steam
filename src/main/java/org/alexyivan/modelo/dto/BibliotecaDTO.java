@@ -15,16 +15,28 @@ public class BibliotecaDTO {
     private float horasJugadasTotal;
     private LocalDate ultimaFechaDeJuego;
     private EstadoInstalacionENUM estadoInstalacion;
+    LocalDate fechaAdquisicion;
 
-    public BibliotecaDTO(long id, long idUsuario, Optional <UsuarioDTO> usuario, long idJuego, Optional <JuegoDTO> juego,
-                         float horasJugadasTotal, LocalDate ultimaFechaDeJuego) {
+    public BibliotecaDTO(long id, long idUsuario, UsuarioDTO usuario, long idJuego, JuegoDTO juego,
+                         float horasJugadasTotal, LocalDate ultimaFechaDeJuego, EstadoInstalacionENUM estadoInstalacion,
+                         LocalDate fechaAdquisicion) {
         this.id = id;
         this.idUsuario = idUsuario;
-        this.usuario = usuario.orElse(null);
+        this.usuario = usuario;
         this.idJuego = idJuego;
-        this.juego = juego.orElse(null);
+        this.juego = juego;
         this.horasJugadasTotal = horasJugadasTotal;
         this.ultimaFechaDeJuego = ultimaFechaDeJuego;
+        this.estadoInstalacion = estadoInstalacion;
+        this.fechaAdquisicion = fechaAdquisicion;
+    }
+
+    public EstadoInstalacionENUM getEstadoInstalacion() {
+        return estadoInstalacion;
+    }
+
+    public LocalDate getFechaAdquisicion() {
+        return fechaAdquisicion;
     }
 
     public long getId() {

@@ -1,11 +1,14 @@
 package org.alexyivan.controlador;
 
 import org.alexyivan.exception.ValidacionException;
+import org.alexyivan.mapper.Mapper;
+import org.alexyivan.modelo.dto.BibliotecaDTO;
 import org.alexyivan.modelo.dto.JuegoDTO;
 import org.alexyivan.modelo.entidad.BibliotecaEntidad;
 import org.alexyivan.modelo.entidad.JuegoEntidad;
 import org.alexyivan.modelo.enums.EstadoInstalacionENUM;
 import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaENUM;
+import org.alexyivan.modelo.enums.OrdenBusquedaJuegoENUM;
 import org.alexyivan.modelo.form.BibliotecaForm;
 import org.alexyivan.modelo.form.CompraForm;
 import org.alexyivan.modelo.form.ErrorDto;
@@ -17,6 +20,7 @@ import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class BibliotecaControlador implements IBibliotecaControlador {
@@ -32,7 +36,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     }
 
     @Override
-    public List<JuegoDTO> verBibliotecaPersonal(long id, OrdenBusquedaBibliotecaENUM busquedaBiblioteca) {
+    public List<BibliotecaDTO> verBibliotecaPersonal(long id, OrdenBusquedaBibliotecaENUM busquedaBiblioteca) {
 
         List<ErrorDto> errores = new ArrayList<>();
 
@@ -46,18 +50,47 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             throw new ValidacionException(errores);
         }
 
-
-        List<JuegoEntidad> juegosFiltrados;
-        List<JuegoEntidad> juegosUsuario;
-        juegosFiltrados = juegoRepo.obtenerTodos();
+        List<BibliotecaEntidad> bibliotecaUsuario;
         var biblioteca = bibliotecaRepo;
-        var jf = juegosFiltrados.stream();
+
+        bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.idUsuario() == id).toList();
+
+        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaENUM.ALFABETICO)) {
+            List<BibliotecaDTO> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
+                    stream().map(Mapper::mapBibliotecaEntidadADto).toList();
+            bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getJuego().getTitulo()));
+
+            return bibliotecaFiltrada;
+        }
+
+        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaENUM.ULTIMA_SESION)) {
+            List<BibliotecaDTO> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
+                    stream().map(Mapper::mapBibliotecaEntidadADto).toList();
+            bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getUltimaFechaDeJuego()));
+
+            return bibliotecaFiltrada;
+        }
+
+        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaENUM.TIEMPO_JUEGO)) {
+            List<BibliotecaDTO> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
+                    stream().map(Mapper::mapBibliotecaEntidadADto).toList();
+            bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getHorasJugadasTotal()));
+
+            return bibliotecaFiltrada;
+        }
+        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaENUM.FECHA_ADQUISICION)) {
+            List<BibliotecaDTO> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
+                    stream().map(Mapper::mapBibliotecaEntidadADto).toList();
+            bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getFechaAdquisicion()));
+
+            return bibliotecaFiltrada;
+        }
 
 
-        juegosUsuario = jf.filter(j -> j.equals()biblioteca.obtenerTodos().)
 
 
-        return
+
+        return bibliotecaUsuario.stream().map(Mapper::mapBibliotecaEntidadADto).toList();
 
 
     }
@@ -91,7 +124,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         var b = bibliotecaRepo.crear(new BibliotecaForm(compra.getUsuarioId(), compra.getJuegoId(),
                 compra.getFechaCompra().toLocalDate(), 0.0f, null,
-                EstadoInstalacionENUM.NO_INSTALADO.toString()));
+                EstadoInstalacionENUM.NO_INSTALADO));
         return true;
 
 
@@ -198,7 +231,6 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         return salida;
 
     }
-
 
 
 }
