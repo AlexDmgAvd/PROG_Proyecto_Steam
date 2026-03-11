@@ -65,19 +65,35 @@ public class UsuarioControlador implements IUsuarioControlador {
     }
 
     @Override
-    public Optional<UsuarioDTO> consultarUsuario(Long id, String nombreUsuario) throws ValidacionException {
+    public Optional<UsuarioDTO> consultarUsuarioNombreUsuario(String nombreUsuario) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
-        if (id == null && nombreUsuario.isEmpty()) {
+        if (nombreUsuario.isEmpty()) {
             errores.add(new ErrorDto("vacio", ErrorType.BUSQUEDA_INVALIDA));
 
         }
-        var usuario = usuarioRepo.obtenerPorId(id);
+        var usuario = usuarioRepo.obtenerPorNombre(nombreUsuario);
 
         //TODO Hace falta DTO de estadísticas de juego
 
-        return Optional.empty();
+        return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
     }
+
+    @Override
+    public Optional<UsuarioDTO> consultarUsuarioId(Long id) throws ValidacionException {
+        List<ErrorDto> errores = new ArrayList<>();
+
+        if (id == null) {
+            errores.add(new ErrorDto("vacio", ErrorType.BUSQUEDA_INVALIDA));
+
+        }
+
+        //TODO Hace falta DTO de estadísticas de juego
+        var usuario = usuarioRepo.obtenerPorId(id);
+
+        return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
+    }
+
 
     @Override
     public void anhadirSaldo(long id, float cantidad) throws ValidacionException {
