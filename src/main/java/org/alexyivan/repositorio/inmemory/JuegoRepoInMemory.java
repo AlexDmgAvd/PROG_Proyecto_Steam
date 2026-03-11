@@ -1,7 +1,6 @@
 package org.alexyivan.repositorio.inmemory;
 
 import org.alexyivan.modelo.entidad.JuegoEntidad;
-import org.alexyivan.modelo.enums.EstadoJuegoENUM;
 import org.alexyivan.modelo.form.JuegoForm;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 
@@ -51,11 +50,11 @@ public class JuegoRepoInMemory implements IJuegoRepo {
         if (juegosOpt.isEmpty()) {
             throw new IllegalArgumentException("Juego no encontrado");
         }
-var juegoActualizado = new JuegoEntidad(id,juegoForm.getTitulo(), juegoForm.getDescripcion(),
-        juegoForm.getDesarrolladora(), juegoForm.getFechaPublicacion(),
-        juegoForm.getPrecioBase(), juegoForm.getDescuentoActual(), juegoForm.getGenero(),
-        juegoForm.getRangoEdad(), juegoForm.getIdiomasDisponibles(), juegoForm.getEstado());
-        juegos.removeIf(j -> j.id()== id);
+        var juegoActualizado = new JuegoEntidad(id, juegoForm.getTitulo(), juegoForm.getDescripcion(),
+                juegoForm.getDesarrolladora(), juegoForm.getFechaPublicacion(),
+                juegoForm.getPrecioBase(), juegoForm.getDescuentoActual(), juegoForm.getGenero(),
+                juegoForm.getRangoEdad(), juegoForm.getIdiomasDisponibles(), juegoForm.getEstado());
+        juegos.removeIf(j -> j.id() == id);
         juegos.add(juegoActualizado);
         return Optional.of(juegoActualizado);
 

@@ -40,6 +40,11 @@ public class BusquedaJuegosForm {
         return estado;
     }
 
+    /**
+     * Valida los datos del formulario de Busqueda de juegos.
+     *
+     * @return Lista de errores encontrados durante la validación. Vacía si todos los campos son válidos.
+     */
     public List<ErrorDto> validar() {
 
         List<ErrorDto> errores = new ArrayList<>();

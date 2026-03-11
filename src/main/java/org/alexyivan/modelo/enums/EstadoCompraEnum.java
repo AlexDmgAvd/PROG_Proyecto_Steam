@@ -1,5 +1,5 @@
 package org.alexyivan.modelo.enums;
 
-public enum EstadoCompraENUM {
+public enum EstadoCompraEnum {
     COMPLETADO, REEMBOLSADO
 }

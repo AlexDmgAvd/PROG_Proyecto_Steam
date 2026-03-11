@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface IJuegoRepo extends ICrud<JuegoEntidad, JuegoForm, Long> {
 
-    Optional<JuegoEntidad> obtenerTitulo (String titulo);
+    Optional<JuegoEntidad> obtenerTitulo(String titulo);
 
 
 }

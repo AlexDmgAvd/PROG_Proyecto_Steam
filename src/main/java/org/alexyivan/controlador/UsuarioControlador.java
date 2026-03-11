@@ -118,7 +118,7 @@ public class UsuarioControlador implements IUsuarioControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (usuario.get().estado() != EstadoCuentaENUM.ACTIVA) {
+        if (usuario.get().estado() != EstadoCuentaEmun.ACTIVA) {
             errores.add(new ErrorDto("cuenta", ErrorType.ESTADO_CUENTA));
         }
 
@@ -136,7 +136,7 @@ public class UsuarioControlador implements IUsuarioControlador {
 
 
     @Override
-    public Optional<UsuarioDTO> consultarSaldo(long id) throws ValidacionException {
+    public Optional<UsuarioDto> consultarSaldo(long id) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
         var usuario = usuarioRepo.obtenerPorId(id);

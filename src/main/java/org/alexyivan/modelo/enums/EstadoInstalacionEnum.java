@@ -1,6 +1,6 @@
 package org.alexyivan.modelo.enums;
 
-public enum EstadoInstalacionENUM {
+public enum EstadoInstalacionEnum {
     INSTALADO, NO_INSTALADO
 }
 

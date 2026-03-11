@@ -1,6 +1,6 @@
 package org.alexyivan.modelo.form;
 
-import org.alexyivan.modelo.enums.EstadoInstalacionENUM;
+import org.alexyivan.modelo.enums.EstadoInstalacionEnum;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,17 +13,17 @@ public class BibliotecaForm {
     private LocalDate fechaAdquisicion;
     private Float tiempoJuegoTotal;
     private LocalDate ultimaFechaJuego;
-    private EstadoInstalacionENUM estadoInstalacion;
+    private EstadoInstalacionEnum estadoInstalacion;
 
 
     // Constructor
     public BibliotecaForm(Long usuarioId, Long juegoId, LocalDate fechaAdquisicion, Float tiempoJuegoTotal,
-                          LocalDate ultimaFechaJuego, EstadoInstalacionENUM estadoInstalacion) {
+                          LocalDate ultimaFechaJuego, EstadoInstalacionEnum estadoInstalacion) {
         this.usuarioId = usuarioId;
         this.juegoId = juegoId;
         this.fechaAdquisicion = fechaAdquisicion;
         this.tiempoJuegoTotal = tiempoJuegoTotal;
-        this.ultimaFechaJuego = ultimaFechaJuego;;
+        this.ultimaFechaJuego = ultimaFechaJuego;
         this.estadoInstalacion = estadoInstalacion;
     }
 
@@ -48,11 +48,16 @@ public class BibliotecaForm {
         return ultimaFechaJuego;
     }
 
-    public EstadoInstalacionENUM getEstadoInstalacion() {
+    public EstadoInstalacionEnum getEstadoInstalacion() {
         return estadoInstalacion;
     }
 
 
+    /**
+     * Valida los datos del formulario de biblioteca.
+     *
+     * @return Lista de errores encontrados durante la validación. Vacía si todos los campos son válidos.
+     */
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();
 
@@ -77,10 +82,10 @@ public class BibliotecaForm {
 
         // Tiempo de juego total
         if (tiempoJuegoTotal != null && tiempoJuegoTotal < 0) {
-                errores.add(new ErrorDto("tiempoJuegoTotal", ErrorType.VALOR_NEGATIVO));
-            }
+            errores.add(new ErrorDto("tiempoJuegoTotal", ErrorType.VALOR_NEGATIVO));
+        }
 
-        if (tiempoJuegoTotal != null ){
+        if (tiempoJuegoTotal != null) {
             if (Math.round(tiempoJuegoTotal * 10) != tiempoJuegoTotal * 10) {
                 errores.add(new ErrorDto("tiempoJuegoTotal", ErrorType.FORMATO_INVALIDO));
             }

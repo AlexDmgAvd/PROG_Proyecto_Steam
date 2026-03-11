@@ -1,21 +1,19 @@
 package org.alexyivan.controlador;
 
-import org.alexyivan.modelo.dto.BibliotecaDTO;
-import org.alexyivan.modelo.dto.JuegoDTO;
-import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaENUM;
+import org.alexyivan.modelo.dto.BibliotecaDto;
+import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaEnum;
 import org.alexyivan.modelo.form.CompraForm;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IBibliotecaControlador {
 
 
-    List<BibliotecaDTO> verBibliotecaPersonal(long id, OrdenBusquedaBibliotecaENUM busquedaBiblioteca);
+    List<BibliotecaDto> verBibliotecaPersonal(long id, OrdenBusquedaBibliotecaEnum busquedaBiblioteca);
 
     boolean anhadirJuego(CompraForm compra);
 
-    boolean eliminarJuego(long usuarioID, long juegoID);
+    boolean eliminarJuego(long usuarioId, long juegoId);
 
     float actualizarTempoJuego(long idUsuario, long idJuego, float horas);
 

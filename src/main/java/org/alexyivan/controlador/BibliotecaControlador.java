@@ -2,13 +2,10 @@ package org.alexyivan.controlador;
 
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
-import org.alexyivan.modelo.dto.BibliotecaDTO;
-import org.alexyivan.modelo.dto.JuegoDTO;
+import org.alexyivan.modelo.dto.BibliotecaDto;
 import org.alexyivan.modelo.entidad.BibliotecaEntidad;
-import org.alexyivan.modelo.entidad.JuegoEntidad;
-import org.alexyivan.modelo.enums.EstadoInstalacionENUM;
-import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaENUM;
-import org.alexyivan.modelo.enums.OrdenBusquedaJuegoENUM;
+import org.alexyivan.modelo.enums.EstadoInstalacionEnum;
+import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaEnum;
 import org.alexyivan.modelo.form.BibliotecaForm;
 import org.alexyivan.modelo.form.CompraForm;
 import org.alexyivan.modelo.form.ErrorDto;
@@ -36,7 +33,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     }
 
     @Override
-    public List<BibliotecaDTO> verBibliotecaPersonal(long id, OrdenBusquedaBibliotecaENUM busquedaBiblioteca) {
+    public List<BibliotecaDto> verBibliotecaPersonal(long id, OrdenBusquedaBibliotecaEnum busquedaBiblioteca) {
 
         List<ErrorDto> errores = new ArrayList<>();
 
@@ -55,39 +52,36 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.idUsuario() == id).toList();
 
-        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaENUM.ALFABETICO)) {
-            List<BibliotecaDTO> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
+        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.ALFABETICO)) {
+            List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
                     stream().map(Mapper::mapBibliotecaEntidadADto).toList();
             bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getJuego().getTitulo()));
 
             return bibliotecaFiltrada;
         }
 
-        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaENUM.ULTIMA_SESION)) {
-            List<BibliotecaDTO> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
+        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.ULTIMA_SESION)) {
+            List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
                     stream().map(Mapper::mapBibliotecaEntidadADto).toList();
             bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getUltimaFechaDeJuego()));
 
             return bibliotecaFiltrada;
         }
 
-        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaENUM.TIEMPO_JUEGO)) {
-            List<BibliotecaDTO> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
+        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.TIEMPO_JUEGO)) {
+            List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
                     stream().map(Mapper::mapBibliotecaEntidadADto).toList();
             bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getHorasJugadasTotal()));
 
             return bibliotecaFiltrada;
         }
-        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaENUM.FECHA_ADQUISICION)) {
-            List<BibliotecaDTO> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
+        if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.FECHA_ADQUISICION)) {
+            List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
                     stream().map(Mapper::mapBibliotecaEntidadADto).toList();
             bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getFechaAdquisicion()));
 
             return bibliotecaFiltrada;
         }
-
-
-
 
 
         return bibliotecaUsuario.stream().map(Mapper::mapBibliotecaEntidadADto).toList();
@@ -124,18 +118,18 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         var b = bibliotecaRepo.crear(new BibliotecaForm(compra.getUsuarioId(), compra.getJuegoId(),
                 compra.getFechaCompra().toLocalDate(), 0.0f, null,
-                EstadoInstalacionENUM.NO_INSTALADO));
+                EstadoInstalacionEnum.NO_INSTALADO));
         return true;
 
 
     }
 
     @Override
-    public boolean eliminarJuego(long usuarioID, long juegoID) {
+    public boolean eliminarJuego(long usuarioId, long juegoId) {
         List<ErrorDto> errores = new ArrayList<>();
 
-        var usuario = usuarioRepo.obtenerPorId(usuarioID);
-        var juego = juegoRepo.obtenerPorId(juegoID);
+        var usuario = usuarioRepo.obtenerPorId(usuarioId);
+        var juego = juegoRepo.obtenerPorId(juegoId);
         var biblioteca = bibliotecaRepo.obtenerTodos();
 
         if (usuario.isEmpty()) {
@@ -146,12 +140,12 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (biblioteca.stream().filter(b -> b.idUsuario() == usuarioID).findFirst().isEmpty()) {
+        if (biblioteca.stream().filter(b -> b.idUsuario() == usuarioId).findFirst().isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (biblioteca.stream().filter(b -> b.idJuego() == juegoID).findFirst().isEmpty()
-                && biblioteca.stream().filter(b -> b.idUsuario() == usuarioID).findFirst().isPresent()) {
+        if (biblioteca.stream().filter(b -> b.idJuego() == juegoId).findFirst().isEmpty()
+                && biblioteca.stream().filter(b -> b.idUsuario() == usuarioId).findFirst().isPresent()) {
 
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
 
@@ -161,8 +155,8 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         bibliotecaBuscada = bibliotecaRepo.obtenerTodos();
         var br = bibliotecaBuscada;
 
-        br.stream().filter(b -> b.idUsuario() == usuarioID);
-        br.stream().filter(b -> b.idJuego() == juegoID);
+        br.stream().filter(b -> b.idUsuario() == usuarioId);
+        br.stream().filter(b -> b.idJuego() == juegoId);
 
         long id = bibliotecaBuscada.getFirst().id();
         bibliotecaRepo.eliminar(id);

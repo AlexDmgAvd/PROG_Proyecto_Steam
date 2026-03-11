@@ -1,8 +1,8 @@
 package org.alexyivan.modelo.form;
 
-import org.alexyivan.modelo.dto.JuegoDTO;
-import org.alexyivan.modelo.dto.UsuarioDTO;
-import org.alexyivan.modelo.enums.EstadoResenhaENUM;
+import org.alexyivan.modelo.dto.JuegoDto;
+import org.alexyivan.modelo.dto.UsuarioDto;
+import org.alexyivan.modelo.enums.EstadoResenhaEnum;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,19 +15,19 @@ public class ResenhaForm {
     public static final int CONSTANTE_DIEZ = 10;
 
     private Long idUsuario;
-    private UsuarioDTO usuario;
+    private UsuarioDto usuario;
     private Long idJuego;
-    private JuegoDTO juego;
+    private JuegoDto juego;
     private Boolean recomendado;
     private String textoAnalisis;
     private Float horasJugadas;
     private LocalDate fechaPublicacion;
     private LocalDate ultimaFechaEdicion;
-    private EstadoResenhaENUM estado;
+    private EstadoResenhaEnum estado;
 
-    public ResenhaForm(long idUsuario, UsuarioDTO usuario, long idJuego, JuegoDTO juego,
+    public ResenhaForm(long idUsuario, UsuarioDto usuario, long idJuego, JuegoDto juego,
                        boolean recomendado, String textoAnalisis, float horasJugadas, LocalDate fechaPublicacion,
-                       LocalDate ultimaFechaEdicion, EstadoResenhaENUM estado) {
+                       LocalDate ultimaFechaEdicion, EstadoResenhaEnum estado) {
         this.idUsuario = idUsuario;
         this.usuario = usuario;
         this.idJuego = idJuego;
@@ -45,7 +45,7 @@ public class ResenhaForm {
         return idUsuario;
     }
 
-    public UsuarioDTO getUsuario() {
+    public UsuarioDto getUsuario() {
         return usuario;
     }
 
@@ -53,7 +53,7 @@ public class ResenhaForm {
         return idJuego;
     }
 
-    public JuegoDTO getJuego() {
+    public JuegoDto getJuego() {
         return juego;
     }
 
@@ -77,10 +77,15 @@ public class ResenhaForm {
         return ultimaFechaEdicion;
     }
 
-    public EstadoResenhaENUM getEstado() {
+    public EstadoResenhaEnum getEstado() {
         return estado;
     }
 
+    /**
+     * Valida los datos del formulario de Reseña.
+     *
+     * @return Lista de errores encontrados durante la validación. Vacía si todos los campos son válidos.
+     */
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();
 
@@ -91,12 +96,10 @@ public class ResenhaForm {
         }
 
 
-
         // juegoId
         if (idJuego == null) {
             errores.add(new ErrorDto("juegoId", ErrorType.REQUERIDO));
         }
-
 
 
         // recomendado
@@ -105,21 +108,20 @@ public class ResenhaForm {
         }
 
 
-
         // texto analisis
         if (textoAnalisis == null || textoAnalisis.isBlank()) {
             errores.add(new ErrorDto("textoAnalisis", ErrorType.REQUERIDO));
         }
 
-        if (textoAnalisis != null){
-            
+        if (textoAnalisis != null) {
+
             if (textoAnalisis.length() < LONGITUD_MIN_CARACTERES) {
                 errores.add(new ErrorDto("textoAnalisis", ErrorType.VALOR_DEMASIADO_BAJO));
             }
             if (textoAnalisis.length() > LONGITUD_MAX_CARACTERES) {
                 errores.add(new ErrorDto("textoAnalisis", ErrorType.VALOR_DEMASIADO_ALTO));
             }
-            
+
         }
 
 

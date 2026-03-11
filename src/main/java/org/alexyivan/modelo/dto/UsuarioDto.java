@@ -1,10 +1,10 @@
 package org.alexyivan.modelo.dto;
 
-import org.alexyivan.modelo.enums.EstadoCuentaENUM;
+import org.alexyivan.modelo.enums.EstadoCuentaEmun;
 
 import java.time.LocalDate;
 
-public class UsuarioDTO {
+public class UsuarioDto {
     private long id;
     private String nombreUsuario;
     private String email;
@@ -14,9 +14,9 @@ public class UsuarioDTO {
     private LocalDate fechaRegistro;
     private String avatar;
     private float creditoSteam;
-    private EstadoCuentaENUM estadoCuenta;
+    private EstadoCuentaEmun estadoCuenta;
 
-    public UsuarioDTO(long id, String nombreUsuario, String email,
+    public UsuarioDto(long id, String nombreUsuario, String email,
                       String nombreReal, String pais, LocalDate cumpleanhos, LocalDate fechaRegistro,
                       String avatar, float creditoSteam) {
 

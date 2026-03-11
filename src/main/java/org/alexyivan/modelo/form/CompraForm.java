@@ -1,7 +1,7 @@
 package org.alexyivan.modelo.form;
 
-import org.alexyivan.modelo.enums.EstadoCompraENUM;
-import org.alexyivan.modelo.enums.MetodoPagoENUM;
+import org.alexyivan.modelo.enums.EstadoCompraEnum;
+import org.alexyivan.modelo.enums.MetodoPagoEnum;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,16 +12,16 @@ public class CompraForm {
     private Long usuarioId;
     private Long juegoId;
     private LocalDateTime fechaCompra;
-    private MetodoPagoENUM metodoPago;
+    private MetodoPagoEnum metodoPago;
     private Float precioSinDescuento;
     private Integer descuento;
     private Double precioFinal;
-    private EstadoCompraENUM estado;
+    private EstadoCompraEnum estado;
 
 
     // Constructor
 
-    public CompraForm(Long usuarioId, Long juegoId, LocalDateTime fechaCompra, MetodoPagoENUM metodoPago, Float precioSinDescuento, Integer descuento, Double precioFinal, EstadoCompraENUM estado) {
+    public CompraForm(Long usuarioId, Long juegoId, LocalDateTime fechaCompra, MetodoPagoEnum metodoPago, Float precioSinDescuento, Integer descuento, Double precioFinal, EstadoCompraEnum estado) {
         this.usuarioId = usuarioId;
         this.juegoId = juegoId;
         this.fechaCompra = fechaCompra;
@@ -47,7 +47,7 @@ public class CompraForm {
         return juegoId;
     }
 
-    public MetodoPagoENUM getMetodoPago() {
+    public MetodoPagoEnum getMetodoPago() {
         return metodoPago;
     }
 
@@ -59,7 +59,7 @@ public class CompraForm {
         return precioSinDescuento;
     }
 
-    public EstadoCompraENUM getEstado() {
+    public EstadoCompraEnum getEstado() {
         return estado;
     }
 
@@ -67,7 +67,11 @@ public class CompraForm {
         return precioFinal;
     }
 
-
+    /**
+     * Valida los datos del formulario de la compra.
+     *
+     * @return Lista de errores encontrados durante la validación. Vacía si todos los campos son válidos.
+     */
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();
 
@@ -117,8 +121,6 @@ public class CompraForm {
         }
         return errores;
     }
-
-
 
 
 //    // calcular el precio final

@@ -1,24 +1,23 @@
 package org.alexyivan.modelo.dto;
 
-import org.alexyivan.modelo.enums.EstadoInstalacionENUM;
+import org.alexyivan.modelo.enums.EstadoInstalacionEnum;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
-public class BibliotecaDTO {
+public class BibliotecaDto {
 
     private long id;
     private long idUsuario;
-    private UsuarioDTO usuario;
+    private UsuarioDto usuario;
     private long idJuego;
-    private JuegoDTO juego;
+    private JuegoDto juego;
     private float horasJugadasTotal;
     private LocalDate ultimaFechaDeJuego;
-    private EstadoInstalacionENUM estadoInstalacion;
+    private EstadoInstalacionEnum estadoInstalacion;
     LocalDate fechaAdquisicion;
 
-    public BibliotecaDTO(long id, long idUsuario, UsuarioDTO usuario, long idJuego, JuegoDTO juego,
-                         float horasJugadasTotal, LocalDate ultimaFechaDeJuego, EstadoInstalacionENUM estadoInstalacion,
+    public BibliotecaDto(long id, long idUsuario, UsuarioDto usuario, long idJuego, JuegoDto juego,
+                         float horasJugadasTotal, LocalDate ultimaFechaDeJuego, EstadoInstalacionEnum estadoInstalacion,
                          LocalDate fechaAdquisicion) {
         this.id = id;
         this.idUsuario = idUsuario;
@@ -31,7 +30,7 @@ public class BibliotecaDTO {
         this.fechaAdquisicion = fechaAdquisicion;
     }
 
-    public EstadoInstalacionENUM getEstadoInstalacion() {
+    public EstadoInstalacionEnum getEstadoInstalacion() {
         return estadoInstalacion;
     }
 
@@ -55,11 +54,11 @@ public class BibliotecaDTO {
         this.idUsuario = idUsuario;
     }
 
-    public UsuarioDTO getUsuario() {
+    public UsuarioDto getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(UsuarioDTO usuario) {
+    public void setUsuario(UsuarioDto usuario) {
         this.usuario = usuario;
     }
 
@@ -71,11 +70,11 @@ public class BibliotecaDTO {
         this.idJuego = idJuego;
     }
 
-    public JuegoDTO getJuego() {
+    public JuegoDto getJuego() {
         return juego;
     }
 
-    public void setJuego(JuegoDTO juego) {
+    public void setJuego(JuegoDto juego) {
         this.juego = juego;
     }
 

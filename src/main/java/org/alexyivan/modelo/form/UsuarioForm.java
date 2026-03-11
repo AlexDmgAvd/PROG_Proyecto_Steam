@@ -1,6 +1,6 @@
 package org.alexyivan.modelo.form;
 
-import org.alexyivan.modelo.enums.EstadoCuentaENUM;
+import org.alexyivan.modelo.enums.EstadoCuentaEmun;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,11 +25,11 @@ public class UsuarioForm {
     LocalDate fechaRegistro;
     String avatar;
     Float saldo;
-    EstadoCuentaENUM estado;
+    EstadoCuentaEmun estado;
 
     //Constructor
     public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombreReal, String pais,
-                       LocalDate fechaNacimiento, LocalDate fechaRegistro, String avatar, Float saldo, EstadoCuentaENUM estado) {
+                       LocalDate fechaNacimiento, LocalDate fechaRegistro, String avatar, Float saldo, EstadoCuentaEmun estado) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.contrasena = contrasena;
@@ -47,7 +47,7 @@ public class UsuarioForm {
         return fechaRegistro;
     }
 
-    public EstadoCuentaENUM getEstado() {
+    public EstadoCuentaEmun getEstado() {
         return estado;
     }
 
@@ -83,6 +83,11 @@ public class UsuarioForm {
         return saldo;
     }
 
+    /**
+     * Valida los datos del formulario de Usuario.
+     *
+     * @return Lista de errores encontrados durante la validación. Vacía si todos los campos son válidos.
+     */
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();
 
@@ -160,7 +165,6 @@ public class UsuarioForm {
         }
 
 
-
         // pais
         if (pais == null || pais.isBlank()) {
             errores.add(new ErrorDto("pais", ErrorType.REQUERIDO));
@@ -171,7 +175,7 @@ public class UsuarioForm {
             errores.add(new ErrorDto("fechaNacimiento", ErrorType.REQUERIDO));
         }
 
-        if (fechaNacimiento != null){
+        if (fechaNacimiento != null) {
 
             LocalDate hoy = LocalDate.now();
             if (fechaNacimiento.isAfter(hoy)) {
