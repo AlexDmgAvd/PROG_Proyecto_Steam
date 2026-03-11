@@ -2,14 +2,13 @@ package org.alexyivan.controlador;
 
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
-import org.alexyivan.modelo.dto.UsuarioDTO;
-import org.alexyivan.modelo.enums.EstadoCuentaENUM;
+import org.alexyivan.modelo.dto.UsuarioDto;
+import org.alexyivan.modelo.enums.EstadoCuentaEmun;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.modelo.form.UsuarioForm;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +29,7 @@ public class UsuarioControlador implements IUsuarioControlador {
 
 
     @Override
-    public Optional<UsuarioDTO> registrarUsuario(UsuarioForm usuarioForm) throws ValidacionException {
+    public Optional<UsuarioDto> registrarUsuario(UsuarioForm usuarioForm) throws ValidacionException {
 
         //Validar formulario
         var errores = usuarioForm.validar();
@@ -65,7 +64,7 @@ public class UsuarioControlador implements IUsuarioControlador {
     }
 
     @Override
-    public Optional<UsuarioDTO> consultarUsuario(Long id, String nombreUsuario) throws ValidacionException {
+    public Optional<UsuarioDto> consultarUsuario(Long id, String nombreUsuario) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
         if (id == null && nombreUsuario.isEmpty()) {
@@ -102,7 +101,7 @@ public class UsuarioControlador implements IUsuarioControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (usuario.get().estado() != EstadoCuentaENUM.ACTIVA) {
+        if (usuario.get().estado() != EstadoCuentaEmun.ACTIVA) {
             errores.add(new ErrorDto("cuenta", ErrorType.ESTADO_CUENTA));
         }
 
@@ -120,7 +119,7 @@ public class UsuarioControlador implements IUsuarioControlador {
 
 
     @Override
-    public Optional<UsuarioDTO> consultarSaldo(long id) throws ValidacionException {
+    public Optional<UsuarioDto> consultarSaldo(long id) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
         var usuario = usuarioRepo.obtenerPorId(id);

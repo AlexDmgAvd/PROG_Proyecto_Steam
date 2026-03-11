@@ -5,11 +5,11 @@ import org.alexyivan.modelo.entidad.*;
 
 public class Mapper {
 
-    public static BibliotecaDTO mapBibliotecaEntidadADto(BibliotecaEntidad entidad) {
+    public static BibliotecaDto mapBibliotecaEntidadADto(BibliotecaEntidad entidad) {
         if (entidad == null)
             return null;
 
-        return new BibliotecaDTO(entidad.id(),
+        return new BibliotecaDto(entidad.id(),
                 entidad.idUsuario(),
                 null,
                 entidad.idJuego(),
@@ -20,14 +20,13 @@ public class Mapper {
                 entidad.fechaAdquisicion());
 
 
-
     }
 
-    public static CompraDTO mapCompraEntidadADto(CompraEntidad entidad) {
+    public static CompraDto mapCompraEntidadADto(CompraEntidad entidad) {
         if (entidad == null)
             return null;
 
-        return new CompraDTO(entidad.id(),
+        return new CompraDto(entidad.id(),
                 entidad.idUsuario(),
                 null,
                 entidad.idJuego(),
@@ -37,11 +36,11 @@ public class Mapper {
 
     }
 
-    public static JuegoDTO mapJuegoEntidadADto(JuegoEntidad entidad) {
+    public static JuegoDto mapJuegoEntidadADto(JuegoEntidad entidad) {
         if (entidad == null)
             return null;
 
-        return new JuegoDTO(entidad.id(),
+        return new JuegoDto(entidad.id(),
                 entidad.titulo(),
                 entidad.descripcion(),
                 entidad.desarrolladora(),
@@ -53,11 +52,11 @@ public class Mapper {
                 entidad.estado());
     }
 
-    public static ResenhaDTO mapResenhaEntidadADto(ResenhaEntidad entidad) {
+    public static ResenhaDto mapResenhaEntidadADto(ResenhaEntidad entidad) {
         if (entidad == null)
             return null;
 
-        return new ResenhaDTO(entidad.id(),
+        return new ResenhaDto(entidad.id(),
                 entidad.idUsuario(),
                 null,
                 entidad.idJuego(),
@@ -70,11 +69,11 @@ public class Mapper {
 
     }
 
-    public static UsuarioDTO mapUsuarioEntidadADto(UsuarioEntidad entidad) {
+    public static UsuarioDto mapUsuarioEntidadADto(UsuarioEntidad entidad) {
         if (entidad == null)
             return null;
 
-        return new UsuarioDTO(entidad.id(),
+        return new UsuarioDto(entidad.id(),
                 entidad.nombreUsuario(),
                 entidad.email(),
                 entidad.nombreReal(),

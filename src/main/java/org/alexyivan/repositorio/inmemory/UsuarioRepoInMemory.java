@@ -1,7 +1,7 @@
 package org.alexyivan.repositorio.inmemory;
 
 import org.alexyivan.modelo.entidad.UsuarioEntidad;
-import org.alexyivan.modelo.enums.EstadoCuentaENUM;
+import org.alexyivan.modelo.enums.EstadoCuentaEmun;
 import org.alexyivan.modelo.form.UsuarioForm;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
@@ -20,7 +20,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     public Optional<UsuarioEntidad> crear(UsuarioForm usuarioForm) {
         var usuario = new UsuarioEntidad(idCounter++, usuarioForm.getNombreUsuario(), usuarioForm.getEmail(), usuarioForm.getContrasena(),
                 usuarioForm.getNombreReal(), usuarioForm.getPais(), usuarioForm.getFechaNacimiento(), usuarioForm.getFechaRegistro(),
-                usuarioForm.getAvatar(), usuarioForm.getSaldo(), EstadoCuentaENUM.ACTIVA);
+                usuarioForm.getAvatar(), usuarioForm.getSaldo(), EstadoCuentaEmun.ACTIVA);
         usuarios.add(usuario);
         return Optional.of(usuario);
     }
@@ -29,8 +29,9 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     public Optional<UsuarioEntidad> obtenerPorId(Long id) {
         return usuarios.stream().filter(u -> u.id() == id).findFirst();
     }
+
     @Override
-    public Optional<UsuarioEntidad> obtenerPorEmail (String email){
+    public Optional<UsuarioEntidad> obtenerPorEmail(String email) {
         return usuarios.stream().filter(u -> u.email().equals(email)).findFirst();
     }
 

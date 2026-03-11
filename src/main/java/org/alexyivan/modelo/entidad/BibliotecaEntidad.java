@@ -1,10 +1,11 @@
 package org.alexyivan.modelo.entidad;
 
-import org.alexyivan.modelo.enums.EstadoInstalacionENUM;
+import org.alexyivan.modelo.enums.EstadoInstalacionEnum;
 
 import java.time.LocalDate;
 
-public record BibliotecaEntidad (long id, long idUsuario, long idJuego, float horasJugadasTotal,
-                                LocalDate ultimaFechaDeJuego, LocalDate fechaAdquisicion, EstadoInstalacionENUM estadoInstalacion) {
+public record BibliotecaEntidad(long id, long idUsuario, long idJuego, float horasJugadasTotal,
+                                LocalDate ultimaFechaDeJuego, LocalDate fechaAdquisicion,
+                                EstadoInstalacionEnum estadoInstalacion) {
 
 }

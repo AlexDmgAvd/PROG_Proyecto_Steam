@@ -1,7 +1,7 @@
 package org.alexyivan.modelo.form;
 
-import org.alexyivan.modelo.enums.EstadoJuegoENUM;
-import org.alexyivan.modelo.enums.PegiENUM;
+import org.alexyivan.modelo.enums.EstadoJuegoEnum;
+import org.alexyivan.modelo.enums.PegiEnum;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,13 +25,13 @@ public class JuegoForm {
     private float precioBase;
     private int descuentoActual;
     private String genero;
-    private PegiENUM rangoEdad;
+    private PegiEnum rangoEdad;
     private String idiomasDisponibles;
-    private EstadoJuegoENUM estado;
+    private EstadoJuegoEnum estado;
 
     public JuegoForm(String titulo, String descripcion, String desarrolladora, LocalDate fechaPublicacion,
-                     float precioBase, int descuentoActual, String genero, PegiENUM rangoEdad, String idiomasDisponibles,
-                     EstadoJuegoENUM estado) {
+                     float precioBase, int descuentoActual, String genero, PegiEnum rangoEdad, String idiomasDisponibles,
+                     EstadoJuegoEnum estado) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.desarrolladora = desarrolladora;
@@ -75,7 +75,7 @@ public class JuegoForm {
         return descuentoActual;
     }
 
-    public PegiENUM getRangoEdad() {
+    public PegiEnum getRangoEdad() {
         return rangoEdad;
     }
 
@@ -83,10 +83,15 @@ public class JuegoForm {
         return idiomasDisponibles;
     }
 
-    public EstadoJuegoENUM getEstado() {
+    public EstadoJuegoEnum getEstado() {
         return estado;
     }
 
+    /**
+     * Valida los datos del formulario de Juego.
+     *
+     * @return Lista de errores encontrados durante la validación. Vacía si todos los campos son válidos.
+     */
     public List<ErrorDto> validar() {
         List<ErrorDto> errores = new ArrayList<>();
 
@@ -136,12 +141,10 @@ public class JuegoForm {
         }
 
 
-
         // descuento actual
         if (descuentoActual < CONSTANTE_CERO || descuentoActual > CONSTANTE_CIEN) {
             errores.add(new ErrorDto("descuentoActual", ErrorType.DESCUENTO_INVALIDO));
         }
-
 
 
         // rango de Edad
@@ -150,12 +153,11 @@ public class JuegoForm {
         }
 
         //estado
-        if(estado == null){
+        if (estado == null) {
 
-            estado = EstadoJuegoENUM.DISPONIBLE;
+            estado = EstadoJuegoEnum.DISPONIBLE;
 
         }
-
 
 
         // idiomas

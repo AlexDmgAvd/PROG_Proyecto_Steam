@@ -1,5 +1,5 @@
 package org.alexyivan.modelo.enums;
 
-public enum EstadoCuentaENUM {
+public enum EstadoCuentaEmun {
     ACTIVA, SUSPENDIDA, BANEADA
 }

@@ -1,15 +1,12 @@
 package org.alexyivan.modelo.dto;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
-public class EstadisticasJuegoDTO {
+public class EstadisticasJuegoDto {
 
     private long id;
     private long idJuego;
-    private JuegoDTO juego;
+    private JuegoDto juego;
     private long idUsuario;
-    private UsuarioDTO usuario;
+    private UsuarioDto usuario;
     private int totalJuegos;
     private float horasJugadas;
     private int juegosInstalados;
@@ -17,7 +14,9 @@ public class EstadisticasJuegoDTO {
     private float valorTotal;
     private long juegosNuncaJugados;
 
-    public EstadisticasJuegoDTO(long id, long idJuego, JuegoDTO juego, long idUsuario, UsuarioDTO usuario, int totalJuegos, float horasJugadas, int juegosInstalados, long juegoMasJugados, float valorTotal, long juegosNuncaJugados) {
+    public EstadisticasJuegoDto(long id, long idJuego, JuegoDto juego, long idUsuario, UsuarioDto usuario,
+                                int totalJuegos, float horasJugadas, int juegosInstalados, long juegoMasJugados,
+                                float valorTotal, long juegosNuncaJugados) {
         this.id = id;
         this.idJuego = idJuego;
         this.juego = juego;
@@ -39,7 +38,7 @@ public class EstadisticasJuegoDTO {
         return idJuego;
     }
 
-    public JuegoDTO getJuego() {
+    public JuegoDto getJuego() {
         return juego;
     }
 
@@ -47,7 +46,7 @@ public class EstadisticasJuegoDTO {
         return idUsuario;
     }
 
-    public UsuarioDTO getUsuario() {
+    public UsuarioDto getUsuario() {
         return usuario;
     }
 

@@ -17,6 +17,7 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
     public Optional<BibliotecaEntidad> crear(BibliotecaForm bibliotecaForm) {
         var biblioteca = new BibliotecaEntidad(idCounter++, bibliotecaForm.getUsuarioId(), bibliotecaForm.getJuegoId(),
                 bibliotecaForm.getTiempoJuegoTotal(), bibliotecaForm.getUltimaFechaJuego());
+
         bibliotecas.add(biblioteca);
         return Optional.of(biblioteca);
     }

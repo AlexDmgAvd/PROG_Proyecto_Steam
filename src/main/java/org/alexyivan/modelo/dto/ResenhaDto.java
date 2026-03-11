@@ -1,25 +1,25 @@
 package org.alexyivan.modelo.dto;
 
-import org.alexyivan.modelo.enums.EstadoResenhaENUM;
+import org.alexyivan.modelo.enums.EstadoResenhaEnum;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class ResenhaDTO {
+public class ResenhaDto {
     private long id;
     private long idUsuario;
-    private UsuarioDTO usuario;
+    private UsuarioDto usuario;
     private long idJuego;
-    private JuegoDTO juego;
+    private JuegoDto juego;
     private boolean recomendado;
     private String textoAnalisis;
     private float horasJugadas;
     private LocalDate fechaPublicacion;
     private LocalDate ultimaFechaEdicion;
-    private EstadoResenhaENUM estado;
+    private EstadoResenhaEnum estado;
 
-    public ResenhaDTO(long id, long idUsuario, Optional <UsuarioDTO> usuario, long idJuego,
-                      Optional <JuegoDTO> juego, boolean recomendado, String textoAnalisis, float horasJugadas,
+    public ResenhaDto(long id, long idUsuario, Optional<UsuarioDto> usuario, long idJuego,
+                      Optional<JuegoDto> juego, boolean recomendado, String textoAnalisis, float horasJugadas,
                       LocalDate fechaPublicacion, LocalDate ultimaFechaEdicion) {
         this.id = id;
         this.idUsuario = idUsuario;
@@ -49,11 +49,11 @@ public class ResenhaDTO {
         this.idUsuario = idUsuario;
     }
 
-    public UsuarioDTO getUsuario() {
+    public UsuarioDto getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(UsuarioDTO usuario) {
+    public void setUsuario(UsuarioDto usuario) {
         this.usuario = usuario;
     }
 
@@ -65,11 +65,11 @@ public class ResenhaDTO {
         this.idJuego = idJuego;
     }
 
-    public JuegoDTO getJuego() {
+    public JuegoDto getJuego() {
         return juego;
     }
 
-    public void setJuego(JuegoDTO juego) {
+    public void setJuego(JuegoDto juego) {
         this.juego = juego;
     }
 

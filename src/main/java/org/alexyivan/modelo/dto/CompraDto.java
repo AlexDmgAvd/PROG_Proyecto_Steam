@@ -1,24 +1,24 @@
 package org.alexyivan.modelo.dto;
 
-import org.alexyivan.modelo.enums.EstadoCompraENUM;
-import org.alexyivan.modelo.enums.MetodoPagoENUM;
+import org.alexyivan.modelo.enums.EstadoCompraEnum;
+import org.alexyivan.modelo.enums.MetodoPagoEnum;
 
 import java.util.Optional;
 
-public class CompraDTO {
+public class CompraDto {
 
     private long id;
     private long idUsuario;
-    private UsuarioDTO usuario;
+    private UsuarioDto usuario;
     private long idJuego;
-    private JuegoDTO juego;
-    private MetodoPagoENUM metodoDePago;
+    private JuegoDto juego;
+    private MetodoPagoEnum metodoDePago;
     private float precioSinDescuento;
     private int descuentoAplicado;
-    private EstadoCompraENUM estado;
+    private EstadoCompraEnum estado;
 
-    public CompraDTO(long id, long idUsuario, Optional <UsuarioDTO> usuario, long idJuego,
-                     Optional <JuegoDTO> juego, float precioCompleto, int descuentoAplicado) {
+    public CompraDto(long id, long idUsuario, Optional<UsuarioDto> usuario, long idJuego,
+                     Optional<JuegoDto> juego, float precioCompleto, int descuentoAplicado) {
         this.id = id;
         this.idUsuario = idUsuario;
         this.usuario = usuario.orElse(null);
@@ -44,11 +44,11 @@ public class CompraDTO {
         this.idUsuario = idUsuario;
     }
 
-    public UsuarioDTO getUsuario() {
+    public UsuarioDto getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(UsuarioDTO usuario) {
+    public void setUsuario(UsuarioDto usuario) {
         this.usuario = usuario;
     }
 
@@ -60,11 +60,11 @@ public class CompraDTO {
         this.idJuego = idJuego;
     }
 
-    public JuegoDTO getJuego() {
+    public JuegoDto getJuego() {
         return juego;
     }
 
-    public void setJuego(JuegoDTO juego) {
+    public void setJuego(JuegoDto juego) {
         this.juego = juego;
     }
 

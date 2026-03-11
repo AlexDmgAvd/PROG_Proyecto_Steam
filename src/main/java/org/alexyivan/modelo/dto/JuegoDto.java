@@ -1,11 +1,11 @@
 package org.alexyivan.modelo.dto;
 
-import org.alexyivan.modelo.enums.EstadoJuegoENUM;
-import org.alexyivan.modelo.enums.PegiENUM;
+import org.alexyivan.modelo.enums.EstadoJuegoEnum;
+import org.alexyivan.modelo.enums.PegiEnum;
 
 import java.time.LocalDate;
 
-public class JuegoDTO {
+public class JuegoDto {
 
     private long id;
     private String titulo;
@@ -15,12 +15,12 @@ public class JuegoDTO {
     private float precioBase;
     private int descuentoActual;
     private String genero;
-    private PegiENUM rangoEdad;
-    private EstadoJuegoENUM estado;
+    private PegiEnum rangoEdad;
+    private EstadoJuegoEnum estado;
 
-    public JuegoDTO(long id, String titulo, String descripcion, String desarrolladora,
+    public JuegoDto(long id, String titulo, String descripcion, String desarrolladora,
                     LocalDate fechaPublicacion, float precioBase, int descuentoActual,
-                    String genero, PegiENUM rangoEdad, EstadoJuegoENUM estado) {
+                    String genero, PegiEnum rangoEdad, EstadoJuegoEnum estado) {
 
         this.id = id;
         this.titulo = titulo;
@@ -98,19 +98,19 @@ public class JuegoDTO {
         this.genero = genero;
     }
 
-    public EstadoJuegoENUM getEstado() {
+    public EstadoJuegoEnum getEstado() {
         return estado;
     }
 
-    public void setEstado(EstadoJuegoENUM estado) {
+    public void setEstado(EstadoJuegoEnum estado) {
         this.estado = estado;
     }
 
-    public PegiENUM getRangoEdad() {
+    public PegiEnum getRangoEdad() {
         return rangoEdad;
     }
 
-    public void setRangoEdad(PegiENUM rangoEdad) {
+    public void setRangoEdad(PegiEnum rangoEdad) {
         this.rangoEdad = rangoEdad;
     }
 }

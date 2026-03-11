@@ -1,5 +1,5 @@
 package org.alexyivan.modelo.enums;
 
-public enum MetodoPagoENUM {
+public enum MetodoPagoEnum {
     TARJETA_CREDITO, PAYPAL, CARTERA_STEAM, TRANSFERENCIA, OTROS
 }

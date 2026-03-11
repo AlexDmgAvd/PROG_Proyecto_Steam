@@ -15,7 +15,7 @@ public class CompraRepoInMemory implements ICompraRepo {
 
     @Override
     public Optional<CompraEntidad> crear(CompraForm compraForm) {
-        var compra = new CompraEntidad(idCounter++,compraForm.getUsuarioId(), compraForm.getJuegoId(),
+        var compra = new CompraEntidad(idCounter++, compraForm.getUsuarioId(), compraForm.getJuegoId(),
                 compraForm.getPrecioSinDescuento(), compraForm.getDescuento());
         compras.add(compra);
         return Optional.of(compra);

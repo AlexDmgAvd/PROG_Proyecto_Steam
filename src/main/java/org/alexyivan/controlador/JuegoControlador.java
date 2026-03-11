@@ -2,10 +2,10 @@ package org.alexyivan.controlador;
 
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
-import org.alexyivan.modelo.dto.JuegoDTO;
+import org.alexyivan.modelo.dto.JuegoDto;
 import org.alexyivan.modelo.entidad.JuegoEntidad;
-import org.alexyivan.modelo.enums.EstadoJuegoENUM;
-import org.alexyivan.modelo.enums.OrdenBusquedaJuegoENUM;
+import org.alexyivan.modelo.enums.EstadoJuegoEnum;
+import org.alexyivan.modelo.enums.OrdenBusquedaJuegoEnum;
 import org.alexyivan.modelo.form.BusquedaJuegosForm;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
@@ -17,15 +17,15 @@ import java.util.*;
 public class JuegoControlador implements IJuegoControlador {
 
     private final IJuegoRepo juegoRepo;
-    private final int DESCUENTO_MIN = 0;
-    private final int DESCUENTO_MAX = 100;
+    private static final int DESCUENTO_MIN = 0;
+    private static final int DESCUENTO_MAX = 100;
 
     public JuegoControlador(IJuegoRepo juegoRepo) {
         this.juegoRepo = juegoRepo;
     }
 
     @Override
-    public Optional<JuegoDTO> anhadirJuegoCatalogo(JuegoForm formulario) throws ValidacionException {
+    public Optional<JuegoDto> anhadirJuegoCatalogo(JuegoForm formulario) throws ValidacionException {
 
         //Validaciones
         var errores = formulario.validar();
@@ -50,7 +50,7 @@ public class JuegoControlador implements IJuegoControlador {
     }
 
     @Override
-    public List<JuegoDTO> buscarJuegos(BusquedaJuegosForm busquedaJuegos) throws ValidacionException {
+    public List<JuegoDto> buscarJuegos(BusquedaJuegosForm busquedaJuegos) throws ValidacionException {
 
 
         var errores = busquedaJuegos.validar();
@@ -89,35 +89,35 @@ public class JuegoControlador implements IJuegoControlador {
     }
 
     @Override
-    public List<JuegoDTO> listarTodosJuegos(OrdenBusquedaJuegoENUM orden) throws ValidacionException {
+    public List<JuegoDto> listarTodosJuegos(OrdenBusquedaJuegoEnum orden) throws ValidacionException {
 
         List<JuegoEntidad> juegosOriginales;
 
 
         //Todo hacer la búsqueda por parámetros y devolver la lista de juegos ordenada.
 
-        if (orden.equals(OrdenBusquedaJuegoENUM.ALFABETICO)) {
-            List<JuegoDTO> juegosFiltrados = juegoRepo.obtenerTodos().
+        if (orden.equals(OrdenBusquedaJuegoEnum.ALFABETICO)) {
+            List<JuegoDto> juegosFiltrados = juegoRepo.obtenerTodos().
                     stream().map(Mapper::mapJuegoEntidadADto).toList();
-            juegosFiltrados.sort(Comparator.comparing(JuegoDTO::getTitulo));
+            juegosFiltrados.sort(Comparator.comparing(JuegoDto::getTitulo));
 
             return juegosFiltrados;
         }
 
 
-        if (orden.equals(OrdenBusquedaJuegoENUM.PRECIO)) {
-            List<JuegoDTO> juegosFiltrados = juegoRepo.obtenerTodos().
+        if (orden.equals(OrdenBusquedaJuegoEnum.PRECIO)) {
+            List<JuegoDto> juegosFiltrados = juegoRepo.obtenerTodos().
                     stream().map(Mapper::mapJuegoEntidadADto).toList();
-            juegosFiltrados.sort(Comparator.comparing(JuegoDTO::getPrecioBase));
+            juegosFiltrados.sort(Comparator.comparing(JuegoDto::getPrecioBase));
 
             return juegosFiltrados;
 
         }
 
-        if (orden.equals(OrdenBusquedaJuegoENUM.FECHA)) {
-            List<JuegoDTO> juegosFiltrados = juegoRepo.obtenerTodos().
+        if (orden.equals(OrdenBusquedaJuegoEnum.FECHA)) {
+            List<JuegoDto> juegosFiltrados = juegoRepo.obtenerTodos().
                     stream().map(Mapper::mapJuegoEntidadADto).toList();
-            juegosFiltrados.sort(Comparator.comparing(JuegoDTO::getFechaPublicacion));
+            juegosFiltrados.sort(Comparator.comparing(JuegoDto::getFechaPublicacion));
 
             return juegosFiltrados;
 
@@ -129,7 +129,7 @@ public class JuegoControlador implements IJuegoControlador {
     }
 
     @Override
-    public Optional<JuegoDTO> consultarJuego(long id) throws ValidacionException {
+    public Optional<JuegoDto> consultarJuego(long id) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
         var juego = juegoRepo.obtenerPorId(id);
@@ -146,7 +146,7 @@ public class JuegoControlador implements IJuegoControlador {
     }
 
     @Override
-    public Optional<JuegoDTO> actualizarDescuento(long id, int descuento) throws ValidacionException {
+    public Optional<JuegoDto> actualizarDescuento(long id, int descuento) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
         if (descuento < DESCUENTO_MIN || descuento > DESCUENTO_MAX) {
@@ -177,7 +177,7 @@ public class JuegoControlador implements IJuegoControlador {
     }
 
     @Override
-    public boolean cambiarEstado(long id, EstadoJuegoENUM estado) throws ValidacionException {
+    public boolean cambiarEstado(long id, EstadoJuegoEnum estado) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
         if (estado == null) {

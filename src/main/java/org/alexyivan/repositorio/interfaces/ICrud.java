@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface ICrud<E, F, ID> {
     /**
      * Crea una nueva entidad a partir de un DTO.
+     *
      * @param dto Objeto de transferencia de datos con la información a persistir.
      * @return La entidad creada.
      */
@@ -20,6 +21,7 @@ public interface ICrud<E, F, ID> {
 
     /**
      * Obtiene una entidad por su identificador único.
+     *
      * @param id Identificador de la entidad.
      * @return Un Optional con la entidad encontrada, o vacío si no existe.
      */
@@ -27,13 +29,15 @@ public interface ICrud<E, F, ID> {
 
     /**
      * Obtiene todas las entidades existentes.
+     *
      * @return Lista de todas las entidades.
      */
     List<E> obtenerTodos();
 
     /**
      * Actualiza una entidad existente a partir de su identificador y un DTO.
-     * @param id Identificador de la entidad a actualizar.
+     *
+     * @param id  Identificador de la entidad a actualizar.
      * @param dto Objeto de transferencia de datos con la información actualizada.
      * @return La entidad actualizada.
      */
@@ -41,6 +45,7 @@ public interface ICrud<E, F, ID> {
 
     /**
      * Elimina una entidad por su identificador único.
+     *
      * @param id Identificador de la entidad a eliminar.
      * @return true si la entidad fue eliminada, false en caso contrario.
      */
