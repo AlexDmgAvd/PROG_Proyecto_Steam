@@ -48,7 +48,6 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         }
 
         List<BibliotecaEntidad> bibliotecaUsuario;
-        var biblioteca = bibliotecaRepo;
 
         bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.idUsuario() == id).toList();
 
