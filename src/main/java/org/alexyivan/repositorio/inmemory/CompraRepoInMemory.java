@@ -24,7 +24,7 @@ public class CompraRepoInMemory implements ICompraRepo {
     @Override
     public Optional<CompraEntidad> obtenerPorId(Long id) {
         return compras.stream()
-                .filter(c -> c.id() == id)
+                .filter(c -> c.getId() == id)
                 .findFirst();
     }
 
@@ -41,13 +41,13 @@ public class CompraRepoInMemory implements ICompraRepo {
         }
         var compraActualizada = new CompraEntidad(id, compraForm.getUsuarioId(), compraForm.getJuegoId(),
                 compraForm.getPrecioSinDescuento(), compraForm.getDescuento());
-        compras.removeIf(c -> c.id() == id);
+        compras.removeIf(c -> c.getId() == id);
         compras.add(compraActualizada);
         return Optional.of(compraActualizada);
     }
 
     @Override
     public boolean eliminar(Long id) {
-        return compras.removeIf(c -> c.id() == id);
+        return compras.removeIf(c -> c.getId() == id);
     }
 }

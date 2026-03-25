@@ -27,17 +27,17 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     @Override
     public Optional<UsuarioEntidad> obtenerPorId(Long id) {
-        return usuarios.stream().filter(u -> u.id() == id).findFirst();
+        return usuarios.stream().filter(u -> u.getId() == id).findFirst();
     }
 
     @Override
     public Optional<UsuarioEntidad> obtenerPorEmail(String email) {
-        return usuarios.stream().filter(u -> u.email().equals(email)).findFirst();
+        return usuarios.stream().filter(u -> u.getEmail().equals(email)).findFirst();
     }
 
     @Override
     public Optional<UsuarioEntidad> obtenerPorNombre(String nombre) {
-        return usuarios.stream().filter(u -> u.nombreUsuario().equals(nombre)).findFirst();
+        return usuarios.stream().filter(u -> u.getNombreUsuario().equals(nombre)).findFirst();
     }
 
 
@@ -55,7 +55,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
         var usuarioActualizado = new UsuarioEntidad(id, usuarioForm.getNombreUsuario(), usuarioForm.getEmail(), usuarioForm.getContrasena(),
                 usuarioForm.getNombreReal(), usuarioForm.getPais(), usuarioForm.getFechaNacimiento(), usuarioForm.getFechaRegistro(),
                 usuarioForm.getAvatar(), usuarioForm.getSaldo(), usuarioForm.getEstado());
-        usuarios.removeIf(u -> u.id() == id);
+        usuarios.removeIf(u -> u.getId() == id);
         usuarios.add(usuarioActualizado);
         return Optional.of(usuarioActualizado);
     }

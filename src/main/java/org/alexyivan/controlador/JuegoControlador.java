@@ -38,9 +38,9 @@ public class JuegoControlador implements IJuegoControlador {
         }
 
         //Si la lista de errores no está vacía manda los errores
-        if (!errores.isEmpty())
+        if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
-
+        }
 
         //Ejecuta la función
         var juegoCreado = juegoRepo.crear(formulario);
@@ -65,23 +65,23 @@ public class JuegoControlador implements IJuegoControlador {
 
 
         if (!busquedaJuegos.getTitulo().isEmpty()) {
-            jf.filter(j -> j.titulo().contains(busquedaJuegos.getTitulo()));
+            jf.filter(j -> j.getTitulo().contains(busquedaJuegos.getTitulo()));
         }
 
         if (!busquedaJuegos.getGenero().isEmpty()) {
-            jf.filter(j -> j.genero().equals(busquedaJuegos.getGenero()));
+            jf.filter(j -> j.getGenero().equals(busquedaJuegos.getGenero()));
 
         }
         if (busquedaJuegos.getPrecio() != null) {
-            jf.filter(j -> j.precioBase() <= busquedaJuegos.getPrecio());
+            jf.filter(j -> j.getPrecioBase() <= busquedaJuegos.getPrecio());
 
         }
         if (!busquedaJuegos.getPegi().isEmpty()) {
-            jf.filter(j -> j.rangoEdad().toString().equals(busquedaJuegos.getPegi()));
+            jf.filter(j -> j.getRangoEdad().toString().equals(busquedaJuegos.getPegi()));
         }
 
         if (!busquedaJuegos.getEstado().isEmpty()) {
-            jf.filter(j -> j.estado().toString().equals(busquedaJuegos.getEstado()));
+            jf.filter(j -> j.getEstado().toString().equals(busquedaJuegos.getEstado()));
         }
 
 
@@ -167,9 +167,9 @@ public class JuegoControlador implements IJuegoControlador {
         }
 
 
-        juegoRepo.actualizar(id, new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
-                juego.get().fechaPublicacion(), juego.get().precioBase(), descuento, juego.get().genero(),
-                juego.get().rangoEdad(), juego.get().idiomasDisponibles(), juego.get().estado()));
+        juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(), juego.get().getDesarrolladora(),
+                juego.get().getFechaPublicacion(), juego.get().getPrecioBase(), descuento, juego.get().getGenero(),
+                juego.get().getRangoEdad(), juego.get().getIdiomasDisponibles(), juego.get().getEstado()));
 
         return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juego.orElse(null)));
 
@@ -199,9 +199,9 @@ public class JuegoControlador implements IJuegoControlador {
         }
 
 
-        juegoRepo.actualizar(id, new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
-                juego.get().fechaPublicacion(), juego.get().precioBase(), juego.get().descuentoActual(), juego.get().genero(),
-                juego.get().rangoEdad(), juego.get().idiomasDisponibles(), estado));
+        juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(), juego.get().getDesarrolladora(),
+                juego.get().getFechaPublicacion(), juego.get().getPrecioBase(), juego.get().getDescuentoActual(), juego.get().getGenero(),
+                juego.get().getRangoEdad(), juego.get().getIdiomasDisponibles(), estado));
         return true;
     }
 }

@@ -52,9 +52,9 @@ public class UsuarioControlador implements IUsuarioControlador {
         }
 
         //Si la lista de errores no está vacía manda los errores
-        if (!errores.isEmpty())
+        if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
-
+        }
 
         //Ejecuta la función
         var usuarioCreado = usuarioRepo.crear(usuarioForm);
@@ -122,7 +122,7 @@ public class UsuarioControlador implements IUsuarioControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (usuario.get().estado() != EstadoCuentaEmun.ACTIVA) {
+        if (usuario.get().getEstado() != EstadoCuentaEmun.ACTIVA) {
             errores.add(new ErrorDto("cuenta", ErrorType.ESTADO_CUENTA));
         }
 
@@ -131,9 +131,9 @@ public class UsuarioControlador implements IUsuarioControlador {
         }
 
 
-        usuarioRepo.actualizar(id, new UsuarioForm(usuario.get().nombreUsuario(), usuario.get().email(),
-                usuario.get().contrasenha(), usuario.get().nombreReal(), usuario.get().pais(), usuario.get().cumpleanhos(), usuario.get().fechaRegistro(),
-                usuario.get().avatar(), cantidad, usuario.get().estado()));
+        usuarioRepo.actualizar(id, new UsuarioForm(usuario.get().getNombreUsuario(), usuario.get().getEmail(),
+                usuario.get().getContrasenha(), usuario.get().getNombreReal(), usuario.get().getPais(), usuario.get().getCumpleanhos(), usuario.get().getFechaRegistro(),
+                usuario.get().getAvatar(), cantidad, usuario.get().getEstado()));
 
 
     }

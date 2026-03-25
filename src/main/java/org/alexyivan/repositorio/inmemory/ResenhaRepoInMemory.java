@@ -26,7 +26,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
     @Override
     public Optional<ResenhaEntidad> obtenerPorId(Long id) {
         return resenhas.stream()
-                .filter(r -> r.id() == id)
+                .filter(r -> r.getId() == id)
                 .findFirst();
     }
 
@@ -45,13 +45,13 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
         var resenhaActualizada = new ResenhaEntidad(id, resenhaForm.getIdUsuario(), resenhaForm.getIdJuego(),
                 resenhaForm.isRecomendado(), resenhaForm.getTextoAnalisis(), resenhaForm.getHorasJugadas(),
                 resenhaForm.getFechaPublicacion(), resenhaForm.getUltimaFechaEdicion());
-        resenhas.removeIf(r -> r.id() == id);
+        resenhas.removeIf(r -> r.getId() == id);
         resenhas.add(resenhaActualizada);
         return Optional.of(resenhaActualizada);
     }
 
     @Override
     public boolean eliminar(Long id) {
-        return resenhas.removeIf(r -> r.id() == id);
+        return resenhas.removeIf(r -> r.getId() == id);
     }
 }

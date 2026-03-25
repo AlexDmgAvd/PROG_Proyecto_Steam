@@ -8,6 +8,8 @@ import java.util.List;
 
 
 public class BibliotecaForm {
+    public static final int CONSTANTE_CERO = 0;
+    public static final int CONSTANTE_DIEZ = 10;
     private Long usuarioId;
     private Long juegoId;
     private LocalDate fechaAdquisicion;
@@ -81,12 +83,12 @@ public class BibliotecaForm {
         }
 
         // Tiempo de juego total
-        if (tiempoJuegoTotal != null && tiempoJuegoTotal < 0) {
+        if (tiempoJuegoTotal != null && tiempoJuegoTotal < CONSTANTE_CERO) {
             errores.add(new ErrorDto("tiempoJuegoTotal", ErrorType.VALOR_NEGATIVO));
         }
 
         if (tiempoJuegoTotal != null) {
-            if (Math.round(tiempoJuegoTotal * 10) != tiempoJuegoTotal * 10) {
+            if (Math.round(tiempoJuegoTotal * CONSTANTE_DIEZ) != tiempoJuegoTotal * CONSTANTE_DIEZ) {
                 errores.add(new ErrorDto("tiempoJuegoTotal", ErrorType.FORMATO_INVALIDO));
             }
         }

@@ -6,8 +6,9 @@ import org.alexyivan.modelo.entidad.*;
 public class Mapper {
 
     public static BibliotecaDto mapBibliotecaEntidadADto(BibliotecaEntidad entidad) {
-        if (entidad == null)
+        if (entidad == null) {
             return null;
+        }
 
         return new BibliotecaDto(entidad.id(),
                 entidad.idUsuario(),
@@ -23,8 +24,9 @@ public class Mapper {
     }
 
     public static CompraDto mapCompraEntidadADto(CompraEntidad entidad) {
-        if (entidad == null)
+        if (entidad == null) {
             return null;
+        }
 
         return new CompraDto(entidad.id(),
                 entidad.idUsuario(),
@@ -37,8 +39,9 @@ public class Mapper {
     }
 
     public static JuegoDto mapJuegoEntidadADto(JuegoEntidad entidad) {
-        if (entidad == null)
+        if (entidad == null) {
             return null;
+        }
 
         return new JuegoDto(entidad.id(),
                 entidad.titulo(),
@@ -53,8 +56,9 @@ public class Mapper {
     }
 
     public static ResenhaDto mapResenhaEntidadADto(ResenhaEntidad entidad) {
-        if (entidad == null)
+        if (entidad == null) {
             return null;
+        }
 
         return new ResenhaDto(entidad.id(),
                 entidad.idUsuario(),
@@ -70,8 +74,9 @@ public class Mapper {
     }
 
     public static UsuarioDto mapUsuarioEntidadADto(UsuarioEntidad entidad) {
-        if (entidad == null)
+        if (entidad == null) {
             return null;
+        }
 
         return new UsuarioDto(entidad.id(),
                 entidad.nombreUsuario(),

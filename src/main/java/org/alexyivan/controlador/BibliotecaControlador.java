@@ -49,7 +49,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         List<BibliotecaEntidad> bibliotecaUsuario;
 
-        bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.idUsuario() == id).toList();
+        bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == id).toList();
 
         if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.ALFABETICO)) {
             List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
@@ -104,8 +104,8 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (!biblioteca.stream().filter(b -> b.idJuego() == compra.getJuegoId()).findFirst().isEmpty()
-                && biblioteca.stream().filter(b -> b.idUsuario() == compra.getUsuarioId()).findFirst().isPresent()) {
+        if (!biblioteca.stream().filter(b -> b.getIdJuego() == compra.getJuegoId()).findFirst().isEmpty()
+                && biblioteca.stream().filter(b -> b.getIdJuego() == compra.getUsuarioId()).findFirst().isPresent()) {
 
             errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
 
@@ -139,12 +139,12 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (biblioteca.stream().filter(b -> b.idUsuario() == usuarioId).findFirst().isEmpty()) {
+        if (biblioteca.stream().filter(b -> b.getIdUsuario() == usuarioId).findFirst().isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (biblioteca.stream().filter(b -> b.idJuego() == juegoId).findFirst().isEmpty()
-                && biblioteca.stream().filter(b -> b.idUsuario() == usuarioId).findFirst().isPresent()) {
+        if (biblioteca.stream().filter(b -> b.getIdJuego() == juegoId).findFirst().isEmpty()
+                && biblioteca.stream().filter(b -> b.getIdUsuario() == usuarioId).findFirst().isPresent()) {
 
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
 
@@ -154,10 +154,10 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         bibliotecaBuscada = bibliotecaRepo.obtenerTodos();
         var br = bibliotecaBuscada;
 
-        br.stream().filter(b -> b.idUsuario() == usuarioId);
-        br.stream().filter(b -> b.idJuego() == juegoId);
+        br.stream().filter(b -> b.getIdUsuario() == usuarioId);
+        br.stream().filter(b -> b.getIdJuego() == juegoId);
 
-        long id = bibliotecaBuscada.getFirst().id();
+        long id = bibliotecaBuscada.getFirst().getId();
         bibliotecaRepo.eliminar(id);
 
         return true;
@@ -185,15 +185,15 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.idUsuario() == idUsuario
-                && b.idJuego() == idJuego).findFirst();
+        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == idUsuario
+                && b.getIdJuego() == idJuego).findFirst();
 
 
-        bibliotecaRepo.actualizar(biblioteca.get().id(), new BibliotecaForm(biblioteca.get().idUsuario(), biblioteca.get().idJuego(),
-                biblioteca.get().fechaAdquisicion(), (biblioteca.get().horasJugadasTotal() + horas), biblioteca.get().ultimaFechaDeJuego(),
-                biblioteca.get().estadoInstalacion()));
+        bibliotecaRepo.actualizar(biblioteca.get().getId(), new BibliotecaForm(biblioteca.get().getIdUsuario(), biblioteca.get().getIdJuego(),
+                biblioteca.get().getFechaAdquisicion(), (biblioteca.get().getHorasJugadasTotal() + horas), biblioteca.get().getUltimaFechaDeJuego(),
+                biblioteca.get().getEstadoInstalacion()));
 
-        return biblioteca.get().horasJugadasTotal() + horas;
+        return biblioteca.get().getHorasJugadasTotal() + horas;
 
     }
 
@@ -213,10 +213,10 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.idUsuario() == idUsuario
-                && b.idJuego() == idJuego).findFirst();
+        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == idUsuario
+                && b.getIdJuego() == idJuego).findFirst();
 
-        var ultimaSesion = biblioteca.get().ultimaFechaDeJuego();
+        var ultimaSesion = biblioteca.get().getUltimaFechaDeJuego();
 
         long dias = ChronoUnit.DAYS.between(ultimaSesion, LocalDate.now());
 

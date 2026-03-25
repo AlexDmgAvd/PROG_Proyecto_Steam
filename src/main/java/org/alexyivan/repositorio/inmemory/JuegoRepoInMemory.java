@@ -27,14 +27,14 @@ public class JuegoRepoInMemory implements IJuegoRepo {
     @Override
     public Optional<JuegoEntidad> obtenerPorId(Long id) {
         return juegos.stream()
-                .filter(j -> j.id() == id)
+                .filter(j -> j.getId() == id)
                 .findFirst();
     }
 
     @Override
     public Optional<JuegoEntidad> obtenerTitulo(String titulo) {
         return juegos.stream()
-                .filter(j -> j.titulo().equalsIgnoreCase(titulo))
+                .filter(j -> j.getTitulo().equalsIgnoreCase(titulo))
                 .findFirst();
     }
 
@@ -54,7 +54,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
                 juegoForm.getDesarrolladora(), juegoForm.getFechaPublicacion(),
                 juegoForm.getPrecioBase(), juegoForm.getDescuentoActual(), juegoForm.getGenero(),
                 juegoForm.getRangoEdad(), juegoForm.getIdiomasDisponibles(), juegoForm.getEstado());
-        juegos.removeIf(j -> j.id() == id);
+        juegos.removeIf(j -> j.getId() == id);
         juegos.add(juegoActualizado);
         return Optional.of(juegoActualizado);
 
@@ -62,7 +62,7 @@ public class JuegoRepoInMemory implements IJuegoRepo {
 
     @Override
     public boolean eliminar(Long id) {
-        return juegos.removeIf(j -> j.id() == id);
+        return juegos.removeIf(j -> j.getId() == id);
     }
 
 
