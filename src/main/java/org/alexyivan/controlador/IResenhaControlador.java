@@ -1,7 +1,7 @@
 package org.alexyivan.controlador;
 
 import org.alexyivan.exception.ValidacionException;
-import org.alexyivan.modelo.dto.EstadisticasResenhaDTO;
+import org.alexyivan.modelo.dto.EstadisticasResenhaDto;
 import org.alexyivan.modelo.dto.ResenhaDto;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public interface IResenhaControlador {
 
     boolean ocultarResenha(long idUsuario, long idResenha) throws ValidacionException;
 
-    Optional<EstadisticasResenhaDTO> consultarEstadisticas() throws ValidacionException;
+    Optional<EstadisticasResenhaDto> consultarEstadisticas() throws ValidacionException;
 
     List<ResenhaDto> verResenhaUsuario (long idUsuario);
 

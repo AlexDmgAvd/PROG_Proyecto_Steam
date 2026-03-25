@@ -2,7 +2,7 @@ package org.alexyivan.controlador;
 
 
 import org.alexyivan.exception.ValidacionException;
-import org.alexyivan.modelo.dto.EstadisticasResenhaDTO;
+import org.alexyivan.modelo.dto.EstadisticasResenhaDto;
 import org.alexyivan.modelo.dto.ResenhaDto;
 import org.alexyivan.repositorio.interfaces.IResenhaRepo;
 
@@ -38,7 +38,7 @@ public class ResenhaControlador implements IResenhaControlador {
     }
 
     @Override
-    public Optional<EstadisticasResenhaDTO> consultarEstadisticas() throws ValidacionException {
+    public Optional<EstadisticasResenhaDto> consultarEstadisticas() throws ValidacionException {
         return Optional.empty();
     }
 

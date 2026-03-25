@@ -1,6 +1,6 @@
 package org.alexyivan.modelo.dto;
 
-public class EstadisticasResenhaDTO {
+public class EstadisticasResenhaDto {
 
     private long id;
     private long idJuego;
@@ -10,7 +10,7 @@ public class EstadisticasResenhaDTO {
     private float promedioHoras;
     private String tendenciaReciente;
 
-    public EstadisticasResenhaDTO(long id, long idJuego, long totalResenhas,
+    public EstadisticasResenhaDto(long id, long idJuego, long totalResenhas,
                                   float porcentajePositivas, float getPorcentajeNegativas,
                                   float promedioHoras, String tendenciaReciente) {
         this.id = id;
