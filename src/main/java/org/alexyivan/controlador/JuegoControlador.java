@@ -167,17 +167,17 @@ public class JuegoControlador implements IJuegoControlador {
         }
 
 
-        juegoRepo.actualizar(id, new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
+        var juegoActualizado = juegoRepo.actualizar(id, new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
                 juego.get().fechaPublicacion(), juego.get().precioBase(), descuento, juego.get().genero(),
                 juego.get().rangoEdad(), juego.get().idiomasDisponibles(), juego.get().estado()));
 
-        return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juego.orElse(null)));
+        return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoActualizado.orElse(null)));
 
 
     }
 
     @Override
-    public boolean cambiarEstado(long id, EstadoJuegoEnum estado) throws ValidacionException {
+    public Optional<JuegoDto> cambiarEstado(long id, EstadoJuegoEnum estado) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
         if (estado == null) {
@@ -199,9 +199,9 @@ public class JuegoControlador implements IJuegoControlador {
         }
 
 
-        juegoRepo.actualizar(id, new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
+        var juegoActualizado = juegoRepo.actualizar(id, new JuegoForm(juego.get().titulo(), juego.get().descripcion(), juego.get().desarrolladora(),
                 juego.get().fechaPublicacion(), juego.get().precioBase(), juego.get().descuentoActual(), juego.get().genero(),
                 juego.get().rangoEdad(), juego.get().idiomasDisponibles(), estado));
-        return true;
+        return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoActualizado.orElse(null)));
     }
 }

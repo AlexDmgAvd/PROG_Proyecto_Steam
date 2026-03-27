@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public class EstadisticasJuegoInMemory implements IEstadisticasJuegoRepo {
     private static final List<EstadisiticasJuegoEntidad> estadisticas = new ArrayList<>();
-    private static long idCounter = estadisticas.size() + 1;
+    private static long idCounter = 1;
 
 
     @Override

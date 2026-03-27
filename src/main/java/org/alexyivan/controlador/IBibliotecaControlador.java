@@ -5,15 +5,16 @@ import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaEnum;
 import org.alexyivan.modelo.form.CompraForm;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IBibliotecaControlador {
 
 
     List<BibliotecaDto> verBibliotecaPersonal(long id, OrdenBusquedaBibliotecaEnum busquedaBiblioteca);
 
-    boolean anhadirJuego(CompraForm compra);
+    Optional<BibliotecaDto> anhadirJuego(CompraForm compra);
 
-    boolean eliminarJuego(long usuarioId, long juegoId);
+    Optional<BibliotecaDto> eliminarJuego(long usuarioId, long juegoId);
 
     float actualizarTempoJuego(long idUsuario, long idJuego, float horas);
 

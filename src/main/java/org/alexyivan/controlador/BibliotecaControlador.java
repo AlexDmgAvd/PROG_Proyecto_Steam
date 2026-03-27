@@ -19,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class BibliotecaControlador implements IBibliotecaControlador {
 
@@ -89,7 +90,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     }
 
     @Override
-    public boolean anhadirJuego(CompraForm compra) {
+    public Optional<BibliotecaDto> anhadirJuego(CompraForm compra) {
 
         var errores = compra.validar();
         var usuario = usuarioRepo.obtenerPorId(compra.getUsuarioId());
@@ -118,13 +119,15 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         var b = bibliotecaRepo.crear(new BibliotecaForm(compra.getUsuarioId(), compra.getJuegoId(),
                 compra.getFechaCompra().toLocalDate(), 0.0f, null,
                 EstadoInstalacionEnum.NO_INSTALADO));
-        return true;
+
+
+        return Optional.empty();
 
 
     }
 
     @Override
-    public boolean eliminarJuego(long usuarioId, long juegoId) {
+    public  Optional<BibliotecaDto> eliminarJuego(long usuarioId, long juegoId) {
         List<ErrorDto> errores = new ArrayList<>();
 
         var usuario = usuarioRepo.obtenerPorId(usuarioId);
@@ -140,7 +143,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         }
 
         if (biblioteca.stream().filter(b -> b.idUsuario() == usuarioId).findFirst().isEmpty()) {
-            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
         }
 
         if (biblioteca.stream().filter(b -> b.idJuego() == juegoId).findFirst().isEmpty()
@@ -154,13 +157,16 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         bibliotecaBuscada = bibliotecaRepo.obtenerTodos();
         var br = bibliotecaBuscada;
 
+        //Crear una función en el repositorio para buscar una biblioteca por id de juego y id de usuario
         br.stream().filter(b -> b.idUsuario() == usuarioId);
         br.stream().filter(b -> b.idJuego() == juegoId);
+
+
 
         long id = bibliotecaBuscada.getFirst().id();
         bibliotecaRepo.eliminar(id);
 
-        return true;
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto();
 
 
     }

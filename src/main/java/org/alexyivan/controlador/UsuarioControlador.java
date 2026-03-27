@@ -2,17 +2,17 @@ package org.alexyivan.controlador;
 
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
-import org.alexyivan.modelo.dto.UsuarioDto;
+
+
 import org.alexyivan.modelo.enums.EstadoCuentaEmun;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.modelo.form.UsuarioForm;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import org.alexyivan.modelo.dto.UsuarioDto;
 import static org.alexyivan.repositorio.inmemory.UsuarioRepoInMemory.listaPaises;
 
 public class UsuarioControlador implements IUsuarioControlador {
@@ -63,10 +63,6 @@ public class UsuarioControlador implements IUsuarioControlador {
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuarioCreado.orElse(null)));
     }
 
-    @Override
-    public Optional<UsuarioDto> consultarUsuario(Long id, String nombreUsuario) throws ValidacionException {
-        return Optional.empty();
-    }
 
     @Override
     public Optional<UsuarioDto> consultarUsuarioNombreUsuario(String nombreUsuario) throws ValidacionException {
