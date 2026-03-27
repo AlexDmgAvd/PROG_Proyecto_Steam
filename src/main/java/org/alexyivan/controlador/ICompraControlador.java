@@ -2,6 +2,7 @@ package org.alexyivan.controlador;
 
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.modelo.dto.CompraDto;
+import org.alexyivan.modelo.enums.MetodoPagoEnum;
 import org.alexyivan.modelo.enums.OpcionesReembolsoEnum;
 
 import java.util.List;
@@ -9,8 +10,8 @@ import java.util.Optional;
 
 public interface ICompraControlador {
 
-    Optional<CompraDto> realizarCompra() throws ValidacionException;
 
+    Optional<CompraDto> realizarCompra(long idUsuario, long idJuego, MetodoPagoEnum metodoPagoEnum) throws ValidacionException;
 
     boolean procesarPago() throws ValidacionException;
 
