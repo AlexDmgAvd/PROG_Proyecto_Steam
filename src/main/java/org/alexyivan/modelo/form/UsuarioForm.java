@@ -15,17 +15,18 @@ public class UsuarioForm {
     public static final int LONGITUD_MIN_CONTRASENA = 8;
     public static final int CONSTANTE_CERO = 0;
     public static final int CONSTANTE_CIEN = 100;
+    public static final int CONSTANTE_TRECE = 13;
 
-    String nombreUsuario;
-    String email;
-    String contrasena;
-    String nombreReal;
-    String pais;
-    LocalDate fechaNacimiento;
-    LocalDate fechaRegistro;
-    String avatar;
-    Float saldo;
-    EstadoCuentaEmun estado;
+    private String nombreUsuario;
+    private String email;
+    private String contrasena;
+    private String nombreReal;
+    private String pais;
+    private LocalDate fechaNacimiento;
+    private LocalDate fechaRegistro;
+    private String avatar;
+    private Float saldo;
+    private EstadoCuentaEmun estado;
 
     //Constructor
     public UsuarioForm(String nombreUsuario, String email, String contrasena, String nombreReal, String pais,
@@ -181,7 +182,7 @@ public class UsuarioForm {
             if (fechaNacimiento.isAfter(hoy)) {
                 errores.add(new ErrorDto("fechaNacimiento", ErrorType.FECHA_FUTURA));
             }
-            LocalDate hace13Anios = hoy.minusYears(13);
+            LocalDate hace13Anios = hoy.minusYears(CONSTANTE_TRECE);
             if (fechaNacimiento.isAfter(hace13Anios)) {
                 errores.add(new ErrorDto("fechaNacimiento", ErrorType.EDAD_INSUFICIENTE));
             }

@@ -5,6 +5,7 @@ import java.util.List;
 
 public class BusquedaJuegosForm {
 
+    public static final int CONSTANTE_DOS = 2;
     private String titulo;
     private String genero;
     private Float precio;
@@ -55,7 +56,7 @@ public class BusquedaJuegosForm {
         }
 
         String precioStr = String.valueOf(precio);
-        if (precioStr.contains(".") && precioStr.split("\\.")[1].length() > 2) {
+        if (precioStr.contains(".") && precioStr.split("\\.")[1].length() > CONSTANTE_DOS) {
             errores.add(new ErrorDto("precio", ErrorType.FORMATO_INVALIDO));
 
         }

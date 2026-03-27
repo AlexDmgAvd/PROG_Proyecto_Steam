@@ -14,7 +14,7 @@ public class BibliotecaDto {
     private float horasJugadasTotal;
     private LocalDate ultimaFechaDeJuego;
     private EstadoInstalacionEnum estadoInstalacion;
-    LocalDate fechaAdquisicion;
+    private LocalDate fechaAdquisicion;
 
     public BibliotecaDto(long id, long idUsuario, UsuarioDto usuario, long idJuego, JuegoDto juego,
                          float horasJugadasTotal, LocalDate ultimaFechaDeJuego, EstadoInstalacionEnum estadoInstalacion,
