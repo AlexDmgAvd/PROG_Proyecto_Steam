@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/PROG_PROYECTO_STEAM.iml" filepath="$PROJECT_DIR$/.idea/PROG_PROYECTO_STEAM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PROG_PROYECTO_STEAM.iml" filepath="$PROJECT_DIR$/PROG_PROYECTO_STEAM.iml" />
     </modules>
   </component>
 </project>

@@ -22,7 +22,7 @@ public interface IJuegoControlador {
 
     Optional<JuegoDto> actualizarDescuento(long id, int descuento) throws ValidacionException;
 
-    boolean cambiarEstado(long id, EstadoJuegoEnum estado) throws ValidacionException;
+    Optional<JuegoDto> cambiarEstado(long id, EstadoJuegoEnum estado) throws ValidacionException;
 
 
 }

@@ -10,13 +10,14 @@ import java.util.Optional;
 
 public class BibliotecaRepoInMemory implements IBibliotecaRepo {
     private static final List<BibliotecaEntidad> bibliotecas = new ArrayList<>();
-    private static long idCounter = bibliotecas.size() + 1;
+    private static long idCounter = 1;
 
 
     @Override
     public Optional<BibliotecaEntidad> crear(BibliotecaForm bibliotecaForm) {
         var biblioteca = new BibliotecaEntidad(idCounter++, bibliotecaForm.getUsuarioId(), bibliotecaForm.getJuegoId(),
-                bibliotecaForm.getTiempoJuegoTotal(), bibliotecaForm.getUltimaFechaJuego(), bibliotecaForm.getFechaAdquisicion(), bibliotecaForm.getEstadoInstalacion());
+                bibliotecaForm.getTiempoJuegoTotal(), bibliotecaForm.getUltimaFechaJuego(), bibliotecaForm.getFechaAdquisicion(),
+                bibliotecaForm.getEstadoInstalacion());
 
         bibliotecas.add(biblioteca);
         return Optional.of(biblioteca);
@@ -50,5 +51,12 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
     @Override
     public boolean eliminar(Long id) {
         return bibliotecas.removeIf(b -> b.getId() == id);
+    }
+
+
+    @Override
+    public Optional<BibliotecaEntidad> buscarJuegoUsuario(Long idJuego, Long idUsuario) {
+        return bibliotecas.stream().filter( b -> b.getIdUsuario() == idUsuario)
+                .findFirst().filter(b -> b.getIdJuego() == idJuego).stream().findFirst();
     }
 }

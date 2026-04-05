@@ -3,22 +3,21 @@ package org.alexyivan.controlador;
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
 import org.alexyivan.modelo.dto.BibliotecaDto;
+import org.alexyivan.modelo.dto.EstadisticasBibliotecaDto;
 import org.alexyivan.modelo.entidad.BibliotecaEntidad;
 import org.alexyivan.modelo.enums.EstadoInstalacionEnum;
 import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaEnum;
 import org.alexyivan.modelo.form.BibliotecaForm;
-import org.alexyivan.modelo.form.CompraForm;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.repositorio.interfaces.IBibliotecaRepo;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class BibliotecaControlador implements IBibliotecaControlador {
 
@@ -89,11 +88,11 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     }
 
     @Override
-    public boolean anhadirJuego(CompraForm compra) {
+    public Optional<BibliotecaDto> anhadirJuego(BibliotecaForm bibliotecaForm) {
 
-        var errores = compra.validar();
-        var usuario = usuarioRepo.obtenerPorId(compra.getUsuarioId());
-        var juego = juegoRepo.obtenerPorId(compra.getJuegoId());
+        var errores = bibliotecaForm.validar();
+        var usuario = usuarioRepo.obtenerPorId(bibliotecaForm.getUsuarioId());
+        var juego = juegoRepo.obtenerPorId(bibliotecaForm.getJuegoId());
         var biblioteca = bibliotecaRepo.obtenerTodos();
 
         if (usuario.isEmpty()) {
@@ -104,8 +103,8 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (!biblioteca.stream().filter(b -> b.getIdJuego() == compra.getJuegoId()).findFirst().isEmpty()
-                && biblioteca.stream().filter(b -> b.getIdJuego() == compra.getUsuarioId()).findFirst().isPresent()) {
+        if (!biblioteca.stream().filter(b -> b.getIdJuego() == bibliotecaForm.getJuegoId()).findFirst().isEmpty()
+                && biblioteca.stream().filter(b -> b.getIdJuego() == bibliotecaForm.getUsuarioId()).findFirst().isPresent()) {
 
             errores.add(new ErrorDto("juego", ErrorType.DUPLICADO));
 
@@ -115,16 +114,18 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             throw new ValidacionException(errores);
         }
 
-        var b = bibliotecaRepo.crear(new BibliotecaForm(compra.getUsuarioId(), compra.getJuegoId(),
-                compra.getFechaCompra().toLocalDate(), 0.0f, null,
+        var b = bibliotecaRepo.crear(new BibliotecaForm(bibliotecaForm.getUsuarioId(), bibliotecaForm.getJuegoId(),
+                bibliotecaForm.getFechaAdquisicion(), 0.0f, null,
                 EstadoInstalacionEnum.NO_INSTALADO));
-        return true;
+
+
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(b.orElse(null)));
 
 
     }
 
     @Override
-    public boolean eliminarJuego(long usuarioId, long juegoId) {
+    public Optional<BibliotecaDto> eliminarJuego(long usuarioId, long juegoId) {
         List<ErrorDto> errores = new ArrayList<>();
 
         var usuario = usuarioRepo.obtenerPorId(usuarioId);
@@ -150,23 +151,21 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         }
 
-        List<BibliotecaEntidad> bibliotecaBuscada;
-        bibliotecaBuscada = bibliotecaRepo.obtenerTodos();
-        var br = bibliotecaBuscada;
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
 
-        br.stream().filter(b -> b.getIdUsuario() == usuarioId);
-        br.stream().filter(b -> b.getIdJuego() == juegoId);
+        var bibliotecaBuscada = bibliotecaRepo.buscarJuegoUsuario(juego.get().getId(), usuario.get().getId());
 
-        long id = bibliotecaBuscada.getFirst().getId();
-        bibliotecaRepo.eliminar(id);
+        bibliotecaRepo.eliminar(bibliotecaBuscada.get().getId());
 
-        return true;
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaBuscada.orElse(null)));
 
 
     }
 
     @Override
-    public float actualizarTempoJuego(long idUsuario, long idJuego, float horas) {
+    public Optional<BibliotecaDto> actualizarTempoJuego(long idUsuario, long idJuego, float horas) {
         List<ErrorDto> errores = new ArrayList<>();
 
         var usuario = usuarioRepo.obtenerPorId(idUsuario);
@@ -185,20 +184,24 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
         var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == idUsuario
                 && b.getIdJuego() == idJuego).findFirst();
 
 
-        bibliotecaRepo.actualizar(biblioteca.get().getId(), new BibliotecaForm(biblioteca.get().getIdUsuario(), biblioteca.get().getIdJuego(),
+        var bibliotecaActualizada = bibliotecaRepo.actualizar(biblioteca.get().getId(), new BibliotecaForm(biblioteca.get().getIdUsuario(), biblioteca.get().getIdJuego(),
                 biblioteca.get().getFechaAdquisicion(), (biblioteca.get().getHorasJugadasTotal() + horas), biblioteca.get().getUltimaFechaDeJuego(),
                 biblioteca.get().getEstadoInstalacion()));
 
-        return biblioteca.get().getHorasJugadasTotal() + horas;
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaActualizada.orElse(null)));
 
     }
 
     @Override
-    public String consultarUltimaSesion(long idUsuario, long idJuego) {
+    public Optional<BibliotecaDto> consultarUltimaSesion(long idUsuario, long idJuego) {
         List<ErrorDto> errores = new ArrayList<>();
 
         var usuario = usuarioRepo.obtenerPorId(idUsuario);
@@ -212,20 +215,22 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         if (juego.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
 
         var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == idUsuario
                 && b.getIdJuego() == idJuego).findFirst();
 
-        var ultimaSesion = biblioteca.get().getUltimaFechaDeJuego();
-
-        long dias = ChronoUnit.DAYS.between(ultimaSesion, LocalDate.now());
-
-        String salida = "Última sesión" + dias + ultimaSesion;
-        return salida;
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(biblioteca.orElse(null)));
 
     }
 
-
+    @Override
+    public Optional<EstadisticasBibliotecaDto> estadisticasBiblioteca(long idUsuario) {
+        //Todo cambiar nombre a EstadisticasBiblioteca y hacer la función
+        return Optional.empty();
+    }
 
 
 }

@@ -10,8 +10,6 @@ public interface IUsuarioControlador {
 
     Optional<UsuarioDto> registrarUsuario(UsuarioForm usuarioForm) throws ValidacionException;
 
-    Optional<UsuarioDto> consultarUsuario(Long id, String nombreUsuario) throws ValidacionException;
-
     Optional<UsuarioDto> consultarUsuarioNombreUsuario(String nombreUsuario) throws ValidacionException;
 
     Optional<UsuarioDto> consultarUsuarioId(Long id) throws ValidacionException;

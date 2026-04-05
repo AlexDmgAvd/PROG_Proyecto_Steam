@@ -1,6 +1,6 @@
 package org.alexyivan.modelo.dto;
 
-public class EstadisticasJuegoDto {
+public class EstadisticasBibliotecaDto {
 
     private long id;
     private long idJuego;
@@ -14,9 +14,9 @@ public class EstadisticasJuegoDto {
     private float valorTotal;
     private long juegosNuncaJugados;
 
-    public EstadisticasJuegoDto(long id, long idJuego, JuegoDto juego, long idUsuario, UsuarioDto usuario,
-                                int totalJuegos, float horasJugadas, int juegosInstalados, long juegoMasJugados,
-                                float valorTotal, long juegosNuncaJugados) {
+    public EstadisticasBibliotecaDto(long id, long idJuego, JuegoDto juego, long idUsuario, UsuarioDto usuario,
+                                     int totalJuegos, float horasJugadas, int juegosInstalados, long juegoMasJugados,
+                                     float valorTotal, long juegosNuncaJugados) {
         this.id = id;
         this.idJuego = idJuego;
         this.juego = juego;
