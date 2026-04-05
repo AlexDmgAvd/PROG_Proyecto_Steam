@@ -1,5 +1,7 @@
 package org.alexyivan.modelo.entidad;
 
+import org.alexyivan.modelo.enums.EstadoResenhaEnum;
+
 import java.time.LocalDate;
 
 public class ResenhaEntidad {
@@ -11,11 +13,14 @@ public class ResenhaEntidad {
     private float horasJugadas;
     private LocalDate fechaPublicacion;
     private LocalDate ultimaFechaEdicion;
+    private EstadoResenhaEnum estado;
 
     // Constructor
-    public ResenhaEntidad(long id, long idUsuario, long idJuego,
-                          boolean recomendado, String textoAnalisis, float horasJugadas,
-                          LocalDate fechaPublicacion, LocalDate ultimaFechaEdicion) {
+
+
+    public ResenhaEntidad(long id, long idUsuario, long idJuego, boolean recomendado,
+                          String textoAnalisis, float horasJugadas, LocalDate fechaPublicacion,
+                          LocalDate ultimaFechaEdicion, EstadoResenhaEnum estado) {
         this.id = id;
         this.idUsuario = idUsuario;
         this.idJuego = idJuego;
@@ -24,6 +29,7 @@ public class ResenhaEntidad {
         this.horasJugadas = horasJugadas;
         this.fechaPublicacion = fechaPublicacion;
         this.ultimaFechaEdicion = ultimaFechaEdicion;
+        this.estado = estado;
     }
 
     // Getters y Setters
@@ -33,6 +39,10 @@ public class ResenhaEntidad {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public EstadoResenhaEnum getEstado() {
+        return estado;
     }
 
     public long getIdUsuario() {

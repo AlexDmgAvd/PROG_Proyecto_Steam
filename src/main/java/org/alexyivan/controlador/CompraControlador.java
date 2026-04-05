@@ -156,11 +156,13 @@ public class CompraControlador implements ICompraControlador {
 
     @Override
     public boolean solicitarReembolso(long idCompra, OpcionesReembolsoEnum opcionesReembolso) throws ValidacionException {
+        //Todo
         return false;
     }
 
     @Override
     public String generarFactura(long idCompra) throws ValidacionException {
+        //Todo
         return "";
     }
 }

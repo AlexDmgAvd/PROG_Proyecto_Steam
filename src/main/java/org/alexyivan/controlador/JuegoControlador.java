@@ -97,7 +97,7 @@ public class JuegoControlador implements IJuegoControlador {
         List<JuegoEntidad> juegosOriginales;
 
 
-        //Todo hacer la búsqueda por parámetros y devolver la lista de juegos ordenada.
+
 
         if (orden.equals(OrdenBusquedaJuegoEnum.ALFABETICO)) {
             List<JuegoDto> juegosFiltrados = juegoRepo.obtenerTodos().
