@@ -24,6 +24,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     private final IBibliotecaRepo bibliotecaRepo;
     private final IUsuarioRepo usuarioRepo;
     private final IJuegoRepo juegoRepo;
+    private int estadisticasId = 1;
 
     public BibliotecaControlador(IBibliotecaRepo bibliotecaRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo) {
         this.bibliotecaRepo = bibliotecaRepo;
@@ -125,11 +126,11 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     }
 
     @Override
-    public Optional<BibliotecaDto> eliminarJuego(long usuarioId, long juegoId) {
+    public Optional<BibliotecaDto> eliminarJuego(BibliotecaForm bibliotecaForm) {
         List<ErrorDto> errores = new ArrayList<>();
 
-        var usuario = usuarioRepo.obtenerPorId(usuarioId);
-        var juego = juegoRepo.obtenerPorId(juegoId);
+        var usuario = usuarioRepo.obtenerPorId(bibliotecaForm.getUsuarioId());
+        var juego = juegoRepo.obtenerPorId(bibliotecaForm.getJuegoId());
         var biblioteca = bibliotecaRepo.obtenerTodos();
 
         if (usuario.isEmpty()) {
@@ -140,12 +141,12 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (biblioteca.stream().filter(b -> b.getIdUsuario() == usuarioId).findFirst().isEmpty()) {
+        if (biblioteca.stream().filter(b -> b.getIdUsuario() == usuario.get().getId()).findFirst().isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
-        if (biblioteca.stream().filter(b -> b.getIdJuego() == juegoId).findFirst().isEmpty()
-                && biblioteca.stream().filter(b -> b.getIdUsuario() == usuarioId).findFirst().isPresent()) {
+        if (biblioteca.stream().filter(b -> b.getIdJuego() == juego.get().getId()).findFirst().isEmpty()
+                && biblioteca.stream().filter(b -> b.getIdUsuario() == usuario.get().getId()).findFirst().isPresent()) {
 
             errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
 
@@ -165,11 +166,11 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     }
 
     @Override
-    public Optional<BibliotecaDto> actualizarTempoJuego(long idUsuario, long idJuego, float horas) {
+    public Optional<BibliotecaDto> actualizarTempoJuego(BibliotecaForm bibliotecaForm, float horas) {
         List<ErrorDto> errores = new ArrayList<>();
 
-        var usuario = usuarioRepo.obtenerPorId(idUsuario);
-        var juego = juegoRepo.obtenerPorId(idJuego);
+        var usuario = usuarioRepo.obtenerPorId(bibliotecaForm.getUsuarioId());
+        var juego = juegoRepo.obtenerPorId(bibliotecaForm.getJuegoId());
 
 
         if (usuario.isEmpty()) {
@@ -188,8 +189,8 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             throw new ValidacionException(errores);
         }
 
-        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == idUsuario
-                && b.getIdJuego() == idJuego).findFirst();
+        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == usuario.get().getId()
+                && b.getIdJuego() == juego.get().getId()).findFirst();
 
 
         var bibliotecaActualizada = bibliotecaRepo.actualizar(biblioteca.get().getId(), new BibliotecaForm(biblioteca.get().getIdUsuario(), biblioteca.get().getIdJuego(),
@@ -201,11 +202,11 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     }
 
     @Override
-    public Optional<BibliotecaDto> consultarUltimaSesion(long idUsuario, long idJuego) {
+    public Optional<BibliotecaDto> consultarUltimaSesion(BibliotecaForm bibliotecaForm) {
         List<ErrorDto> errores = new ArrayList<>();
 
-        var usuario = usuarioRepo.obtenerPorId(idUsuario);
-        var juego = juegoRepo.obtenerPorId(idJuego);
+        var usuario = usuarioRepo.obtenerPorId(bibliotecaForm.getUsuarioId());
+        var juego = juegoRepo.obtenerPorId(bibliotecaForm.getJuegoId());
 
 
         if (usuario.isEmpty()) {
@@ -219,17 +220,47 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             throw new ValidacionException(errores);
         }
 
-        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == idUsuario
-                && b.getIdJuego() == idJuego).findFirst();
+        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == usuario.get().getId()
+                && b.getIdJuego() == juego.get().getId()).findFirst();
 
         return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(biblioteca.orElse(null)));
 
     }
 
     @Override
-    public Optional<EstadisticasBibliotecaDto> estadisticasBiblioteca(long idUsuario) {
+    public Optional<EstadisticasBibliotecaDto> estadisticasBiblioteca(BibliotecaForm bibliotecaForm) {
+        List<ErrorDto> errores = new ArrayList<>();
+
+        var usuario = usuarioRepo.obtenerPorId(bibliotecaForm.getUsuarioId());
+        var juego = juegoRepo.obtenerPorId(bibliotecaForm.getJuegoId());
+
+        if (usuario.isEmpty()) {
+            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+        }
+
+        if (juego.isEmpty()) {
+            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+        }
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
+        var bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == usuario.get().getId()).toList();
+
+        var estadisticas = new EstadisticasBibliotecaDto(estadisticasId++, bibliotecaForm.getJuegoId(), null, bibliotecaForm.getUsuarioId(), null,
+                bibliotecaUsuario.size(),
+                //Sumar todas las horas de todos los juegos
+                ,//Sumar todos los juegos que tengan el estado de Instalado
+                ,//Comprobar cuál es el juego que tiene más horas jugadas
+                ,//Comprobar cuál es el valor total de toda la biblioteca
+                ,//Comprobar todos los juegos que nunca hayan tenido el estado de Instalado
+
+
+                )
+
+
         //Todo cambiar nombre a EstadisticasBiblioteca y hacer la función
-        return Optional.empty();
+        return Optional.ofNullable(estadisticas);
     }
 
 

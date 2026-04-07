@@ -59,4 +59,11 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
         return bibliotecas.stream().filter( b -> b.getIdUsuario() == idUsuario)
                 .findFirst().filter(b -> b.getIdJuego() == idJuego).stream().findFirst();
     }
+
+
+    @Override
+    public Optional<BibliotecaEntidad> buscarJuegoUsuario(Long idJuego, Long idUsuario) {
+      return bibliotecas.stream().filter( b -> b.getIdUsuario() == idUsuario)
+               .findFirst().filter(b -> b.getIdJuego() == idJuego).stream().findFirst();
+    }
 }

@@ -15,11 +15,11 @@ public interface IBibliotecaControlador {
 
     Optional<BibliotecaDto> anhadirJuego(BibliotecaForm bibliotecaForm);
 
-    Optional<BibliotecaDto> eliminarJuego(long usuarioId, long juegoId);
+    Optional<BibliotecaDto> eliminarJuego(BibliotecaForm bibliotecaForm);
 
-    Optional<BibliotecaDto> actualizarTempoJuego(long idUsuario, long idJuego, float horas);
+    Optional<BibliotecaDto> actualizarTempoJuego(BibliotecaForm bibliotecaForm, float horas);
 
-    Optional<BibliotecaDto> consultarUltimaSesion(long idUsuario, long idJuego);
+    Optional<BibliotecaDto> consultarUltimaSesion(BibliotecaForm bibliotecaForm);
 
-    Optional<EstadisticasBibliotecaDto> estadisticasBiblioteca (long idUsuario);
+    Optional<EstadisticasBibliotecaDto> estadisticasBiblioteca (BibliotecaForm bibliotecaForm);
 }

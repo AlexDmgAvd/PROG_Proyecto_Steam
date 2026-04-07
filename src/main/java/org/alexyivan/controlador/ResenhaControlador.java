@@ -168,7 +168,7 @@ public class ResenhaControlador implements IResenhaControlador {
         }
 
        var resenhas = resenhaRepo.obtenerTodos().stream()
-               .filter(r -> r.getIdUsuario() == usuario.get().getId());
+               .filter(r -> r.getIdUsuario() == usuario.get().getId()).map(Mapper::mapResenhaEntidadADto).toList();
         //Todo buscar como mapear una lista completa
 
 
