@@ -11,6 +11,7 @@ import java.util.Optional;
 public class CompraRepoInMemory implements ICompraRepo {
 
     private static final List<CompraEntidad> compras = new ArrayList<>();
+   //Todo arreglar el contador
     private static long idCounter = compras.size() + 1;
 
     @Override

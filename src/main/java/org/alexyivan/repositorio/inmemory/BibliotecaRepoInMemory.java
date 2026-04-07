@@ -52,4 +52,11 @@ public class BibliotecaRepoInMemory implements IBibliotecaRepo {
     public boolean eliminar(Long id) {
         return bibliotecas.removeIf(b -> b.getId() == id);
     }
+
+
+    @Override
+    public Optional<BibliotecaEntidad> buscarJuegoUsuario(Long idJuego, Long idUsuario) {
+        return bibliotecas.stream().filter( b -> b.getIdUsuario() == idUsuario)
+                .findFirst().filter(b -> b.getIdJuego() == idJuego).stream().findFirst();
+    }
 }

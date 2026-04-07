@@ -22,9 +22,10 @@ public enum ErrorType {
     SALDO_INSUFICIENTE("Saldo insuficiente"),
     JUEGO_NO_COMPRABLE("El juego no está disponible para compra"),
     JUEGO_EXISTENTE("Ya existe un juego con ese título"),
-    RESENA_DUPLICADA("Ya existe una reseña para este juego"),
+    RESENHA_DUPLICADA("Ya existe una reseña para este juego"),
     BUSQUEDA_INVALIDA("No se pueden realizar búsquedas vacías"),
     FECHA_ANTERIOR_REGISTRO("La fecha no puede ser anterior al registro del usuario"),
+    FECHA_ANTERIOR_MAYOR("La primera fecha no puede ser mayor que la segunda"),
     JUEGO_NO_EN_BIBLIOTECA("El juego no está en la biblioteca del usuario"),
     USUARIO_SIN_PERMISO("El usuario no tiene permiso para realizar esta acción"),
     COMPRA_NO_VERIFICADA("No se encontró una compra verificada para este juego"),
@@ -33,7 +34,15 @@ public enum ErrorType {
     ESTADO_CUENTA("El estado de la cuenta no permite esa acción"),
     NOMBRE_EXISTENTE("Ese nombre de usuario ya existe en el sistema"),
     PAIS_INEXISTENTE("El país no se encuentra en la lista"),
-    PLAZO_EXPIRADO("El plazo para esta operación ha expirado");
+    PLAZO_EXPIRADO("El plazo para esta operación ha expirado"),
+    COMRPA_INEXISTENTE("El id de la compra no existe"),
+    COMPRA_COMPLETADA("La compra ya ha sido completada"),
+    COMPRA_REEMBOLSADA("La compra ya ha sido reembolsada"),
+    COMPRA_INVALIDA("No se reconoce el método de pago"),
+    COMPRA_NO_COINCIDENTE("Esta compra no pertenece al usuario"),
+    RESENHA_NO_PERTENECE("La reseña no pertenece a la ID del usuario"),
+    RESENHA_YA_BORRADA("La reseña ya ha sido borrada"),
+    RESENHA_YA_OCULTA("La reseña ya está oculta");
 
     private final String mensaje;
 

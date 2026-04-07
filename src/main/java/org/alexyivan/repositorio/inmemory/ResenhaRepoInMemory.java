@@ -11,13 +11,15 @@ import java.util.Optional;
 public class ResenhaRepoInMemory implements IResenhaRepo {
 
     private static List<ResenhaEntidad> resenhas = new ArrayList<>();
+    //Todo arreglar el contador
     private static long idCounter = resenhas.size() + 1;
 
 
     @Override
     public Optional<ResenhaEntidad> crear(ResenhaForm resenhaForm) {
         var resenha = new ResenhaEntidad(idCounter++, resenhaForm.getIdUsuario(), resenhaForm.getIdJuego(), resenhaForm.isRecomendado(),
-                resenhaForm.getTextoAnalisis(), resenhaForm.getHorasJugadas(), resenhaForm.getFechaPublicacion(), resenhaForm.getUltimaFechaEdicion());
+                resenhaForm.getTextoAnalisis(), resenhaForm.getHorasJugadas(),
+                resenhaForm.getFechaPublicacion(), resenhaForm.getUltimaFechaEdicion(), resenhaForm.getEstado());
         resenhas.add(resenha);
         return Optional.of(resenha);
 
@@ -44,7 +46,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
         }
         var resenhaActualizada = new ResenhaEntidad(id, resenhaForm.getIdUsuario(), resenhaForm.getIdJuego(),
                 resenhaForm.isRecomendado(), resenhaForm.getTextoAnalisis(), resenhaForm.getHorasJugadas(),
-                resenhaForm.getFechaPublicacion(), resenhaForm.getUltimaFechaEdicion());
+                resenhaForm.getFechaPublicacion(), resenhaForm.getUltimaFechaEdicion(), resenhaForm.getEstado());
         resenhas.removeIf(r -> r.getId() == id);
         resenhas.add(resenhaActualizada);
         return Optional.of(resenhaActualizada);
