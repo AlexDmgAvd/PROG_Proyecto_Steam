@@ -1,5 +1,7 @@
 package org.alexyivan.modelo.dto;
 
+import java.util.Optional;
+
 public class EstadisticasBibliotecaDto {
 
     private long id;
@@ -10,12 +12,15 @@ public class EstadisticasBibliotecaDto {
     private int totalJuegos;
     private float horasJugadas;
     private int juegosInstalados;
-    private long juegoMasJugados;
+    private long idJuegoMasJugado;
+    private Optional<JuegoDto> juegoMasJugado;
     private float valorTotal;
     private long juegosNuncaJugados;
 
+
     public EstadisticasBibliotecaDto(long id, long idJuego, JuegoDto juego, long idUsuario, UsuarioDto usuario,
-                                     int totalJuegos, float horasJugadas, int juegosInstalados, long juegoMasJugados,
+                                     int totalJuegos, float horasJugadas, int juegosInstalados, long idJuegoMasJugado,
+                                     Optional<JuegoDto> juegoMasJugado,
                                      float valorTotal, long juegosNuncaJugados) {
         this.id = id;
         this.idJuego = idJuego;
@@ -25,7 +30,8 @@ public class EstadisticasBibliotecaDto {
         this.totalJuegos = totalJuegos;
         this.horasJugadas = horasJugadas;
         this.juegosInstalados = juegosInstalados;
-        this.juegoMasJugados = juegoMasJugados;
+        this.idJuegoMasJugado = idJuegoMasJugado;
+        this.juegoMasJugado = juegoMasJugado;
         this.valorTotal = valorTotal;
         this.juegosNuncaJugados = juegosNuncaJugados;
     }
@@ -62,8 +68,8 @@ public class EstadisticasBibliotecaDto {
         return juegosInstalados;
     }
 
-    public long getJuegoMasJugados() {
-        return juegoMasJugados;
+    public long getIdJuegoMasJugado() {
+        return idJuegoMasJugado;
     }
 
     public float getValorTotal() {
@@ -72,6 +78,10 @@ public class EstadisticasBibliotecaDto {
 
     public long getJuegosNuncaJugados() {
         return juegosNuncaJugados;
+    }
+
+    public Optional<JuegoDto> getJuegoMasJugado() {
+        return juegoMasJugado;
     }
 }
 

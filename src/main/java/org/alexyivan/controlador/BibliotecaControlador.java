@@ -5,11 +5,13 @@ import org.alexyivan.mapper.Mapper;
 import org.alexyivan.modelo.dto.BibliotecaDto;
 import org.alexyivan.modelo.dto.EstadisticasBibliotecaDto;
 import org.alexyivan.modelo.entidad.BibliotecaEntidad;
+import org.alexyivan.modelo.entidad.JuegoEntidad;
 import org.alexyivan.modelo.enums.EstadoInstalacionEnum;
 import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaEnum;
 import org.alexyivan.modelo.form.BibliotecaForm;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
+import org.alexyivan.repositorio.inmemory.CompraRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IBibliotecaRepo;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
@@ -259,23 +261,38 @@ public class BibliotecaControlador implements IBibliotecaControlador {
                 .reduce(0f, (acc, n) -> acc + n);
 
         // Juegos instalados
-        int JuegosInstaladosTotales = bibliotecaUsuario.stream()
+        int juegosInstaladosTotales = bibliotecaUsuario.stream()
                 .filter(b -> b.getEstadoInstalacion() == EstadoInstalacionEnum.INSTALADO )
                 .toList().size();
 
+        // Juego mas jugado
+        Optional<BibliotecaEntidad> juegoMasJugado = bibliotecaUsuario.stream()
+                .max(Comparator.comparingDouble(BibliotecaEntidad::getHorasJugadasTotal))
+                .map();  //todo
+
+        // Valor total de la biblioteca
+        float valorTotalBiblioteca = bibliotecaUsuario.stream()
+                .map(b -> new CompraRepoInMemory().);
+
+        // juegos nunca jugados
+        int juegosNuncaJugados = bibliotecaUsuario.stream()
+                .filter(b -> b.getHorasJugadasTotal() == 0f)
+                .toList().size();
 
 
-
-        var estadisticas = new EstadisticasBibliotecaDto(estadisticasId++, bibliotecaForm.getJuegoId(),
-                null, bibliotecaForm.getUsuarioId(), null, bibliotecaUsuario.size(),
-                //Sumar todas las horas de todos los juegos
-                ,//Sumar todos los juegos que tengan el estado de Instalado
-                ,//Comprobar cuál es el juego que tiene más horas jugadas
-                ,//Comprobar cuál es el valor total de toda la biblioteca
-                ,//Comprobar todos los juegos que nunca hayan tenido el estado de Instalado
-
-
-                )
+        var estadisticas = new EstadisticasBibliotecaDto(
+                estadisticasId++,
+                bibliotecaForm.getJuegoId(),
+                null,
+                bibliotecaForm.getUsuarioId(),
+                null,
+                totalJuegos,
+                totalHoras,
+                juegosInstaladosTotales,
+                juegoMasJugado.get().getIdJuego(),
+                juegoMasJugado.,
+                valorTotalBiblioteca,
+                juegosNuncaJugados);
 
 
         return Optional.ofNullable(estadisticas);
