@@ -14,7 +14,6 @@ import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IResenhaRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -154,7 +153,7 @@ public class ResenhaControlador implements IResenhaControlador {
     }
 
     @Override
-    public List<ResenhaDto> verResenhaUsuario(ResenhaForm formularioResenha, EstadoResenhaEnum estado) {
+    public List<ResenhaDto> verResenhaUsuario(ResenhaForm formularioResenha, Optional<EstadoResenhaEnum> estado) {
         var errores = formularioResenha.validar();
 
         var usuario = usuarioRepo.obtenerPorId(formularioResenha.getIdUsuario());
@@ -168,10 +167,10 @@ public class ResenhaControlador implements IResenhaControlador {
         }
 
        var resenhas = resenhaRepo.obtenerTodos().stream()
-               .filter(r -> r.getIdUsuario() == usuario.get().getId()).map(Mapper::mapResenhaEntidadADto).toList();
-        //Todo buscar como mapear una lista completa
+               .filter(r -> r.getIdUsuario() == usuario.get().getId())
+               .filter(r -> estado.map(e -> r.getEstado() == e).orElse(true))
+               .map(Mapper::mapResenhaEntidadADto).toList();
 
-
-        return List.of(resenhas);
+        return resenhas;
     }
 }

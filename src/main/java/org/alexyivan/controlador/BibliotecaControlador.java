@@ -245,10 +245,29 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             throw new ValidacionException(errores);
         }
 
-        var bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == usuario.get().getId()).toList();
+        var bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream()
+                .filter(b -> b.getIdUsuario() == usuario.get().getId()).toList();
 
-        var estadisticas = new EstadisticasBibliotecaDto(estadisticasId++, bibliotecaForm.getJuegoId(), null, bibliotecaForm.getUsuarioId(), null,
-                bibliotecaUsuario.size(),
+        // Calcular estadísticas
+
+        // Total de juegos
+        int totalJuegos = bibliotecaUsuario.size();
+
+        // Horas totales
+        float totalHoras = bibliotecaUsuario.stream()
+                .map(BibliotecaEntidad::getHorasJugadasTotal)
+                .reduce(0f, (acc, n) -> acc + n);
+
+        // Juegos instalados
+        int JuegosInstaladosTotales = bibliotecaUsuario.stream()
+                .filter(b -> b.getEstadoInstalacion() == EstadoInstalacionEnum.INSTALADO )
+                .toList().size();
+
+
+
+
+        var estadisticas = new EstadisticasBibliotecaDto(estadisticasId++, bibliotecaForm.getJuegoId(),
+                null, bibliotecaForm.getUsuarioId(), null, bibliotecaUsuario.size(),
                 //Sumar todas las horas de todos los juegos
                 ,//Sumar todos los juegos que tengan el estado de Instalado
                 ,//Comprobar cuál es el juego que tiene más horas jugadas
@@ -259,7 +278,6 @@ public class BibliotecaControlador implements IBibliotecaControlador {
                 )
 
 
-        //Todo cambiar nombre a EstadisticasBiblioteca y hacer la función
         return Optional.ofNullable(estadisticas);
     }
 

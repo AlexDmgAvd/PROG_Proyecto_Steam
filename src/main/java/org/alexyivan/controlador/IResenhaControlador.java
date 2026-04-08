@@ -21,6 +21,5 @@ public interface IResenhaControlador {
 
     Optional<EstadisticasResenhaDto> consultarEstadisticas() throws ValidacionException;
 
-    List<ResenhaDto> verResenhaUsuario (ResenhaForm formularioResenha, EstadoResenhaEnum estado);
-
+    List<ResenhaDto> verResenhaUsuario(ResenhaForm formularioResenha, Optional<EstadoResenhaEnum> estado);
 }
