@@ -1,5 +1,6 @@
 package org.alexyivan.repositorio.inmemory;
 
+import org.alexyivan.modelo.entidad.BibliotecaEntidad;
 import org.alexyivan.modelo.entidad.CompraEntidad;
 import org.alexyivan.modelo.form.CompraForm;
 import org.alexyivan.repositorio.interfaces.ICompraRepo;
@@ -50,5 +51,11 @@ public class CompraRepoInMemory implements ICompraRepo {
     @Override
     public boolean eliminar(Long id) {
         return compras.removeIf(c -> c.getId() == id);
+    }
+
+    @Override
+    public Optional<CompraEntidad> buscarJuegoUsuario(Long idJuego, Long idUsuario) {
+        return compras.stream().filter( b -> b.getIdUsuario() == idUsuario)
+                .findFirst().filter(b -> b.getIdJuego() == idJuego).stream().findFirst();
     }
 }

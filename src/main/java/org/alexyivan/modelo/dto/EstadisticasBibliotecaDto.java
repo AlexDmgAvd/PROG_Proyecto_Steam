@@ -1,5 +1,7 @@
 package org.alexyivan.modelo.dto;
 
+import java.util.Optional;
+
 public class EstadisticasBibliotecaDto {
 
     private long id;
@@ -11,6 +13,7 @@ public class EstadisticasBibliotecaDto {
     private float horasJugadas;
     private int juegosInstalados;
     private long juegoMasJugados;
+    private Optional<JuegoDto> juegoMasJugado;
     private float valorTotal;
     private long juegosNuncaJugados;
 

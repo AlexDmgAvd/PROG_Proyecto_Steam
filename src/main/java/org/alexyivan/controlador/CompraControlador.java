@@ -112,8 +112,8 @@ public class CompraControlador implements ICompraControlador {
     }
 
     @Override
-    public List<CompraDto> consultarHistorialCompras(CompraForm formularioCompra, BusquedaCompraForm opcionesBusqueda
-            , long id) throws ValidacionException {
+    public List<CompraDto> consultarHistorialCompras(CompraForm formularioCompra, BusquedaCompraForm opcionesBusqueda,
+                                                     long id) throws ValidacionException {
 
         var compra = compraRepo.obtenerPorId(id);
         var erroresCompra = formularioCompra.validar();
