@@ -13,6 +13,7 @@ import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.repositorio.inmemory.CompraRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IBibliotecaRepo;
+import org.alexyivan.repositorio.interfaces.ICompraRepo;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
@@ -26,12 +27,14 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     private final IBibliotecaRepo bibliotecaRepo;
     private final IUsuarioRepo usuarioRepo;
     private final IJuegoRepo juegoRepo;
+    private final ICompraRepo compraRepo;
     private int estadisticasId = 1;
 
-    public BibliotecaControlador(IBibliotecaRepo bibliotecaRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo) {
+    public BibliotecaControlador(IBibliotecaRepo bibliotecaRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, ICompraRepo compraRepo) {
         this.bibliotecaRepo = bibliotecaRepo;
         this.usuarioRepo = usuarioRepo;
         this.juegoRepo = juegoRepo;
+        this.compraRepo = compraRepo;
     }
 
     @Override
@@ -272,7 +275,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         // Valor total de la biblioteca
         float valorTotalBiblioteca = bibliotecaUsuario.stream()
-                .map(b -> new CompraRepoInMemory().);
+                .map(b -> b.getIdJuego() == compraRepo.);
 
         // juegos nunca jugados
         int juegosNuncaJugados = bibliotecaUsuario.stream()
