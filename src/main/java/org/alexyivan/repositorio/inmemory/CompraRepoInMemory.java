@@ -13,7 +13,7 @@ public class CompraRepoInMemory implements ICompraRepo {
 
     private static final List<CompraEntidad> compras = new ArrayList<>();
    //Todo arreglar el contador
-    private static long idCounter = compras.size() + 1;
+    private static long idCounter = 1;
 
     @Override
     public Optional<CompraEntidad> crear(CompraForm compraForm) {

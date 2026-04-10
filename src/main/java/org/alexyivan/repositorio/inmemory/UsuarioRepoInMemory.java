@@ -13,7 +13,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     private static List<UsuarioEntidad> usuarios = new ArrayList<>();
     //Todo arreglar el contador
-    private static long idCounter = usuarios.size() + 1;
+    private static long idCounter = 1;
     public static List<String> listaPaises = List.of("España", "Alemania", "Irlanda", "Reino Unido");
 
 

@@ -5,6 +5,7 @@ import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
 import org.alexyivan.modelo.dto.EstadisticasResenhaDto;
 import org.alexyivan.modelo.dto.ResenhaDto;
+import org.alexyivan.modelo.entidad.ResenhaEntidad;
 import org.alexyivan.modelo.enums.BusquedaResenhasValoracionEnum;
 import org.alexyivan.modelo.enums.EstadoResenhaEnum;
 import org.alexyivan.modelo.enums.OrdenResenhasEnum;
@@ -16,9 +17,9 @@ import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IResenhaRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class ResenhaControlador implements IResenhaControlador {
 
@@ -127,7 +128,6 @@ public class ResenhaControlador implements IResenhaControlador {
                 .filter(r -> r.getIdJuego() == id);
 
 
-
         if (valoracion.isPresent()) {
 
             if (valoracion.equals(BusquedaResenhasValoracionEnum.POSITIVA)) {
@@ -138,12 +138,18 @@ public class ResenhaControlador implements IResenhaControlador {
             }
         }
 
-        if(orden.isPresent()){
+        if (orden.isPresent()) {
+            if (orden.equals(OrdenResenhasEnum.RECIENTES)) {
+                resenhas.sorted((a, b) -> a.getFechaPublicacion().compareTo(b.getFechaPublicacion())).toList();
+
+            }
+            if (orden.equals(OrdenResenhasEnum.UTILES)){
+                resenhas = resenhasOrdenadasUtilidad(resenhas);
+            }
 
         }
 
 
-        //Todo
         return resenhas.map(Mapper::mapResenhaEntidadADto).toList();
 
 
@@ -211,5 +217,15 @@ public class ResenhaControlador implements IResenhaControlador {
                 .map(Mapper::mapResenhaEntidadADto).toList();
 
         return resenhas;
+    }
+
+
+    private Stream<ResenhaEntidad> resenhasOrdenadasUtilidad(Stream<ResenhaEntidad> lista) {
+
+        return lista
+                .sorted((a, b) -> Float.compare(a.getHorasJugadas(), b.getHorasJugadas()))
+                .filter(r -> r.isRecomendado());
+
+
     }
 }
