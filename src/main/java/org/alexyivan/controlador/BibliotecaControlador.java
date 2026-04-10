@@ -253,6 +253,10 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         var bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream()
                 .filter(b -> b.getIdUsuario() == usuario.get().getId()).toList();
 
+        var comprasUsuario = compraRepo.obtenerTodos().stream()
+                .filter(c -> c.getIdUsuario() == usuario.get().getId());
+
+
         // Calcular estadísticas
 
         // Total de juegos
@@ -270,12 +274,12 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         // Juego mas jugado
         Optional<BibliotecaEntidad> juegoMasJugado = bibliotecaUsuario.stream()
-                .max(Comparator.comparingDouble(BibliotecaEntidad::getHorasJugadasTotal))
-                .map();  //todo
+                .max(Comparator.comparingDouble(BibliotecaEntidad::getHorasJugadasTotal));  //todo
 
         // Valor total de la biblioteca
-        float valorTotalBiblioteca = bibliotecaUsuario.stream()
-                .map(b -> b.getIdJuego() == compraRepo.);
+        float valorTotalBiblioteca = comprasUsuario
+                .map(c -> c.getPrecioSinDescuento() - c.getPrecioSinDescuento() * (c.getDescuentoAplicado() / 100))
+                .reduce(0f, (a, b) -> a + b);
 
         // juegos nunca jugados
         int juegosNuncaJugados = bibliotecaUsuario.stream()
