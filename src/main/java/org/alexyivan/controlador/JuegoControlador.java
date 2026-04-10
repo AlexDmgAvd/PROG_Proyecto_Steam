@@ -17,13 +17,13 @@ import java.util.*;
 public class JuegoControlador implements IJuegoControlador {
 
     private final IJuegoRepo juegoRepo;
-    private ItransactionManager tm;
+    //private ItransactionManager tm;
     private static final int DESCUENTO_MIN = 0;
     private static final int DESCUENTO_MAX = 100;
 
-    public JuegoControlador(IJuegoRepo juegoRepo, ITransactionManager tm) {
+    public JuegoControlador(IJuegoRepo juegoRepo) {
         this.juegoRepo = juegoRepo;
-        this.tm = tm;
+        //this.tm = tm;
     }
 
     @Override
@@ -32,24 +32,21 @@ public class JuegoControlador implements IJuegoControlador {
         //Validaciones
         var errores = formulario.validar();
 
-        Optional<JuegoEntidad> juegoCreado = tm.inTransaction(() -> {
-            var juego = juegoRepo.obtenerTitulo(formulario.getTitulo());
+        var juego = juegoRepo.obtenerTitulo(formulario.getTitulo());
 
-            if (juego.isPresent()) {
+        if (juego.isPresent()) {
 
-                errores.add(new ErrorDto("existe", ErrorType.JUEGO_EXISTENTE));
-                throw new IllegalStateException();
-            }
-            return juegoRepo.crear(formulario);
+            errores.add(new ErrorDto("existe", ErrorType.JUEGO_EXISTENTE));
+            throw new IllegalStateException();
+        }
 
-        });
 
         //Si la lista de errores no está vacía manda los errores
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
 
-        return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoCreado.orElse(null)));
+        return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juego.orElse(null)));
     }
 
     @Override
@@ -95,8 +92,6 @@ public class JuegoControlador implements IJuegoControlador {
     public List<JuegoDto> listarTodosJuegos(OrdenBusquedaJuegoEnum orden) throws ValidacionException {
 
         List<JuegoEntidad> juegosOriginales;
-
-
 
 
         if (orden.equals(OrdenBusquedaJuegoEnum.ALFABETICO)) {
@@ -170,7 +165,7 @@ public class JuegoControlador implements IJuegoControlador {
         }
 
 
-        var juegoActualizado =  juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(), juego.get().getDesarrolladora(),
+        var juegoActualizado = juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(), juego.get().getDesarrolladora(),
                 juego.get().getFechaPublicacion(), juego.get().getPrecioBase(), descuento, juego.get().getGenero(),
                 juego.get().getRangoEdad(), juego.get().getIdiomasDisponibles(), juego.get().getEstado()));
 
@@ -202,7 +197,7 @@ public class JuegoControlador implements IJuegoControlador {
         }
 
 
-        var juegoActualizado =  juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(), juego.get().getDesarrolladora(),
+        var juegoActualizado = juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(), juego.get().getDesarrolladora(),
                 juego.get().getFechaPublicacion(), juego.get().getPrecioBase(), juego.get().getDescuentoActual(), juego.get().getGenero(),
                 juego.get().getRangoEdad(), juego.get().getIdiomasDisponibles(), estado));
         return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoActualizado.orElse(null)));

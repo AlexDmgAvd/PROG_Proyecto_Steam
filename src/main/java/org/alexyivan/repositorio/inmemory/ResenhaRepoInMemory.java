@@ -12,7 +12,7 @@ public class ResenhaRepoInMemory implements IResenhaRepo {
 
     private static List<ResenhaEntidad> resenhas = new ArrayList<>();
     //Todo arreglar el contador
-    private static long idCounter = resenhas.size() + 1;
+    private static long idCounter = 1;
 
 
     @Override
