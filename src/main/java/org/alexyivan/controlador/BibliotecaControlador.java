@@ -297,7 +297,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
                 totalHoras,
                 juegosInstaladosTotales,
                 juegoMasJugado.get().getIdJuego(),
-                juegoMasJugado.,
+                null,
                 valorTotalBiblioteca,
                 juegosNuncaJugados);
 

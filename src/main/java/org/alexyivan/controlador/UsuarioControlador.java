@@ -9,10 +9,13 @@ import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.modelo.form.UsuarioForm;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.alexyivan.modelo.dto.UsuarioDto;
+
 import static org.alexyivan.repositorio.inmemory.UsuarioRepoInMemory.listaPaises;
 
 public class UsuarioControlador implements IUsuarioControlador {
@@ -74,8 +77,6 @@ public class UsuarioControlador implements IUsuarioControlador {
         }
         var usuario = usuarioRepo.obtenerPorNombre(nombreUsuario);
 
-        //TODO Hace falta DTO de estadísticas de juego
-
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
     }
 
@@ -88,7 +89,6 @@ public class UsuarioControlador implements IUsuarioControlador {
 
         }
 
-        //TODO Hace falta DTO de estadísticas de juego
         var usuario = usuarioRepo.obtenerPorId(id);
 
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
