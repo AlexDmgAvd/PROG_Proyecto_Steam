@@ -8,8 +8,10 @@ import org.alexyivan.modelo.enums.EstadoCuentaEmun;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.modelo.form.UsuarioForm;
+import org.alexyivan.repositorio.inmemory.UsuarioRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -151,5 +153,15 @@ public class UsuarioControlador implements IUsuarioControlador {
 
 
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
+    }
+
+    public static void main(String[] args) {
+        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+
+        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+                "Spain", LocalDate.of(1998,03,05),LocalDate.of(2026,04,21),
+                "Avatar",50.0f, EstadoCuentaEmun.ACTIVA));
+
+
     }
 }

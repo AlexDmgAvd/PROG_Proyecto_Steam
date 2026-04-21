@@ -4,16 +4,19 @@ package org.alexyivan.controlador;
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
 import org.alexyivan.modelo.enums.*;
-import org.alexyivan.modelo.form.BusquedaCompraForm;
-import org.alexyivan.modelo.form.CompraForm;
-import org.alexyivan.modelo.form.ErrorDto;
-import org.alexyivan.modelo.form.ErrorType;
+import org.alexyivan.modelo.form.*;
+import org.alexyivan.repositorio.inmemory.BibliotecaRepoInMemory;
+import org.alexyivan.repositorio.inmemory.CompraRepoInMemory;
+import org.alexyivan.repositorio.inmemory.JuegoRepoInMemory;
+import org.alexyivan.repositorio.inmemory.UsuarioRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IBibliotecaRepo;
 import org.alexyivan.repositorio.interfaces.ICompraRepo;
 import org.alexyivan.modelo.dto.CompraDto;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,7 +83,11 @@ public class CompraControlador implements ICompraControlador {
                 formularioCompra.getMetodoPago(), formularioCompra.getPrecioSinDescuento(), formularioCompra.getDescuento(),
                 formularioCompra.getPrecioFinal(), formularioCompra.getEstado()));
 
-        return Optional.ofNullable(Mapper.mapCompraEntidadADto(compra.orElse(null)));
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+
+
+        return Optional.ofNullable(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto));
     }
 
     @Override
@@ -107,8 +114,13 @@ public class CompraControlador implements ICompraControlador {
             throw new ValidacionException(errores);
         }
 
+        var usuario = usuarioRepo.obtenerPorId(formularioCompra.getUsuarioId());
+        var juego = juegoRepo.obtenerPorId(formularioCompra.getJuegoId());
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-        return Optional.ofNullable(Mapper.mapCompraEntidadADto(compra.orElse(null)));
+
+        return Optional.ofNullable(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto));
     }
 
     @Override
@@ -149,9 +161,15 @@ public class CompraControlador implements ICompraControlador {
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
+        var usuario = usuarioRepo.obtenerPorId(formularioCompra.getUsuarioId());
+        var juego = juegoRepo.obtenerPorId(formularioCompra.getJuegoId());
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
 
-        return Optional.ofNullable(Mapper.mapCompraEntidadADto(compra.orElse(null)));
+        return Optional.ofNullable(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto));
+
+
     }
 
     @Override
@@ -164,5 +182,29 @@ public class CompraControlador implements ICompraControlador {
     public String generarFactura(long idCompra) throws ValidacionException {
         //Todo
         return "";
+    }
+
+    public static void main(String[] args) {
+        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
+        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
+        ICompraRepo iCompraRepo = new CompraRepoInMemory();
+
+        CompraControlador compraControlador = new CompraControlador(iCompraRepo, iUsuarioRepo, iBibliotecaRepo, iJuegoRepo);
+
+        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+                "Spain", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+        iJuegoRepo.crear(new JuegoForm("Marvel Rivals", "Heroe shooter en tercera persona en el que controlas" +
+                "a los personajes del universo marvel", "NetEast", LocalDate.of(2025, 01, 01),
+                5.0f, 0, "Heroe Shooter", PegiEnum.PEGI_12, "Español, Inglés", EstadoJuegoEnum.DISPONIBLE));
+
+        compraControlador.realizarCompra(new CompraForm(iUsuarioRepo.obtenerPorNombre("kaisquest").get().getId(), iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getId(),
+                LocalDateTime.now(), MetodoPagoEnum.CARTERA_STEAM, iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase(),
+                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual(),
+                Double.valueOf(iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()) - ((iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()
+                        * (iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual() * 100))), EstadoCompraEnum.COMPLETADO));
+
+
     }
 }

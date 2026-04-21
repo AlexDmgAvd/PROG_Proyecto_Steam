@@ -3,9 +3,11 @@ package org.alexyivan.mapper;
 import org.alexyivan.modelo.dto.*;
 import org.alexyivan.modelo.entidad.*;
 
+import java.util.Optional;
+
 public class Mapper {
 
-    public static BibliotecaDto mapBibliotecaEntidadADto(BibliotecaEntidad entidad) {
+    public static BibliotecaDto mapBibliotecaEntidadADto(BibliotecaEntidad entidad, UsuarioDto usuario, JuegoDto juego) {
         if (entidad == null) {
             return null;
         }
@@ -13,9 +15,9 @@ public class Mapper {
         return new BibliotecaDto(
                 entidad.getId(),
                 entidad.getIdUsuario(),
-                null,
+                usuario,
                 entidad.getIdJuego(),
-                null,
+                juego,
                 entidad.getHorasJugadasTotal(),
                 entidad.getUltimaFechaDeJuego(),
                 entidad.getEstadoInstalacion(),
@@ -23,7 +25,7 @@ public class Mapper {
         );
     }
 
-    public static CompraDto mapCompraEntidadADto(CompraEntidad entidad) {
+    public static CompraDto mapCompraEntidadADto(CompraEntidad entidad, UsuarioDto usuario, JuegoDto juego) {
         if (entidad == null) {
             return null;
         }
@@ -31,9 +33,9 @@ public class Mapper {
         return new CompraDto(
                 entidad.getId(),
                 entidad.getIdUsuario(),
-                null,
+                Optional.of(usuario),
                 entidad.getIdJuego(),
-                null,
+                Optional.of(juego),
                 entidad.getPrecioSinDescuento(),
                 entidad.getDescuentoAplicado()
         );
@@ -58,7 +60,7 @@ public class Mapper {
         );
     }
 
-    public static ResenhaDto mapResenhaEntidadADto(ResenhaEntidad entidad) {
+    public static ResenhaDto mapResenhaEntidadADto(ResenhaEntidad entidad, UsuarioDto usuario, JuegoDto juego) {
         if (entidad == null) {
             return null;
         }
@@ -66,9 +68,9 @@ public class Mapper {
         return new ResenhaDto(
                 entidad.getId(),
                 entidad.getIdUsuario(),
-                null,
+                Optional.of(usuario),
                 entidad.getIdJuego(),
-                null,
+                Optional.of(juego),
                 entidad.isRecomendado(),
                 entidad.getTextoAnalisis(),
                 entidad.getHorasJugadas(),

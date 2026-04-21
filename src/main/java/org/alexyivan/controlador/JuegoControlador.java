@@ -10,6 +10,7 @@ import org.alexyivan.modelo.form.BusquedaJuegosForm;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.modelo.form.JuegoForm;
+import org.alexyivan.repositorio.inmemory.JuegoRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 
 import java.util.*;
@@ -201,5 +202,14 @@ public class JuegoControlador implements IJuegoControlador {
                 juego.get().getFechaPublicacion(), juego.get().getPrecioBase(), juego.get().getDescuentoActual(), juego.get().getGenero(),
                 juego.get().getRangoEdad(), juego.get().getIdiomasDisponibles(), estado));
         return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoActualizado.orElse(null)));
+    }
+
+    public static void main(String[] args) {
+        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
+
+
+
+
+
     }
 }

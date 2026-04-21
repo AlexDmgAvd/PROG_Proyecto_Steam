@@ -4,8 +4,12 @@ package org.alexyivan.controlador;
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
 import org.alexyivan.modelo.dto.EstadisticasResenhaDto;
+import org.alexyivan.modelo.dto.JuegoDto;
 import org.alexyivan.modelo.dto.ResenhaDto;
+import org.alexyivan.modelo.dto.UsuarioDto;
+import org.alexyivan.modelo.entidad.JuegoEntidad;
 import org.alexyivan.modelo.entidad.ResenhaEntidad;
+import org.alexyivan.modelo.entidad.UsuarioEntidad;
 import org.alexyivan.modelo.enums.BusquedaResenhasValoracionEnum;
 import org.alexyivan.modelo.enums.EstadoResenhaEnum;
 import org.alexyivan.modelo.enums.OrdenResenhasEnum;
@@ -73,7 +77,10 @@ public class ResenhaControlador implements IResenhaControlador {
                 formularioResenha.getTextoAnalisis(), formularioResenha.getHorasJugadas(), formularioResenha.getFechaPublicacion(),
                 formularioResenha.getUltimaFechaEdicion(), EstadoResenhaEnum.PUBLICADA));
 
-        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null)));
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+
+        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null),usuarioDto,juegoDto));
     }
 
     @Override
@@ -104,8 +111,13 @@ public class ResenhaControlador implements IResenhaControlador {
                 formularioResenha.getTextoAnalisis(), formularioResenha.getHorasJugadas(), formularioResenha.getFechaPublicacion(),
                 formularioResenha.getUltimaFechaEdicion(), EstadoResenhaEnum.BORRADA));
 
+        var usuario = usuarioRepo.obtenerPorId(formularioResenha.getIdUsuario());
+        var juego = juegoRepo.obtenerPorId(formularioResenha.getIdJuego());
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null)));
+
+        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null),usuarioDto,juegoDto));
     }
 
     @Override
@@ -150,7 +162,18 @@ public class ResenhaControlador implements IResenhaControlador {
         }
 
 
-        return resenhas.map(Mapper::mapResenhaEntidadADto).toList();
+        return resenhas.map(r -> {
+            Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(r.getIdJuego());
+            Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(r.getIdUsuario());
+
+            Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
+            Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
+
+            return Mapper.mapResenhaEntidadADto(r,usuarioDto.orElse(null),juegoDto.orElse(null));
+
+        }).toList();
+
+
 
 
     }
@@ -187,8 +210,12 @@ public class ResenhaControlador implements IResenhaControlador {
                 formularioResenha.getTextoAnalisis(), formularioResenha.getHorasJugadas(), formularioResenha.getFechaPublicacion(),
                 formularioResenha.getUltimaFechaEdicion(), EstadoResenhaEnum.OCULTA));
 
+        var usuario = usuarioRepo.obtenerPorId(formularioResenha.getIdUsuario());
+        var juego = juegoRepo.obtenerPorId(formularioResenha.getIdJuego());
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null)));
+        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null),usuarioDto,juegoDto));
     }
 
     @Override
@@ -214,7 +241,15 @@ public class ResenhaControlador implements IResenhaControlador {
         var resenhas = resenhaRepo.obtenerTodos().stream()
                 .filter(r -> r.getIdUsuario() == usuario.get().getId())
                 .filter(r -> estado.map(e -> r.getEstado() == e).orElse(true))
-                .map(Mapper::mapResenhaEntidadADto).toList();
+                .map(r -> {
+                    Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(r.getIdJuego());
+                    Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(r.getIdUsuario());
+
+                    Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
+                    Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
+
+                    return Mapper.mapResenhaEntidadADto(r,usuarioDto.orElse(null),juegoDto.orElse(null));
+                }).toList();
 
         return resenhas;
     }

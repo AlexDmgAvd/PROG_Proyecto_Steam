@@ -86,7 +86,7 @@ public class CompraForm {
         }
 
         // Fecha de compra
-        if (fechaCompra != null) {
+        if (fechaCompra == null) {
             errores.add(new ErrorDto("fechaCompra", ErrorType.REQUERIDO));
         }
 

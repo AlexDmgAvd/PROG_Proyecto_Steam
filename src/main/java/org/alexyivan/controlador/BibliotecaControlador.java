@@ -4,19 +4,29 @@ import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
 import org.alexyivan.modelo.dto.BibliotecaDto;
 import org.alexyivan.modelo.dto.EstadisticasBibliotecaDto;
+import org.alexyivan.modelo.dto.JuegoDto;
+import org.alexyivan.modelo.dto.UsuarioDto;
 import org.alexyivan.modelo.entidad.BibliotecaEntidad;
 import org.alexyivan.modelo.entidad.JuegoEntidad;
+import org.alexyivan.modelo.entidad.UsuarioEntidad;
+import org.alexyivan.modelo.enums.EstadoCuentaEmun;
 import org.alexyivan.modelo.enums.EstadoInstalacionEnum;
 import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaEnum;
+import org.alexyivan.modelo.enums.OrdenResenhasEnum;
 import org.alexyivan.modelo.form.BibliotecaForm;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
+import org.alexyivan.modelo.form.UsuarioForm;
+import org.alexyivan.repositorio.inmemory.BibliotecaRepoInMemory;
 import org.alexyivan.repositorio.inmemory.CompraRepoInMemory;
+import org.alexyivan.repositorio.inmemory.JuegoRepoInMemory;
+import org.alexyivan.repositorio.inmemory.UsuarioRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IBibliotecaRepo;
 import org.alexyivan.repositorio.interfaces.ICompraRepo;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -58,7 +68,17 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.ALFABETICO)) {
             List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
-                    stream().map(Mapper::mapBibliotecaEntidadADto).toList();
+                    stream().map(b -> {
+                        Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
+                        Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
+
+                        Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
+                        Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
+
+                        return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
+
+                    }).toList();
+
             bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getJuego().getTitulo()));
 
             return bibliotecaFiltrada;
@@ -66,7 +86,17 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.ULTIMA_SESION)) {
             List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
-                    stream().map(Mapper::mapBibliotecaEntidadADto).toList();
+                    stream().map(b -> {
+                        Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
+                        Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
+
+                        Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
+                        Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
+
+                        return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
+
+                    }).toList();
+
             bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getUltimaFechaDeJuego()));
 
             return bibliotecaFiltrada;
@@ -74,21 +104,50 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.TIEMPO_JUEGO)) {
             List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
-                    stream().map(Mapper::mapBibliotecaEntidadADto).toList();
+                    stream().map(b -> {
+                        Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
+                        Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
+
+                        Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
+                        Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
+
+                        return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
+
+                    }).toList();
+
             bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getHorasJugadasTotal()));
 
             return bibliotecaFiltrada;
         }
         if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.FECHA_ADQUISICION)) {
             List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
-                    stream().map(Mapper::mapBibliotecaEntidadADto).toList();
+                    stream().map(b -> {
+                        Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
+                        Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
+
+                        Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
+                        Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
+
+                        return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
+
+                    }).toList();
+
             bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getFechaAdquisicion()));
 
             return bibliotecaFiltrada;
         }
 
 
-        return bibliotecaUsuario.stream().map(Mapper::mapBibliotecaEntidadADto).toList();
+        return bibliotecaUsuario.stream().map(b -> {
+            Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
+            Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
+
+            Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
+            Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
+
+            return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
+
+        }).toList();
 
 
     }
@@ -124,8 +183,11 @@ public class BibliotecaControlador implements IBibliotecaControlador {
                 bibliotecaForm.getFechaAdquisicion(), 0.0f, null,
                 EstadoInstalacionEnum.NO_INSTALADO));
 
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(b.orElse(null)));
+
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(b.orElse(null),usuarioDto,juegoDto));
 
 
     }
@@ -165,7 +227,10 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         bibliotecaRepo.eliminar(bibliotecaBuscada.get().getId());
 
-        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaBuscada.orElse(null)));
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaBuscada.orElse(null),usuarioDto,juegoDto));
 
 
     }
@@ -202,7 +267,10 @@ public class BibliotecaControlador implements IBibliotecaControlador {
                 biblioteca.get().getFechaAdquisicion(), (biblioteca.get().getHorasJugadasTotal() + horas), biblioteca.get().getUltimaFechaDeJuego(),
                 biblioteca.get().getEstadoInstalacion()));
 
-        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaActualizada.orElse(null)));
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaActualizada.orElse(null),usuarioDto,juegoDto));
 
     }
 
@@ -228,7 +296,10 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == usuario.get().getId()
                 && b.getIdJuego() == juego.get().getId()).findFirst();
 
-        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(biblioteca.orElse(null)));
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(biblioteca.orElse(null),usuarioDto,juegoDto));
 
     }
 
@@ -269,7 +340,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         // Juegos instalados
         int juegosInstaladosTotales = bibliotecaUsuario.stream()
-                .filter(b -> b.getEstadoInstalacion() == EstadoInstalacionEnum.INSTALADO )
+                .filter(b -> b.getEstadoInstalacion() == EstadoInstalacionEnum.INSTALADO)
                 .toList().size();
 
         // Juego mas jugado
@@ -304,6 +375,25 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         return Optional.ofNullable(estadisticas);
     }
+
+
+//    public static void main(String[] args) {
+//        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
+//        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+//        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
+//        ICompraRepo iCompraRepo = new CompraRepoInMemory();
+//
+//
+//        BibliotecaControlador biblioteca = new BibliotecaControlador(iBibliotecaRepo, iUsuarioRepo, iJuegoRepo, iCompraRepo);
+//
+//        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+//                "Spain", LocalDate.of(1998,03,05),LocalDate.of(2026,04,21),
+//                "Avatar",50.0f, EstadoCuentaEmun.ACTIVA));
+//
+//        biblioteca.verBibliotecaPersonal(1, OrdenBusquedaBibliotecaEnum.ALFABETICO);
+//
+//
+//    }
 
 
 }

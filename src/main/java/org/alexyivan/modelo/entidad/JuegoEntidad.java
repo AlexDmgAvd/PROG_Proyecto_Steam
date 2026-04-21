@@ -5,11 +5,10 @@ import org.alexyivan.modelo.enums.PegiEnum;
 
 import java.time.LocalDate;
 
-@Table(name = "juegos")
-@Entity
+
 public class JuegoEntidad {
 
-    @Id
+
 
     private long id;
     private String titulo;
