@@ -1,0 +1,22 @@
+<hibernate-configuration>
+    <session-factory>
+        <!--  Conexión (datos de docker-compose.yml)  -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/mydb</property>
+        <property name="hibernate.connection.username">myuser</property>
+        <property name="hibernate.connection.password">mypassword</property>
+        <!--  Dialecto  -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <!--  El esquema ya existe (creado por schema.sql); sólo se valida  -->
+        <property name="hibernate.hbm2ddl.auto">validate</property>
+        <!--  SQL en consola (útil para depurar)  -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        <!--  Entidades mapeadas  -->
+        <mapping class="org.alexyivan.modelo.entidad.JuegoEntidad"/>
+        <mapping class="org.alexyivan.modelo.entidad.ResenhaEntidad"/>
+        <mapping class="org.alexyivan.modelo.entidad.UsuarioEntidad"/>
+        <mapping class="org.alexyivan.modelo.entidad.CompraEntidad"/>
+        <mapping class="org.alexyivan.modelo.entidad.BibliotecaEntidad"/>
+    </session-factory>
+</hibernate-configuration>
