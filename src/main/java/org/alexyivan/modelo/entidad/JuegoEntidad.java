@@ -1,5 +1,6 @@
 package org.alexyivan.modelo.entidad;
 
+import org.alexyivan.bdconfig.HibernateUtil;
 import org.alexyivan.modelo.enums.EstadoJuegoEnum;
 import org.alexyivan.modelo.enums.PegiEnum;
 
@@ -11,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Table(name = "juegos")
 @Entity
@@ -57,10 +59,12 @@ public class JuegoEntidad {
         this.estado = estado;
     }
 
+    // Constructor vacio
     public JuegoEntidad(){
 
     }
 
+    // Constructor sin ID
     public JuegoEntidad(String titulo, String descripcion, String desarrolladora,
                         LocalDate fechaPublicacion, float precioBase, int descuentoActual,
                         String genero, PegiEnum rangoEdad, String idiomasDisponibles, EstadoJuegoEnum estado) {
@@ -172,5 +176,26 @@ public class JuegoEntidad {
                 + desarrolladora + ", fechaPublicacion=" + fechaPublicacion + ", precioBase=" + precioBase
                 + ", descuentoActual=" + descuentoActual + ", genero=" + genero + ", rangoEdad=" + rangoEdad
                 + ", idiomasDisponibles=" + idiomasDisponibles + ", estado=" + estado + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        JuegoEntidad that = (JuegoEntidad) o;
+        return id == that.id && Float.compare(precioBase, that.precioBase) == 0
+                && descuentoActual == that.descuentoActual
+                && Objects.equals(titulo, that.titulo)
+                && Objects.equals(descripcion, that.descripcion)
+                && Objects.equals(desarrolladora, that.desarrolladora)
+                && Objects.equals(fechaPublicacion, that.fechaPublicacion)
+                && Objects.equals(genero, that.genero)
+                && rangoEdad == that.rangoEdad
+                && Objects.equals(idiomasDisponibles, that.idiomasDisponibles) && estado == that.estado;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, titulo, descripcion, desarrolladora, fechaPublicacion, precioBase, descuentoActual,
+                genero, rangoEdad, idiomasDisponibles, estado);
     }
 }
