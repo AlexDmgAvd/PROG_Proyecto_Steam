@@ -12,7 +12,7 @@ import org.alexyivan.transaction.ISesionManager;
 import java.util.List;
 import java.util.Optional;
 
-public class UsuarioRepoHibernate implements IUsuarioRepo {
+public class  UsuarioRepoHibernate implements IUsuarioRepo {
 
     private final ISesionManager sesionManager;
 
