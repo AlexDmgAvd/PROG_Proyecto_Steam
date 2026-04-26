@@ -17,11 +17,9 @@ import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CompraControlador implements ICompraControlador {
@@ -175,6 +173,11 @@ public class CompraControlador implements ICompraControlador {
     @Override
     public boolean solicitarReembolso(long idCompra, OpcionesReembolsoEnum opcionesReembolso) throws ValidacionException {
         //Todo
+
+
+
+
+
         return false;
     }
 
@@ -199,11 +202,17 @@ public class CompraControlador implements ICompraControlador {
                 "a los personajes del universo marvel", "NetEast", LocalDate.of(2025, 01, 01),
                 5.0f, 0, "Heroe Shooter", PegiEnum.PEGI_12, "Español, Inglés", EstadoJuegoEnum.DISPONIBLE));
 
-        compraControlador.realizarCompra(new CompraForm(iUsuarioRepo.obtenerPorNombre("kaisquest").get().getId(), iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getId(),
+        compraControlador.realizarCompra(new CompraForm(iUsuarioRepo.obtenerPorNombreUsuario("kaisquest").get().getId(), iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getId(),
                 LocalDateTime.now(), MetodoPagoEnum.CARTERA_STEAM, iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase(),
                 iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual(),
                 Double.valueOf(iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()) - ((iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()
                         * (iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual() * 100))), EstadoCompraEnum.COMPLETADO));
+
+
+    }
+
+    static void main() {
+
 
 
     }

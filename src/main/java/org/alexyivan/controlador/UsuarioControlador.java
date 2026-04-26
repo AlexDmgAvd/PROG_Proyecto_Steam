@@ -45,7 +45,7 @@ public class UsuarioControlador implements IUsuarioControlador {
             errores.add(new ErrorDto("email", ErrorType.EMAIL_INVALIDO));
 
         //Validación de que el nombre no existe en el repositorio
-        usuario = usuarioRepo.obtenerPorNombre(usuarioForm.getNombreUsuario());
+        usuario = usuarioRepo.obtenerPorNombreUsuario(usuarioForm.getNombreUsuario());
         if (usuario.isPresent()) {
             errores.add(new ErrorDto("nombre", ErrorType.NOMBRE_EXISTENTE));
         }
@@ -77,7 +77,7 @@ public class UsuarioControlador implements IUsuarioControlador {
             errores.add(new ErrorDto("vacio", ErrorType.BUSQUEDA_INVALIDA));
 
         }
-        var usuario = usuarioRepo.obtenerPorNombre(nombreUsuario);
+        var usuario = usuarioRepo.obtenerPorNombreUsuario(nombreUsuario);
 
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
     }
@@ -98,7 +98,7 @@ public class UsuarioControlador implements IUsuarioControlador {
 
 
     @Override
-    public void anhadirSaldo(long id, float cantidad) throws ValidacionException {
+    public Optional<UsuarioDto> anhadirSaldo(long id, float cantidad) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
         //Validaciones
@@ -129,10 +129,11 @@ public class UsuarioControlador implements IUsuarioControlador {
         }
 
 
-        usuarioRepo.actualizar(id, new UsuarioForm(usuario.get().getNombreUsuario(), usuario.get().getEmail(),
+        var usuarioNuevoSaldo = usuarioRepo.actualizar(id, new UsuarioForm(usuario.get().getNombreUsuario(), usuario.get().getEmail(),
                 usuario.get().getContrasenha(), usuario.get().getNombreReal(), usuario.get().getPais(), usuario.get().getCumpleanhos(), usuario.get().getFechaRegistro(),
-                usuario.get().getAvatar(), cantidad, usuario.get().getEstado()));
+                usuario.get().getAvatar(), (cantidad + usuario.get().getCreditoSteam()), usuario.get().getEstado()));
 
+        return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuarioNuevoSaldo.orElse(null)));
 
     }
 
@@ -155,12 +156,47 @@ public class UsuarioControlador implements IUsuarioControlador {
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+        UsuarioControlador controlador = new UsuarioControlador(iUsuarioRepo);
 
-        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
-                "Spain", LocalDate.of(1998,03,05),LocalDate.of(2026,04,21),
-                "Avatar",50.0f, EstadoCuentaEmun.ACTIVA));
+
+        var usuario2 = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com", "1234ABcd!", "Iván",
+                "España", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+
+        try {
+            var usuario = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+                    "España", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+                    "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+        } catch (ValidacionException e) {
+            System.err.println("El usuario ya existe en el sistema");
+
+        }
+
+
+        var usuarioNombre = controlador.consultarUsuarioNombreUsuario("kaisquest");
+
+        System.out.println(usuarioNombre.get().getNombreUsuario());
+
+        var usuarioId = controlador.consultarUsuarioId(1l);
+
+        System.out.println(usuarioId.get().getNombreUsuario());
+
+        var usuarioSaldo = controlador.consultarSaldo(1L);
+        System.out.println(usuarioSaldo.get().getNombreUsuario() + " " + usuarioSaldo.get().getCreditoSteam());
+
+        //TODO - A la hora de añadir el saldo no se está actualizando, siempre sale el saldo antiguo
+        usuarioSaldo = controlador.anhadirSaldo(1L, 20.0f);
+
+        System.out.println(usuarioSaldo.get().getNombreUsuario() + " " + usuarioSaldo.get().getCreditoSteam());
+
+        try {
+            usuarioSaldo = controlador.anhadirSaldo(1L,3f);
+        } catch (ValidacionException e) {
+            System.err.println("Saldo a introducir demasiado bajo");
+        }
+
 
 
     }

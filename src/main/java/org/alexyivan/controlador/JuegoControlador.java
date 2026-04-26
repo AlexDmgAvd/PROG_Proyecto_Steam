@@ -6,6 +6,7 @@ import org.alexyivan.modelo.dto.JuegoDto;
 import org.alexyivan.modelo.entidad.JuegoEntidad;
 import org.alexyivan.modelo.enums.EstadoJuegoEnum;
 import org.alexyivan.modelo.enums.OrdenBusquedaJuegoEnum;
+import org.alexyivan.modelo.enums.PegiEnum;
 import org.alexyivan.modelo.form.BusquedaJuegosForm;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
@@ -13,6 +14,7 @@ import org.alexyivan.modelo.form.JuegoForm;
 import org.alexyivan.repositorio.inmemory.JuegoRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class JuegoControlador implements IJuegoControlador {
@@ -47,7 +49,11 @@ public class JuegoControlador implements IJuegoControlador {
             throw new ValidacionException(errores);
         }
 
-        return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juego.orElse(null)));
+        var juegoCreado = juegoRepo.crear(new JuegoForm(formulario.getTitulo(), formulario.getDescripcion(), formulario.getDesarrolladora(),
+                formulario.getFechaPublicacion(), formulario.getPrecioBase(), formulario.getDescuentoActual(), formulario.getGenero(),
+                formulario.getRangoEdad(), formulario.getIdiomasDisponibles(), formulario.getEstado()));
+
+        return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoCreado.orElse(null)));
     }
 
     @Override
@@ -65,11 +71,11 @@ public class JuegoControlador implements IJuegoControlador {
         var jf = juegosFiltrados.stream();
 
 
-        if (!busquedaJuegos.getTitulo().isEmpty()) {
+        if (!busquedaJuegos.getTitulo().isEmpty() || busquedaJuegos.getTitulo() == null) {
             jf.filter(j -> j.getTitulo().contains(busquedaJuegos.getTitulo()));
         }
 
-        if (!busquedaJuegos.getGenero().isEmpty()) {
+        if (!busquedaJuegos.getGenero().isEmpty() || busquedaJuegos.getGenero() == null) {
             jf.filter(j -> j.getGenero().equals(busquedaJuegos.getGenero()));
 
         }
@@ -77,11 +83,11 @@ public class JuegoControlador implements IJuegoControlador {
             jf.filter(j -> j.getPrecioBase() <= busquedaJuegos.getPrecio());
 
         }
-        if (!busquedaJuegos.getPegi().isEmpty()) {
+        if (!busquedaJuegos.getPegi().isEmpty() || busquedaJuegos.getPegi() == null) {
             jf.filter(j -> j.getRangoEdad().toString().equals(busquedaJuegos.getPegi()));
         }
 
-        if (!busquedaJuegos.getEstado().isEmpty()) {
+        if (busquedaJuegos.getEstado() == null) {
             jf.filter(j -> j.getEstado().toString().equals(busquedaJuegos.getEstado()));
         }
 
@@ -204,9 +210,53 @@ public class JuegoControlador implements IJuegoControlador {
         return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoActualizado.orElse(null)));
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
 
+        JuegoControlador controlador = new JuegoControlador(iJuegoRepo);
+
+        var juegoCreado = controlador.anhadirJuegoCatalogo(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
+                "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
+                "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
+                LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
+                "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
+
+        System.out.println(juegoCreado.get().getTitulo() + " " + juegoCreado.get().getDescuentoActual() + juegoCreado.get().getEstado());
+
+// TODO - Preguntar por esta línea Exception in thread "main" java.lang.IllegalStateException:
+//  stream has already been operated upon or closed
+        //var juegoEntontrados = controlador.buscarJuegos
+        //        (new BusquedaJuegosForm("Clair Obscure: Expedition 33", "", null, "", null));
+//
+        //System.out.println(juegoEntontrados.getFirst().getTitulo());
+//
+        //TODO - Salta un error relacionado con la inmutabilidad de las listas
+        //controlador.listarTodosJuegos(OrdenBusquedaJuegoEnum.PRECIO);
+
+        var juegoConsultado = controlador.consultarJuego(1l);
+
+        System.out.println(juegoConsultado.get().getTitulo());
+
+        var juegoNuevoDescuento = controlador.actualizarDescuento(1l, 15);
+
+        System.out.println(juegoNuevoDescuento.get().getTitulo() + " " + juegoNuevoDescuento.get().getDescuentoActual());
+
+        //TODO - Preguntar si me está mostrando el mismo descuento porque está almacenado en memoria
+        System.out.println(juegoCreado.get().getTitulo() + " " + juegoCreado.get().getDescuentoActual());
+
+        var juegoNuevoEstado = controlador.cambiarEstado(1l, EstadoJuegoEnum.NO_DISPONIBLE);
+
+        System.out.println(juegoNuevoEstado.get().getTitulo() + " " + juegoNuevoEstado.get().getEstado());
+
+        try {
+            controlador.anhadirJuegoCatalogo(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
+                    "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
+                    "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
+                    LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
+                    "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
+        } catch (IllegalStateException e) {
+            System.err.println("Juego ya creado");
+        }
 
 
 

@@ -12,7 +12,6 @@ import java.util.Optional;
 public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     private static List<UsuarioEntidad> usuarios = new ArrayList<>();
-    //Todo arreglar el contador
     private static long idCounter = 1;
     public static List<String> listaPaises = List.of("España", "Alemania", "Irlanda", "Reino Unido");
 
@@ -37,7 +36,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     }
 
     @Override
-    public Optional<UsuarioEntidad> obtenerPorNombre(String nombre) {
+    public Optional<UsuarioEntidad> obtenerPorNombreUsuario(String nombre) {
         return usuarios.stream().filter(u -> u.getNombreUsuario().equals(nombre)).findFirst();
     }
 
@@ -51,7 +50,7 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
     public Optional<UsuarioEntidad> actualizar(Long id, UsuarioForm usuarioForm) {
         var usuarioOpt = obtenerPorId(id);
         if (usuarioOpt.isEmpty()) {
-            throw new IllegalArgumentException("Juego no encontrado");
+            throw new IllegalArgumentException("Usuario no encontrado");
         }
         var usuarioActualizado = new UsuarioEntidad(id, usuarioForm.getNombreUsuario(), usuarioForm.getEmail(), usuarioForm.getContrasena(),
                 usuarioForm.getNombreReal(), usuarioForm.getPais(), usuarioForm.getFechaNacimiento(), usuarioForm.getFechaRegistro(),
@@ -63,6 +62,6 @@ public class UsuarioRepoInMemory implements IUsuarioRepo {
 
     @Override
     public boolean eliminar(Long id) {
-        return false;
+        return usuarios.removeIf(u -> u.getId() == id);
     }
 }

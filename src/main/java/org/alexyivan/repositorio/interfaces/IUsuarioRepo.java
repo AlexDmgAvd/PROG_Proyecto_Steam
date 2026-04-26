@@ -10,7 +10,7 @@ public interface IUsuarioRepo extends ICrud<UsuarioEntidad, UsuarioForm, Long> {
 
     Optional<UsuarioEntidad> obtenerPorEmail(String email);
 
-    Optional<UsuarioEntidad> obtenerPorNombre(String nombre);
+    Optional<UsuarioEntidad> obtenerPorNombreUsuario(String nombre);
 
 
 }

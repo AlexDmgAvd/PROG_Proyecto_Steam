@@ -1,5 +1,7 @@
 package org.alexyivan.modelo.form;
 
+import org.alexyivan.modelo.enums.EstadoJuegoEnum;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +12,10 @@ public class BusquedaJuegosForm {
     private String genero;
     private Float precio;
     private String pegi;
-    private String estado;
+    private EstadoJuegoEnum estado;
 
 
-    public BusquedaJuegosForm(String titulo, String genero, Float precio, String pegi, String estado) {
+    public BusquedaJuegosForm(String titulo, String genero, Float precio, String pegi, EstadoJuegoEnum estado) {
         this.titulo = titulo;
         this.genero = genero;
         this.precio = precio;
@@ -37,7 +39,7 @@ public class BusquedaJuegosForm {
         return pegi;
     }
 
-    public String getEstado() {
+    public EstadoJuegoEnum getEstado() {
         return estado;
     }
 
@@ -50,7 +52,7 @@ public class BusquedaJuegosForm {
 
         List<ErrorDto> errores = new ArrayList<>();
 
-        if (titulo.isEmpty() & genero.isEmpty() & precio == null & pegi.isEmpty() & estado.isEmpty()) {
+        if ((titulo.isEmpty()) & genero.isEmpty() & precio == null & pegi.isEmpty() & estado == null) {
             errores.add(new ErrorDto("busqueda", ErrorType.BUSQUEDA_INVALIDA));
 
         }

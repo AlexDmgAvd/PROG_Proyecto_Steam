@@ -14,7 +14,7 @@ public interface IUsuarioControlador {
 
     Optional<UsuarioDto> consultarUsuarioId(Long id) throws ValidacionException;
 
-    void anhadirSaldo(long id, float cantidad) throws ValidacionException;
+    Optional<UsuarioDto> anhadirSaldo(long id, float cantidad) throws ValidacionException;
 
     Optional<UsuarioDto> consultarSaldo(long id) throws ValidacionException;
 

@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public class JuegoRepoInMemory implements IJuegoRepo {
     private static List<JuegoEntidad> juegos = new ArrayList<>();
-    //Todo arreglar el contador
     private static long idCounter = 1;
 
     @Override

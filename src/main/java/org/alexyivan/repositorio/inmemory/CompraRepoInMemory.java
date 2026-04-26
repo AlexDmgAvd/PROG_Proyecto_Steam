@@ -12,7 +12,6 @@ import java.util.Optional;
 public class CompraRepoInMemory implements ICompraRepo {
 
     private static final List<CompraEntidad> compras = new ArrayList<>();
-   //Todo arreglar el contador
     private static long idCounter = 1;
 
     @Override
@@ -55,7 +54,7 @@ public class CompraRepoInMemory implements ICompraRepo {
 
     @Override
     public Optional<CompraEntidad> buscarJuegoUsuario(Long idJuego, Long idUsuario) {
-        return compras.stream().filter( b -> b.getIdUsuario() == idUsuario)
+        return compras.stream().filter(b -> b.getIdUsuario() == idUsuario)
                 .findFirst().filter(b -> b.getIdJuego() == idJuego).stream().findFirst();
     }
 }
