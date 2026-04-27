@@ -36,8 +36,11 @@ public class Mapper {
                 Optional.of(usuario),
                 entidad.getIdJuego(),
                 Optional.of(juego),
+                entidad.getMetodoDePago(),
                 entidad.getPrecioSinDescuento(),
-                entidad.getDescuentoAplicado()
+                entidad.getDescuentoAplicado(),
+                entidad.getEstado(),
+                entidad.getFechaCompra()
         );
     }
 

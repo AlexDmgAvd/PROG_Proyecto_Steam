@@ -3,6 +3,7 @@ package org.alexyivan.controlador;
 
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
+import org.alexyivan.modelo.entidad.CompraEntidad;
 import org.alexyivan.modelo.enums.*;
 import org.alexyivan.modelo.form.*;
 import org.alexyivan.repositorio.inmemory.BibliotecaRepoInMemory;
@@ -17,9 +18,7 @@ import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class CompraControlador implements ICompraControlador {
@@ -173,6 +172,15 @@ public class CompraControlador implements ICompraControlador {
     @Override
     public boolean solicitarReembolso(long idCompra, OpcionesReembolsoEnum opcionesReembolso) throws ValidacionException {
         //Todo
+        List<ErrorDto> errores = new ArrayList<>();
+        var compra = compraRepo.obtenerPorId(idCompra);
+
+        if (compra.isEmpty()){
+            errores.add(new ErrorDto("id", ErrorType.COMPRA_NO_EXISTENTE));
+        }
+        if (compra.get().getEstado() != EstadoCompraEnum.COMPLETADO){
+            errores.add(new ErrorDto("estado", ErrorType.COMPRA_NO_COMPLETADA));
+        }
 
 
 
@@ -210,6 +218,17 @@ public class CompraControlador implements ICompraControlador {
 
 
     }
+
+//    private int calcularPlazo(CompraEntidad compra){
+//       var diaActual =  LocalDateTime.now();
+//
+//       int anho = diaActual.getDayOfYear() - compra.getFechaCompra().getYear();
+//
+//
+//
+//
+//
+//    }
 
     static void main() {
 

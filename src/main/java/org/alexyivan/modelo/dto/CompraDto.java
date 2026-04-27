@@ -3,6 +3,8 @@ package org.alexyivan.modelo.dto;
 import org.alexyivan.modelo.enums.EstadoCompraEnum;
 import org.alexyivan.modelo.enums.MetodoPagoEnum;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class CompraDto {
@@ -16,16 +18,21 @@ public class CompraDto {
     private float precioSinDescuento;
     private int descuentoAplicado;
     private EstadoCompraEnum estado;
+    private LocalDateTime fechaCompra;
 
     public CompraDto(long id, long idUsuario, Optional<UsuarioDto> usuario, long idJuego,
-                     Optional<JuegoDto> juego, float precioCompleto, int descuentoAplicado) {
+                     Optional<JuegoDto> juego,MetodoPagoEnum metodoDePago, float precioCompleto, int descuentoAplicado, EstadoCompraEnum estado,
+                     LocalDateTime fechaCompra) {
         this.id = id;
         this.idUsuario = idUsuario;
         this.usuario = usuario.orElse(null);
         this.idJuego = idJuego;
         this.juego = juego.orElse(null);
+        this.metodoDePago = metodoDePago;
         this.precioSinDescuento = precioCompleto;
         this.descuentoAplicado = descuentoAplicado;
+        this.estado = estado;
+        this.fechaCompra = fechaCompra;
     }
 
     public long getId() {
@@ -34,6 +41,30 @@ public class CompraDto {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public MetodoPagoEnum getMetodoDePago() {
+        return metodoDePago;
+    }
+
+    public void setMetodoDePago(MetodoPagoEnum metodoDePago) {
+        this.metodoDePago = metodoDePago;
+    }
+
+    public EstadoCompraEnum getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoCompraEnum estado) {
+        this.estado = estado;
+    }
+
+    public LocalDateTime getFechaCompra() {
+        return fechaCompra;
+    }
+
+    public void setFechaCompra(LocalDateTime fechaCompra) {
+        this.fechaCompra = fechaCompra;
     }
 
     public long getIdUsuario() {
