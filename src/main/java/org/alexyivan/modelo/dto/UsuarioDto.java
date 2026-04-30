@@ -18,7 +18,7 @@ public class UsuarioDto {
 
     public UsuarioDto(long id, String nombreUsuario, String email,
                       String nombreReal, String pais, LocalDate cumpleanhos, LocalDate fechaRegistro,
-                      String avatar, float creditoSteam) {
+                      String avatar, float creditoSteam, EstadoCuentaEmun estadoCuenta) {
 
         this.id = id;
         this.nombreUsuario = nombreUsuario;
@@ -29,6 +29,7 @@ public class UsuarioDto {
         this.fechaRegistro = fechaRegistro;
         this.avatar = avatar;
         this.creditoSteam = creditoSteam;
+        this.estadoCuenta = estadoCuenta;
     }
 
     public long getId() {
@@ -91,6 +92,14 @@ public class UsuarioDto {
         return avatar;
     }
 
+    public EstadoCuentaEmun getEstadoCuenta() {
+        return estadoCuenta;
+    }
+
+    public void setEstadoCuenta(EstadoCuentaEmun estadoCuenta) {
+        this.estadoCuenta = estadoCuenta;
+    }
+
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
@@ -102,4 +111,7 @@ public class UsuarioDto {
     public void setCreditoSteam(float creditoSteam) {
         this.creditoSteam = creditoSteam;
     }
+
+
+
 }

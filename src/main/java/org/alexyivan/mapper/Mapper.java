@@ -96,7 +96,8 @@ public class Mapper {
                 entidad.getCumpleanhos(),
                 entidad.getFechaRegistro(),
                 entidad.getAvatar(),
-                entidad.getCreditoSteam()
+                entidad.getCreditoSteam(),
+                entidad.getEstado()
         );
     }
 }

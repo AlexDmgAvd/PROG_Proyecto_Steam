@@ -10,17 +10,12 @@ import org.alexyivan.modelo.dto.UsuarioDto;
 import org.alexyivan.modelo.entidad.JuegoEntidad;
 import org.alexyivan.modelo.entidad.ResenhaEntidad;
 import org.alexyivan.modelo.entidad.UsuarioEntidad;
-import org.alexyivan.modelo.enums.BusquedaResenhasValoracionEnum;
-import org.alexyivan.modelo.enums.EstadoResenhaEnum;
-import org.alexyivan.modelo.enums.OrdenResenhasEnum;
-import org.alexyivan.modelo.form.ErrorDto;
-import org.alexyivan.modelo.form.ErrorType;
-import org.alexyivan.modelo.form.ResenhaForm;
-import org.alexyivan.repositorio.interfaces.IBibliotecaRepo;
-import org.alexyivan.repositorio.interfaces.IJuegoRepo;
-import org.alexyivan.repositorio.interfaces.IResenhaRepo;
-import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
+import org.alexyivan.modelo.enums.*;
+import org.alexyivan.modelo.form.*;
+import org.alexyivan.repositorio.inmemory.*;
+import org.alexyivan.repositorio.interfaces.*;
 
+import java.lang.classfile.attribute.SourceDebugExtensionAttribute;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
@@ -80,7 +75,7 @@ public class ResenhaControlador implements IResenhaControlador {
         var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
         var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null),usuarioDto,juegoDto));
+        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null), usuarioDto, juegoDto));
     }
 
     @Override
@@ -117,7 +112,7 @@ public class ResenhaControlador implements IResenhaControlador {
         var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
 
-        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null),usuarioDto,juegoDto));
+        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null), usuarioDto, juegoDto));
     }
 
     @Override
@@ -155,7 +150,7 @@ public class ResenhaControlador implements IResenhaControlador {
                 resenhas.sorted((a, b) -> a.getFechaPublicacion().compareTo(b.getFechaPublicacion())).toList();
 
             }
-            if (orden.equals(OrdenResenhasEnum.UTILES)){
+            if (orden.equals(OrdenResenhasEnum.UTILES)) {
                 resenhas = resenhasOrdenadasUtilidad(resenhas);
             }
 
@@ -169,11 +164,9 @@ public class ResenhaControlador implements IResenhaControlador {
             Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
             Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
 
-            return Mapper.mapResenhaEntidadADto(r,usuarioDto.orElse(null),juegoDto.orElse(null));
+            return Mapper.mapResenhaEntidadADto(r, usuarioDto.orElse(null), juegoDto.orElse(null));
 
         }).toList();
-
-
 
 
     }
@@ -215,7 +208,7 @@ public class ResenhaControlador implements IResenhaControlador {
         var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
         var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null),usuarioDto,juegoDto));
+        return Optional.ofNullable(Mapper.mapResenhaEntidadADto(resenha.orElse(null), usuarioDto, juegoDto));
     }
 
     @Override
@@ -248,7 +241,7 @@ public class ResenhaControlador implements IResenhaControlador {
                     Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
                     Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
 
-                    return Mapper.mapResenhaEntidadADto(r,usuarioDto.orElse(null),juegoDto.orElse(null));
+                    return Mapper.mapResenhaEntidadADto(r, usuarioDto.orElse(null), juegoDto.orElse(null));
                 }).toList();
 
         return resenhas;
@@ -262,5 +255,46 @@ public class ResenhaControlador implements IResenhaControlador {
                 .filter(r -> r.isRecomendado());
 
 
+    }
+
+
+    static void main() {
+        IResenhaRepo iResenhaRepo = new ResenhaRepoInMemory();
+        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
+        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
+        ICompraRepo iCompraRepo = new CompraRepoInMemory();
+
+        JuegoControlador juegoControlador = new JuegoControlador(iJuegoRepo);
+        UsuarioControlador usuarioControlador = new UsuarioControlador(iUsuarioRepo);
+        BibliotecaControlador bibliotecaControlador = new BibliotecaControlador(iBibliotecaRepo, iUsuarioRepo, iJuegoRepo, iCompraRepo);
+        ResenhaControlador resenhaControlador = new ResenhaControlador(iResenhaRepo, iJuegoRepo, iUsuarioRepo, iBibliotecaRepo);
+
+        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+                "España", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+
+        iJuegoRepo.crear(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
+                "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
+                "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
+                LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
+                "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
+
+        var usuario = usuarioControlador.consultarUsuarioId(1l);
+        var juego = juegoControlador.consultarJuego(1);
+        var biblioteca = bibliotecaControlador.anhadirJuego(new BibliotecaForm(usuario.get().getId(), juego.get().getId(), LocalDate.of(2025, 12, 25),
+                20.4f, LocalDate.of(2026, 01, 9), EstadoInstalacionEnum.INSTALADO));
+
+
+        System.out.println(usuario.get().getNombreUsuario());
+        System.out.println(juego.get().getTitulo());
+
+        resenhaControlador.escribirResenha(new ResenhaForm(1, usuario.orElse(null), 1, juego.orElse(null), true,
+                "Texto de ejemplo del análisisis para que no pite por ser demasiado corto",
+                biblioteca.get().getHorasJugadasTotal(), LocalDate.of(2026, 04, 10), LocalDate.of(2026, 04, 16),
+                EstadoResenhaEnum.PUBLICADA));
+
+        var resenha = resenhaControlador.verResenhasJuego(1l, null, null);
+        System.out.println(resenha.getFirst().getId()+"   " + resenha.getFirst().getTextoAnalisis());
     }
 }

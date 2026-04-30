@@ -190,6 +190,7 @@ public class UsuarioControlador implements IUsuarioControlador {
         usuarioSaldo = controlador.anhadirSaldo(1L, 20.0f);
 
         System.out.println(usuarioSaldo.get().getNombreUsuario() + " " + usuarioSaldo.get().getCreditoSteam());
+        System.out.println(usuarioNombre.get().getEstadoCuenta().toString());
 
         try {
             usuarioSaldo = controlador.anhadirSaldo(1L,3f);

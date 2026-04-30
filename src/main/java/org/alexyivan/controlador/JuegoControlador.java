@@ -98,38 +98,42 @@ public class JuegoControlador implements IJuegoControlador {
     @Override
     public List<JuegoDto> listarTodosJuegos(OrdenBusquedaJuegoEnum orden) throws ValidacionException {
 
-        List<JuegoEntidad> juegosOriginales;
+        List<JuegoEntidad> juegosFiltrados = juegoRepo.obtenerTodos();
 
 
         if (orden.equals(OrdenBusquedaJuegoEnum.ALFABETICO)) {
-            List<JuegoDto> juegosFiltrados = juegoRepo.obtenerTodos().
-                    stream().map(Mapper::mapJuegoEntidadADto).toList();
-            juegosFiltrados.sort(Comparator.comparing(JuegoDto::getTitulo));
+            juegosFiltrados.
+                    stream().sorted(Comparator.comparing(JuegoEntidad::getTitulo));
 
-            return juegosFiltrados;
+
+            return juegosFiltrados.stream().map(Mapper::mapJuegoEntidadADto).toList();
         }
 
 
         if (orden.equals(OrdenBusquedaJuegoEnum.PRECIO)) {
-            List<JuegoDto> juegosFiltrados = juegoRepo.obtenerTodos().
-                    stream().map(Mapper::mapJuegoEntidadADto).toList();
-            juegosFiltrados.sort(Comparator.comparing(JuegoDto::getPrecioBase));
 
-            return juegosFiltrados;
+            juegosFiltrados.
+                    stream().sorted(Comparator.comparing(JuegoEntidad::getPrecioBase));
+
+
+            return juegosFiltrados.stream().map(Mapper::mapJuegoEntidadADto).toList();
 
         }
 
         if (orden.equals(OrdenBusquedaJuegoEnum.FECHA)) {
-            List<JuegoDto> juegosFiltrados = juegoRepo.obtenerTodos().
-                    stream().map(Mapper::mapJuegoEntidadADto).toList();
-            juegosFiltrados.sort(Comparator.comparing(JuegoDto::getFechaPublicacion));
 
-            return juegosFiltrados;
+            juegosFiltrados.
+                    stream().sorted(Comparator.comparing(JuegoEntidad::getFechaPublicacion));
+
+
+            return juegosFiltrados.stream().map(Mapper::mapJuegoEntidadADto).toList();
+
+
 
         }
 
-        juegosOriginales = juegoRepo.obtenerTodos();
-        return juegosOriginales.stream().map(Mapper::mapJuegoEntidadADto).toList();
+
+        return juegosFiltrados.stream().map(Mapper::mapJuegoEntidadADto).toList();
 
     }
 
@@ -257,8 +261,6 @@ public class JuegoControlador implements IJuegoControlador {
         } catch (IllegalStateException e) {
             System.err.println("Juego ya creado");
         }
-
-
 
 
     }
