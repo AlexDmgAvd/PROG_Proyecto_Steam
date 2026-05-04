@@ -37,6 +37,10 @@ public class ResenhaDto {
         return id;
     }
 
+    public EstadoResenhaEnum getEstado() {
+        return estado;
+    }
+
     public void setId(long id) {
         this.id = id;
     }

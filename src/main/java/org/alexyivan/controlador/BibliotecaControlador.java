@@ -9,14 +9,8 @@ import org.alexyivan.modelo.dto.UsuarioDto;
 import org.alexyivan.modelo.entidad.BibliotecaEntidad;
 import org.alexyivan.modelo.entidad.JuegoEntidad;
 import org.alexyivan.modelo.entidad.UsuarioEntidad;
-import org.alexyivan.modelo.enums.EstadoCuentaEmun;
-import org.alexyivan.modelo.enums.EstadoInstalacionEnum;
-import org.alexyivan.modelo.enums.OrdenBusquedaBibliotecaEnum;
-import org.alexyivan.modelo.enums.OrdenResenhasEnum;
-import org.alexyivan.modelo.form.BibliotecaForm;
-import org.alexyivan.modelo.form.ErrorDto;
-import org.alexyivan.modelo.form.ErrorType;
-import org.alexyivan.modelo.form.UsuarioForm;
+import org.alexyivan.modelo.enums.*;
+import org.alexyivan.modelo.form.*;
 import org.alexyivan.repositorio.inmemory.BibliotecaRepoInMemory;
 import org.alexyivan.repositorio.inmemory.CompraRepoInMemory;
 import org.alexyivan.repositorio.inmemory.JuegoRepoInMemory;
@@ -34,6 +28,7 @@ import java.util.Optional;
 
 public class BibliotecaControlador implements IBibliotecaControlador {
 
+    public static final int DESCUENTO = 100;
     private final IBibliotecaRepo bibliotecaRepo;
     private final IUsuarioRepo usuarioRepo;
     private final IJuegoRepo juegoRepo;
@@ -62,91 +57,86 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             throw new ValidacionException(errores);
         }
 
-        List<BibliotecaEntidad> bibliotecaUsuario;
 
-        bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == id).toList();
+        var bibliotecaUsuario = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == id);
 
         if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.ALFABETICO)) {
-            List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
-                    stream().map(b -> {
-                        Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
-                        Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
 
-                        Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
-                        Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
+            return bibliotecaUsuario.sorted(Comparator.comparing(b -> {
+                var j = b.getIdJuego();
+                Optional<JuegoEntidad> juego = juegoRepo.obtenerPorId(j);
 
-                        return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
+                return juego.get().getTitulo();
+            })).map(b -> {
 
-                    }).toList();
+                Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
+                Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
 
-            bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getJuego().getTitulo()));
+                Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
+                Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
+                return Mapper.mapBibliotecaEntidadADto(b, usuarioDto.orElse(null), juegoDto.orElse(null));
+            }).toList();
 
-            return bibliotecaFiltrada;
+
         }
 
         if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.ULTIMA_SESION)) {
-            List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
-                    stream().map(b -> {
+
+            return bibliotecaUsuario.sorted(Comparator.comparing(b -> b.getUltimaFechaDeJuego()))
+                    .map(b -> {
+
                         Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
                         Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
 
                         Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
                         Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
-
-                        return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
-
+                        return Mapper.mapBibliotecaEntidadADto(b, usuarioDto.orElse(null), juegoDto.orElse(null));
                     }).toList();
 
-            bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getUltimaFechaDeJuego()));
 
-            return bibliotecaFiltrada;
         }
 
         if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.TIEMPO_JUEGO)) {
-            List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
-                    stream().map(b -> {
+
+            return bibliotecaUsuario.sorted(Comparator.comparing(b -> b.getHorasJugadasTotal()))
+                    .map(b -> {
+
                         Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
                         Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
 
                         Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
                         Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
-
-                        return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
-
+                        return Mapper.mapBibliotecaEntidadADto(b, usuarioDto.orElse(null), juegoDto.orElse(null));
                     }).toList();
 
-            bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getHorasJugadasTotal()));
-
-            return bibliotecaFiltrada;
         }
+
+
         if (busquedaBiblioteca.equals(OrdenBusquedaBibliotecaEnum.FECHA_ADQUISICION)) {
-            List<BibliotecaDto> bibliotecaFiltrada = bibliotecaRepo.obtenerTodos().
-                    stream().map(b -> {
+
+            return bibliotecaUsuario.sorted(Comparator.comparing(b -> b.getFechaAdquisicion()))
+                    .map(b -> {
+
                         Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
                         Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
 
                         Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
                         Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
-
-                        return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
-
+                        return Mapper.mapBibliotecaEntidadADto(b, usuarioDto.orElse(null), juegoDto.orElse(null));
                     }).toList();
 
-            bibliotecaFiltrada.sort(Comparator.comparing(b -> b.getFechaAdquisicion()));
 
-            return bibliotecaFiltrada;
         }
 
 
-        return bibliotecaUsuario.stream().map(b -> {
+        return bibliotecaUsuario.map(b -> {
+
             Optional<JuegoEntidad> j = juegoRepo.obtenerPorId(b.getIdJuego());
             Optional<UsuarioEntidad> u = usuarioRepo.obtenerPorId(b.getIdUsuario());
 
             Optional<JuegoDto> juegoDto = j.map(Mapper::mapJuegoEntidadADto);
             Optional<UsuarioDto> usuarioDto = u.map(Mapper::mapUsuarioEntidadADto);
-
-            return Mapper.mapBibliotecaEntidadADto(b,usuarioDto.orElse(null),juegoDto.orElse(null));
-
+            return Mapper.mapBibliotecaEntidadADto(b, usuarioDto.orElse(null), juegoDto.orElse(null));
         }).toList();
 
 
@@ -187,7 +177,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
 
-        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(b.orElse(null),usuarioDto,juegoDto));
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(b.orElse(null), usuarioDto, juegoDto));
 
 
     }
@@ -230,7 +220,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
         var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaBuscada.orElse(null),usuarioDto,juegoDto));
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaBuscada.orElse(null), usuarioDto, juegoDto));
 
 
     }
@@ -270,7 +260,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
         var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaActualizada.orElse(null),usuarioDto,juegoDto));
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(bibliotecaActualizada.orElse(null), usuarioDto, juegoDto));
 
     }
 
@@ -299,7 +289,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
         var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(biblioteca.orElse(null),usuarioDto,juegoDto));
+        return Optional.ofNullable(Mapper.mapBibliotecaEntidadADto(biblioteca.orElse(null), usuarioDto, juegoDto));
 
     }
 
@@ -347,9 +337,10 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         Optional<BibliotecaEntidad> juegoMasJugado = bibliotecaUsuario.stream()
                 .max(Comparator.comparingDouble(BibliotecaEntidad::getHorasJugadasTotal));  //todo
 
+
         // Valor total de la biblioteca
         float valorTotalBiblioteca = comprasUsuario
-                .map(c -> c.getPrecioSinDescuento() - c.getPrecioSinDescuento() * (c.getDescuentoAplicado() / 100))
+                .map(c -> c.getPrecioSinDescuento() - c.getPrecioSinDescuento() * (c.getDescuentoAplicado() / DESCUENTO))
                 .reduce(0f, (a, b) -> a + b);
 
         // juegos nunca jugados
@@ -363,12 +354,13 @@ public class BibliotecaControlador implements IBibliotecaControlador {
                 bibliotecaForm.getJuegoId(),
                 null,
                 bibliotecaForm.getUsuarioId(),
-                null,
+                Mapper.mapUsuarioEntidadADto(usuarioRepo.obtenerPorId(usuario.get().getId()).orElse(null)),
                 totalJuegos,
                 totalHoras,
                 juegosInstaladosTotales,
                 juegoMasJugado.get().getIdJuego(),
-                null,
+                Optional.ofNullable(Mapper.mapJuegoEntidadADto
+                        (juegoRepo.obtenerPorId(juegoMasJugado.get().getIdJuego()).orElse(null))),
                 valorTotalBiblioteca,
                 juegosNuncaJugados);
 
@@ -377,23 +369,30 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     }
 
 
-//    public static void main(String[] args) {
-//        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
-//        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
-//        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
-//        ICompraRepo iCompraRepo = new CompraRepoInMemory();
-//
-//
-//        BibliotecaControlador biblioteca = new BibliotecaControlador(iBibliotecaRepo, iUsuarioRepo, iJuegoRepo, iCompraRepo);
-//
-//        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
-//                "Spain", LocalDate.of(1998,03,05),LocalDate.of(2026,04,21),
-//                "Avatar",50.0f, EstadoCuentaEmun.ACTIVA));
-//
-//        biblioteca.verBibliotecaPersonal(1, OrdenBusquedaBibliotecaEnum.ALFABETICO);
-//
-//
-//    }
+    public static void main(String[] args) {
+        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
+        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
+        ICompraRepo iCompraRepo = new CompraRepoInMemory();
+
+
+        BibliotecaControlador biblioteca = new BibliotecaControlador(iBibliotecaRepo, iUsuarioRepo, iJuegoRepo, iCompraRepo);
+
+        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+                "Spain", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+
+        iJuegoRepo.crear(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
+                "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
+                "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
+                LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
+                "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
+
+
+        biblioteca.verBibliotecaPersonal(1, OrdenBusquedaBibliotecaEnum.ALFABETICO);
+
+
+    }
 
 
 }

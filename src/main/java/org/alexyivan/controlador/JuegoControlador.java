@@ -66,9 +66,8 @@ public class JuegoControlador implements IJuegoControlador {
             throw new ValidacionException(errores);
         }
 
-        List<JuegoEntidad> juegosFiltrados;
-        juegosFiltrados = juegoRepo.obtenerTodos();
-        var jf = juegosFiltrados.stream();
+
+        var jf = juegoRepo.obtenerTodos().stream();
 
 
         if (!busquedaJuegos.getTitulo().isEmpty() || busquedaJuegos.getTitulo() == null) {
@@ -98,42 +97,34 @@ public class JuegoControlador implements IJuegoControlador {
     @Override
     public List<JuegoDto> listarTodosJuegos(OrdenBusquedaJuegoEnum orden) throws ValidacionException {
 
-        List<JuegoEntidad> juegosFiltrados = juegoRepo.obtenerTodos();
+        var jf = juegoRepo.obtenerTodos().stream();
 
 
         if (orden.equals(OrdenBusquedaJuegoEnum.ALFABETICO)) {
-            juegosFiltrados.
-                    stream().sorted(Comparator.comparing(JuegoEntidad::getTitulo));
+            return jf.sorted(Comparator.comparing(JuegoEntidad::getTitulo))
+                    .map(Mapper::mapJuegoEntidadADto).toList();
 
 
-            return juegosFiltrados.stream().map(Mapper::mapJuegoEntidadADto).toList();
         }
 
 
         if (orden.equals(OrdenBusquedaJuegoEnum.PRECIO)) {
 
-            juegosFiltrados.
-                    stream().sorted(Comparator.comparing(JuegoEntidad::getPrecioBase));
-
-
-            return juegosFiltrados.stream().map(Mapper::mapJuegoEntidadADto).toList();
+            return jf.sorted(Comparator.comparing(JuegoEntidad::getPrecioBase))
+                    .map(Mapper::mapJuegoEntidadADto).toList();
 
         }
 
         if (orden.equals(OrdenBusquedaJuegoEnum.FECHA)) {
 
-            juegosFiltrados.
-                    stream().sorted(Comparator.comparing(JuegoEntidad::getFechaPublicacion));
 
-
-            return juegosFiltrados.stream().map(Mapper::mapJuegoEntidadADto).toList();
-
-
+            return jf.sorted(Comparator.comparing(JuegoEntidad::getFechaPublicacion))
+                    .map(Mapper::mapJuegoEntidadADto).toList();
 
         }
 
 
-        return juegosFiltrados.stream().map(Mapper::mapJuegoEntidadADto).toList();
+        return jf.map(Mapper::mapJuegoEntidadADto).toList();
 
     }
 

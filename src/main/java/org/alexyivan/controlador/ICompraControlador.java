@@ -6,6 +6,7 @@ import org.alexyivan.modelo.enums.OpcionesReembolsoEnum;
 import org.alexyivan.modelo.form.BusquedaCompraForm;
 import org.alexyivan.modelo.form.CompraForm;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +24,9 @@ public interface ICompraControlador {
     Optional<CompraDto> consultarDetallesCompra(long idCompra, CompraForm formularioCompra) throws ValidacionException;
 
 
-    boolean solicitarReembolso(long idCompra, OpcionesReembolsoEnum opcionesReembolso) throws ValidacionException;
+    Optional<CompraDto> solicitarReembolso(long idCompra, OpcionesReembolsoEnum opcionesReembolso) throws ValidacionException;
 
 
-    String generarFactura (long idCompra) throws ValidacionException;
+    String generarFactura (long idCompra) throws ValidacionException, IOException;
 
 }

@@ -9,5 +9,8 @@
         <module name="PROG_PROYECTO_STEAM" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="resources" target="25" />
+    </bytecodeTargetLevel>
   </component>
 </project>

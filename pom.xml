@@ -8,6 +8,7 @@
     <artifactId>PROG_PROYECTO_STEAM</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
@@ -23,3 +24,4 @@
     </dependencies>
 
 </project>
+

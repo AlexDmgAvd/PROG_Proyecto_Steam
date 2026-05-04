@@ -16,13 +16,22 @@ import org.alexyivan.modelo.dto.CompraDto;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.*;
 import java.util.stream.Stream;
 
 public class CompraControlador implements ICompraControlador {
 
+    public static final int DIAS_MAXIMOS = 30;
+    public static final float MAX_HORAS_JUGADAS = 2.0f;
+    public static final int DESCUENTO = 100;
+    private static long idCounterFactura = 1;
+    private static String separador = "_";
     private final ICompraRepo compraRepo;
     private final IUsuarioRepo usuarioRepo;
     private final IBibliotecaRepo bibliotecaRepo;
@@ -99,7 +108,7 @@ public class CompraControlador implements ICompraControlador {
         if (formularioCompra.getEstado() == EstadoCompraEnum.COMPLETADO) {
             errores.add(new ErrorDto("completado", ErrorType.COMPRA_COMPLETADA));
         }
-        if (formularioCompra.getEstado() == EstadoCompraEnum.REEMBOLSADO) {
+        if (formularioCompra.getEstado() == EstadoCompraEnum.REEMBOLSADA) {
             errores.add(new ErrorDto("reembolsado", ErrorType.COMPRA_REEMBOLSADA));
         }
 
@@ -170,32 +179,126 @@ public class CompraControlador implements ICompraControlador {
     }
 
     @Override
-    public boolean solicitarReembolso(long idCompra, OpcionesReembolsoEnum opcionesReembolso) throws ValidacionException {
+    public Optional<CompraDto> solicitarReembolso(long idCompra, OpcionesReembolsoEnum opcionesReembolso) throws ValidacionException {
         //Todo
         List<ErrorDto> errores = new ArrayList<>();
         var compra = compraRepo.obtenerPorId(idCompra);
+        var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario());
+        var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego());
+        var bibloteca = bibliotecaRepo.buscarJuegoUsuario(usuario.get().getId(), juego.get().getId());
 
-        if (compra.isEmpty()){
+
+        LocalDate fechaActual = LocalDate.now();
+        LocalDate fechaCompra = compra.get().getFechaCompra().toLocalDate();
+
+
+        if (compra.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.COMPRA_NO_EXISTENTE));
         }
-        if (compra.get().getEstado() != EstadoCompraEnum.COMPLETADO){
+        if (compra.get().getEstado() != EstadoCompraEnum.COMPLETADO) {
             errores.add(new ErrorDto("estado", ErrorType.COMPRA_NO_COMPLETADA));
         }
+        if (fechaActual.isAfter(fechaCompra.plusDays(DIAS_MAXIMOS))) {
+            errores.add(new ErrorDto("plazo", ErrorType.PLAZO_EXPIRADO));
+        }
 
+        if (usuario.get().getId() != compra.get().getIdUsuario()) {
+            errores.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
+        }
 
+        if (juego.get().getId() != compra.get().getIdJuego()) {
+            errores.add(new ErrorDto("id", ErrorType.JUEGO_NO_COINCIDENTE));
+        }
+        if (bibloteca.get().getIdUsuario() != compra.get().getIdUsuario()) {
+            errores.add(new ErrorDto("id", ErrorType.BIBLIOTECA_NO_COINCIDENTE));
+        }
+        if (bibloteca.get().getHorasJugadasTotal() > MAX_HORAS_JUGADAS) {
+            errores.add(new ErrorDto("compra", ErrorType.COMPRA_NO_REEMBOLSABLE));
+        }
+        if (opcionesReembolso == null) {
+            errores.add(new ErrorDto("opciones", ErrorType.OPCIONES_VACIAS));
+        }
 
+        usuarioRepo.actualizar(usuario.get().getId(), new UsuarioForm(usuario.get().getNombreUsuario(), usuario.get().getEmail(),
+                usuario.get().getContrasenha(), usuario.get().getNombreReal(), usuario.get().getPais(), usuario.get().getCumpleanhos(),
+                usuario.get().getFechaRegistro(), usuario.get().getAvatar(),
+                (usuario.get().getCreditoSteam()) + (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
+                        (compra.get().getDescuentoAplicado() / DESCUENTO)), usuario.get().getEstado()));
 
+        bibliotecaRepo.eliminar(bibloteca.get().getId());
 
-        return false;
+        var compraActualizada = compraRepo.actualizar(compra.get().getId(), new CompraForm(compra.get().getIdUsuario(), compra.get().getIdJuego(),
+                compra.get().getFechaCompra(), compra.get().getMetodoDePago(), compra.get().getPrecioSinDescuento(),
+                compra.get().getDescuentoAplicado(), (double) (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
+                ((double) compra.get().getDescuentoAplicado() / DESCUENTO)), EstadoCompraEnum.REEMBOLSADA));
+
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+
+        return Optional.ofNullable(Mapper.mapCompraEntidadADto(compraActualizada.orElse(null), usuarioDto, juegoDto));
     }
 
     @Override
-    public String generarFactura(long idCompra) throws ValidacionException {
+    public String generarFactura(long idCompra) throws ValidacionException, IOException {
         //Todo
+
+        List<ErrorDto> errores = new ArrayList<>();
+        var compra = compraRepo.obtenerPorId(idCompra);
+        var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario());
+        var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego());
+
+        if (compra.isEmpty()) {
+            errores.add(new ErrorDto("id", ErrorType.COMPRA_NO_EXISTENTE));
+        }
+
+        if (compra.get().getEstado() != EstadoCompraEnum.COMPLETADO) {
+            errores.add(new ErrorDto("estado", ErrorType.COMPRA_NO_COMPLETADA));
+        }
+
+        if (usuario.get().getId() != compra.get().getIdUsuario()) {
+            errores.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
+        }
+
+        if (juego.get().getId() != compra.get().getIdJuego()) {
+            errores.add(new ErrorDto("id", ErrorType.JUEGO_NO_COINCIDENTE));
+        }
+
+        String nombreFactura = "factura" + separador + usuario.get().getNombreUsuario() + separador
+                + idCounterFactura + separador + LocalDate.now() + ".txt";
+
+        var path = Path.of("resources/", nombreFactura);
+        Files.write(path, List.of(
+                "=================================================",
+                "==========            Steam©          ===========",
+                "==========    Factura simplificada    ===========",
+                "=================================================",
+                "",
+                "Id de la compra: " + compra.get().getId(),
+                "Fecha de la compra: " + compra.get().getFechaCompra(),
+
+                "Nombre de usuario: " + usuario.get().getNombreUsuario(),
+                "Correo electrónico: " + usuario.get().getEmail(),
+
+                "Título del videojuego : " + juego.get().getTitulo(),
+                "Precio: " + compra.get().getPrecioSinDescuento(),
+                "Descuento: " + compra.get().getDescuentoAplicado(),
+                "Total: " + (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
+                        (compra.get().getDescuentoAplicado() / DESCUENTO)),
+                "Método de pago: " + compra.get().getMetodoDePago().toString(),
+                "",
+                "=================================================",
+                "==========            Steam©          ===========",
+                "==========             " + LocalDate.now().getYear() + "           ===========",
+                "================================================="
+
+
+        ));
+
+        idCounterFactura++;
         return "";
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
         IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
         IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
@@ -210,29 +313,26 @@ public class CompraControlador implements ICompraControlador {
                 "a los personajes del universo marvel", "NetEast", LocalDate.of(2025, 01, 01),
                 5.0f, 0, "Heroe Shooter", PegiEnum.PEGI_12, "Español, Inglés", EstadoJuegoEnum.DISPONIBLE));
 
-        compraControlador.realizarCompra(new CompraForm(iUsuarioRepo.obtenerPorNombreUsuario("kaisquest").get().getId(), iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getId(),
-                LocalDateTime.now(), MetodoPagoEnum.CARTERA_STEAM, iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase(),
+        var formularioCompra = new CompraForm(iUsuarioRepo.obtenerPorNombreUsuario("kaisquest").get().getId(),
+                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getId(),
+                LocalDateTime.of(2026, 4, 20, 20, 50), MetodoPagoEnum.CARTERA_STEAM, iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase(),
                 iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual(),
                 Double.valueOf(iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()) - ((iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()
-                        * (iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual() * 100))), EstadoCompraEnum.COMPLETADO));
+                        * (iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual() * 100))), EstadoCompraEnum.COMPLETADO);
+        compraControlador.realizarCompra(formularioCompra);
+
+
+        var compra = compraControlador.consultarDetallesCompra(1, formularioCompra);
+        System.out.println(compra.get().getEstado().toString());
+
+        try {
+            compraControlador.generarFactura(1L);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
 
-//    private int calcularPlazo(CompraEntidad compra){
-//       var diaActual =  LocalDateTime.now();
-//
-//       int anho = diaActual.getDayOfYear() - compra.getFechaCompra().getYear();
-//
-//
-//
-//
-//
-//    }
 
-    static void main() {
-
-
-
-    }
 }
