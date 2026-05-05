@@ -352,7 +352,7 @@ public class BibliotecaControlador implements IBibliotecaControlador {
         var estadisticas = new EstadisticasBibliotecaDto(
                 estadisticasId++,
                 bibliotecaForm.getJuegoId(),
-                null,
+                null, //Todo preguntar por este atributo
                 bibliotecaForm.getUsuarioId(),
                 Mapper.mapUsuarioEntidadADto(usuarioRepo.obtenerPorId(usuario.get().getId()).orElse(null)),
                 totalJuegos,

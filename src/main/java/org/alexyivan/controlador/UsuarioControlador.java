@@ -156,7 +156,7 @@ public class UsuarioControlador implements IUsuarioControlador {
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
     }
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
         UsuarioControlador controlador = new UsuarioControlador(iUsuarioRepo);
 
@@ -193,11 +193,10 @@ public class UsuarioControlador implements IUsuarioControlador {
         System.out.println(usuarioNombre.get().getEstadoCuenta().toString());
 
         try {
-            usuarioSaldo = controlador.anhadirSaldo(1L,3f);
+            usuarioSaldo = controlador.anhadirSaldo(1L, 3f);
         } catch (ValidacionException e) {
             System.err.println("Saldo a introducir demasiado bajo");
         }
-
 
 
     }

@@ -15,7 +15,7 @@ public interface ICompraControlador {
     Optional<CompraDto> realizarCompra(CompraForm formularioCompra) throws ValidacionException;
 
 
-    Optional<CompraDto> procesarPago(CompraForm formularioCompra, long id) throws ValidacionException;
+    Optional<CompraDto> procesarPago(long id) throws ValidacionException;
 
 
     List<CompraDto> consultarHistorialCompras(CompraForm formularioCompra, BusquedaCompraForm opcionesBusqueda, long id) throws ValidacionException;
