@@ -89,6 +89,10 @@ public class ResenhaControlador implements IResenhaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
         if (resenha.get().getIdUsuario() == formularioResenha.getIdUsuario()) {
             errores.add(new ErrorDto("id", ErrorType.RESENHA_NO_PERTENECE));
         }
@@ -180,6 +184,10 @@ public class ResenhaControlador implements IResenhaControlador {
 
         if (resenha.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+        }
+
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
         }
 
         if (resenha.get().getIdUsuario() == formularioResenha.getIdUsuario()) {

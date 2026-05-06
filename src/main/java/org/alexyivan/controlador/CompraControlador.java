@@ -58,13 +58,18 @@ public class CompraControlador implements ICompraControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
+        if (juego.isEmpty()) {
+            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+        }
+
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
         if (usuario.get().getEstado() != EstadoCuentaEmun.ACTIVA) {
             errores.add(new ErrorDto("cuenta", ErrorType.USUARIO_SIN_PERMISO));
         }
 
-        if (juego.isEmpty()) {
-            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
-        }
 
         if (juego.get().getEstado() == EstadoJuegoEnum.NO_DISPONIBLE) {
             errores.add(new ErrorDto("estado", ErrorType.JUEGO_NO_COMPRABLE));
@@ -114,7 +119,6 @@ public class CompraControlador implements ICompraControlador {
         }
 
 
-
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
@@ -127,7 +131,7 @@ public class CompraControlador implements ICompraControlador {
         bibliotecaRepo.crear(new BibliotecaForm(usuario.get().getId(), juego.get().getId(), compra.get().getFechaCompra().toLocalDate(),
                 HORAS_COMPRA, null, EstadoInstalacionEnum.NO_INSTALADO));
 
-       var compraActualizada = compraRepo.actualizar(compra.get().getId(), new CompraForm(compra.get().getIdUsuario(), compra.get().getIdJuego(),
+        var compraActualizada = compraRepo.actualizar(compra.get().getId(), new CompraForm(compra.get().getIdUsuario(), compra.get().getIdJuego(),
                 compra.get().getFechaCompra(), compra.get().getMetodoDePago(), compra.get().getPrecioSinDescuento(), compra.get().getDescuentoAplicado(),
                 (double) (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
                         ((float) compra.get().getDescuentoAplicado() / DESCUENTO)), EstadoCompraEnum.COMPLETADO
@@ -203,6 +207,21 @@ public class CompraControlador implements ICompraControlador {
         if (compra.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.COMPRA_NO_EXISTENTE));
         }
+        if (usuario.isEmpty()) {
+            errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+        }
+        if (juego.isEmpty()) {
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+        }
+        if (bibloteca.isEmpty()) {
+            errores.add(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO));
+        }
+
+
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
         if (compra.get().getEstado() != EstadoCompraEnum.COMPLETADO) {
             errores.add(new ErrorDto("estado", ErrorType.COMPRA_NO_COMPLETADA));
         }
@@ -225,6 +244,10 @@ public class CompraControlador implements ICompraControlador {
         }
         if (opcionesReembolso == null) {
             errores.add(new ErrorDto("opciones", ErrorType.OPCIONES_VACIAS));
+        }
+
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
         }
 
         usuarioRepo.actualizar(usuario.get().getId(), new UsuarioForm(usuario.get().getNombreUsuario(), usuario.get().getEmail(),
@@ -259,6 +282,10 @@ public class CompraControlador implements ICompraControlador {
             errores.add(new ErrorDto("id", ErrorType.COMPRA_NO_EXISTENTE));
         }
 
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
         if (compra.get().getEstado() != EstadoCompraEnum.COMPLETADO) {
             errores.add(new ErrorDto("estado", ErrorType.COMPRA_NO_COMPLETADA));
         }
@@ -269,6 +296,10 @@ public class CompraControlador implements ICompraControlador {
 
         if (juego.get().getId() != compra.get().getIdJuego()) {
             errores.add(new ErrorDto("id", ErrorType.JUEGO_NO_COINCIDENTE));
+        }
+
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
         }
 
         String nombreFactura = "factura" + separador + usuario.get().getNombreUsuario() + separador
@@ -330,7 +361,6 @@ public class CompraControlador implements ICompraControlador {
                 Double.valueOf(iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()) - ((iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()
                         * (iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual() * 100))), null);
         compraControlador.realizarCompra(formularioCompra);
-
 
 
         var compra = compraControlador.consultarDetallesCompra(1, formularioCompra);

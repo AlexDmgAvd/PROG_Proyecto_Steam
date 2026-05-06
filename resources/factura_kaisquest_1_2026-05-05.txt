@@ -1,0 +1,19 @@
+=================================================
+==========            Steam©          ===========
+==========    Factura simplificada    ===========
+=================================================
+
+Id de la compra: 1
+Fecha de la compra: 2026-04-20T20:50
+Nombre de usuario: kaisquest
+Correo electrónico: email@email.com
+Título del videojuego : Marvel Rivals
+Precio: 5.0
+Descuento: 0
+Total: 5.0
+Método de pago: CARTERA_STEAM
+
+=================================================
+==========            Steam©          ===========
+==========             2026           ===========
+=================================================

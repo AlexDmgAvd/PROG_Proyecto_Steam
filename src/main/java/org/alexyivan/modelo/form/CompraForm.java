@@ -104,7 +104,7 @@ public class CompraForm {
             errores.add(new ErrorDto("precioSinDescuento", ErrorType.REQUERIDO));
         }
 
-        if (precioSinDescuento <= 0) {
+        if (precioSinDescuento < 0) {
             errores.add(new ErrorDto("precioSinDescuento", ErrorType.VALOR_DEMASIADO_BAJO));
         }
         // Validar máximo 2 decimales
