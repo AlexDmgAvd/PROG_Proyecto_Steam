@@ -231,7 +231,8 @@ public class BibliotecaControlador implements IBibliotecaControlador {
 
         var usuario = usuarioRepo.obtenerPorId(bibliotecaForm.getUsuarioId());
         var juego = juegoRepo.obtenerPorId(bibliotecaForm.getJuegoId());
-
+        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == usuario.get().getId()
+                && b.getIdJuego() == juego.get().getId()).findFirst();
 
         if (usuario.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
@@ -245,13 +246,15 @@ public class BibliotecaControlador implements IBibliotecaControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
+        if (biblioteca.isEmpty()) {
+
+            errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+
+        }
+
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
-
-        var biblioteca = bibliotecaRepo.obtenerTodos().stream().filter(b -> b.getIdUsuario() == usuario.get().getId()
-                && b.getIdJuego() == juego.get().getId()).findFirst();
-
 
         var bibliotecaActualizada = bibliotecaRepo.actualizar(biblioteca.get().getId(), new BibliotecaForm(biblioteca.get().getIdUsuario(), biblioteca.get().getIdJuego(),
                 biblioteca.get().getFechaAdquisicion(), (biblioteca.get().getHorasJugadasTotal() + horas), biblioteca.get().getUltimaFechaDeJuego(),

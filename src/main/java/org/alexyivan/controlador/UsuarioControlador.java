@@ -120,6 +120,10 @@ public class UsuarioControlador implements IUsuarioControlador {
             errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
         }
 
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
         if (usuario.get().getEstado() != EstadoCuentaEmun.ACTIVA) {
             errores.add(new ErrorDto("cuenta", ErrorType.ESTADO_CUENTA));
         }
