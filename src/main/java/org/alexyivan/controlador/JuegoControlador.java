@@ -13,6 +13,8 @@ import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.modelo.form.JuegoForm;
 import org.alexyivan.repositorio.inmemory.JuegoRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
+import org.alexyivan.transaction.ITransactionManager;
+import org.alexyivan.transaction.NoOpTransactionManager;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -20,13 +22,13 @@ import java.util.*;
 public class JuegoControlador implements IJuegoControlador {
 
     private final IJuegoRepo juegoRepo;
-    //private ItransactionManager tm;
+    private ITransactionManager tm;
     private static final int DESCUENTO_MIN = 0;
     private static final int DESCUENTO_MAX = 100;
 
-    public JuegoControlador(IJuegoRepo juegoRepo) {
+    public JuegoControlador(IJuegoRepo juegoRepo, ITransactionManager tm) {
         this.juegoRepo = juegoRepo;
-        //this.tm = tm;
+        this.tm = tm;
     }
 
     @Override
@@ -35,23 +37,30 @@ public class JuegoControlador implements IJuegoControlador {
         //Validaciones
         var errores = formulario.validar();
 
-        var juego = juegoRepo.obtenerTitulo(formulario.getTitulo());
-
-        if (juego.isPresent()) {
-
-            errores.add(new ErrorDto("existe", ErrorType.JUEGO_EXISTENTE));
-            throw new IllegalStateException();
-        }
 
 
-        //Si la lista de errores no está vacía manda los errores
+        var juegoCreado = tm.inTransaction(() -> {
+
+            var juego = juegoRepo.obtenerTitulo(formulario.getTitulo());
+
+            if (juego.isPresent()) {
+
+                errores.add(new ErrorDto("existe", ErrorType.JUEGO_EXISTENTE));
+                throw new IllegalStateException();
+            }
+
+            //Si la lista de errores no está vacía manda los errores
+            if (!errores.isEmpty()) {
+                throw new ValidacionException(errores);
+            }
+
+            return juegoRepo.crear(formulario);
+        });
+
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
 
-        var juegoCreado = juegoRepo.crear(new JuegoForm(formulario.getTitulo(), formulario.getDescripcion(), formulario.getDesarrolladora(),
-                formulario.getFechaPublicacion(), formulario.getPrecioBase(), formulario.getDescuentoActual(), formulario.getGenero(),
-                formulario.getRangoEdad(), formulario.getIdiomasDisponibles(), formulario.getEstado()));
 
         return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoCreado.orElse(null)));
     }
@@ -207,8 +216,8 @@ public class JuegoControlador implements IJuegoControlador {
 
     static void main(String[] args) {
         IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
-
-        JuegoControlador controlador = new JuegoControlador(iJuegoRepo);
+        ITransactionManager tm = new NoOpTransactionManager();
+        JuegoControlador controlador = new JuegoControlador(iJuegoRepo, tm);
 
         var juegoCreado = controlador.anhadirJuegoCatalogo(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
                 "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
