@@ -39,8 +39,8 @@ public class CompraRepoHibernate implements ICompraRepo {
     public Optional<CompraEntidad> crear(CompraForm form) {
 
         var session = sesionManager.getSession();
-        var compra = new CompraEntidad(0, form.getUsuarioId(), form.getJuegoId(), form.getPrecioSinDescuento(),
-                form.getDescuento());
+        var compra = new CompraEntidad(0, form.getUsuarioId(), form.getJuegoId(), form.getMetodoPago(), form.getPrecioSinDescuento(),
+                form.getDescuento(), form.getEstado(), form.getFechaCompra());
         session.persist(compra);
 
         return Optional.of(compra);
@@ -76,8 +76,8 @@ public class CompraRepoHibernate implements ICompraRepo {
         if (compraOpt.isEmpty())
             return Optional.empty();
 
-        session.merge(new CompraEntidad(id, form.getUsuarioId(), form.getJuegoId(), form.getPrecioSinDescuento(),
-                form.getDescuento()));
+        session.merge(new CompraEntidad(id, form.getUsuarioId(), form.getJuegoId(), form.getMetodoPago(), form.getPrecioSinDescuento(),
+                form.getDescuento(), form.getEstado(), form.getFechaCompra()));
 
         return obtenerPorId(id);
     }

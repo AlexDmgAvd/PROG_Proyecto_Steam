@@ -14,6 +14,8 @@ import org.alexyivan.modelo.enums.*;
 import org.alexyivan.modelo.form.*;
 import org.alexyivan.repositorio.inmemory.*;
 import org.alexyivan.repositorio.interfaces.*;
+import org.alexyivan.transaction.ITransactionManager;
+import org.alexyivan.transaction.NoOpTransactionManager;
 
 import java.lang.classfile.attribute.SourceDebugExtensionAttribute;
 import java.time.LocalDate;
@@ -273,7 +275,9 @@ public class ResenhaControlador implements IResenhaControlador {
         IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
         ICompraRepo iCompraRepo = new CompraRepoInMemory();
 
-        JuegoControlador juegoControlador = new JuegoControlador(iJuegoRepo);
+
+        ITransactionManager tm = new NoOpTransactionManager();
+        JuegoControlador juegoControlador = new JuegoControlador(iJuegoRepo, tm);
         UsuarioControlador usuarioControlador = new UsuarioControlador(iUsuarioRepo);
         BibliotecaControlador bibliotecaControlador = new BibliotecaControlador(iBibliotecaRepo, iUsuarioRepo, iJuegoRepo, iCompraRepo);
         ResenhaControlador resenhaControlador = new ResenhaControlador(iResenhaRepo, iJuegoRepo, iUsuarioRepo, iBibliotecaRepo);

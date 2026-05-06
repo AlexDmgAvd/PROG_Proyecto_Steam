@@ -33,8 +33,10 @@ public class  UsuarioRepoHibernate implements IUsuarioRepo {
         return  session.createQuery(criteriaQuery).getResultStream().findFirst();
     }
 
+
+
     @Override
-    public Optional<UsuarioEntidad> obtenerPorNombre(String nombre) {
+    public Optional<UsuarioEntidad> obtenerPorNombreUsuario(String nombre) {
 
         var session = sesionManager.getSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();

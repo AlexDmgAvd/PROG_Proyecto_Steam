@@ -5,6 +5,7 @@ import org.alexyivan.modelo.enums.EstadoCompraEnum;
 import org.alexyivan.modelo.enums.MetodoPagoEnum;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Table(name = "compras")
 @Entity
