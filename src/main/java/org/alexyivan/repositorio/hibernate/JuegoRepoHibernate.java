@@ -36,7 +36,7 @@ public class JuegoRepoHibernate implements IJuegoRepo {
     public Optional<JuegoEntidad> crear(JuegoForm form) {
 
         var session = sesionManager.getSession();
-        var juego = new JuegoEntidad(-1, form.getTitulo(), form.getDescripcion(), form.getDesarrolladora(),
+        var juego = new JuegoEntidad(0, form.getTitulo(), form.getDescripcion(), form.getDesarrolladora(),
                 form.getFechaPublicacion(), form.getPrecioBase(), form.getDescuentoActual(), form.getGenero(),
                 form.getRangoEdad(), form.getIdiomasDisponibles(), form.getEstado());
         session.persist(juego);

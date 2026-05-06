@@ -40,7 +40,7 @@ public class BibliotecaRepoHibernate implements IBibliotecaRepo {
     public Optional<BibliotecaEntidad> crear(BibliotecaForm form) {
 
         var session = sesionManager.getSession();
-        var biblioteca = new BibliotecaEntidad(-1, form.getUsuarioId(), form.getJuegoId(),
+        var biblioteca = new BibliotecaEntidad(0, form.getUsuarioId(), form.getJuegoId(),
                 form.getTiempoJuegoTotal(), form.getUltimaFechaJuego(), form.getFechaAdquisicion(),
                 form.getEstadoInstalacion());
         session.persist(biblioteca);

@@ -50,7 +50,7 @@ public class  UsuarioRepoHibernate implements IUsuarioRepo {
     public Optional<UsuarioEntidad> crear(UsuarioForm form) {
 
         var session = sesionManager.getSession();
-        var usuario = new UsuarioEntidad(-1, form.getNombreUsuario(), form.getEmail(), form.getContrasena(),
+        var usuario = new UsuarioEntidad(0, form.getNombreUsuario(), form.getEmail(), form.getContrasena(),
                 form.getNombreReal(), form.getPais(), form.getFechaNacimiento(), form.getFechaRegistro(),
                 form.getAvatar(), form.getSaldo(), form.getEstado());
         session.persist(usuario);

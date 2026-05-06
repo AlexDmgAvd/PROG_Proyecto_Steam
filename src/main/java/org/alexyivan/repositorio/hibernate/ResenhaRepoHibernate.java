@@ -24,7 +24,7 @@ public class ResenhaRepoHibernate implements IResenhaRepo {
     public Optional<ResenhaEntidad> crear(ResenhaForm form) {
 
         var session = sesionManager.getSession();
-        var resenha = new ResenhaEntidad(-1, form.getIdUsuario(), form.getIdJuego(), form.isRecomendado(),
+        var resenha = new ResenhaEntidad(0, form.getIdUsuario(), form.getIdJuego(), form.isRecomendado(),
                 form.getTextoAnalisis(), form.getHorasJugadas(), form.getFechaPublicacion(),
                 form.getUltimaFechaEdicion(), form.getEstado());
         session.persist(resenha);
