@@ -163,48 +163,48 @@ public class UsuarioControlador implements IUsuarioControlador {
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
     }
 
-    public static void main(String[] args) {
-        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
-        UsuarioControlador controlador = new UsuarioControlador();
-
-
-        var usuario2 = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com", "1234ABcd!", "Iván",
-                "España", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
-                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
-
-        try {
-            var usuario = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
-                    "España", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
-                    "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
-        } catch (ValidacionException e) {
-            System.err.println("El usuario ya existe en el sistema");
-
-        }
-
-
-        var usuarioNombre = controlador.consultarUsuarioNombreUsuario("kaisquest");
-
-        System.out.println(usuarioNombre.get().getNombreUsuario());
-
-        var usuarioId = controlador.consultarUsuarioId(1l);
-
-        System.out.println(usuarioId.get().getNombreUsuario());
-
-        var usuarioSaldo = controlador.consultarSaldo(1L);
-        System.out.println(usuarioSaldo.get().getNombreUsuario() + " " + usuarioSaldo.get().getCreditoSteam());
-
-        //TODO - A la hora de añadir el saldo no se está actualizando, siempre sale el saldo antiguo
-        usuarioSaldo = controlador.anhadirSaldo(1L, 20.0f);
-
-        System.out.println(usuarioSaldo.get().getNombreUsuario() + " " + usuarioSaldo.get().getCreditoSteam());
-        System.out.println(usuarioNombre.get().getEstadoCuenta().toString());
-
-        try {
-            usuarioSaldo = controlador.anhadirSaldo(1L, 3f);
-        } catch (ValidacionException e) {
-            System.err.println("Saldo a introducir demasiado bajo");
-        }
-
-
-    }
+//    public static void main(String[] args) {
+//        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+//        UsuarioControlador controlador = new UsuarioControlador();
+//
+//
+//        var usuario2 = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com", "1234ABcd!", "Iván",
+//                "España", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+//                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+//
+//        try {
+//            var usuario = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+//                    "España", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+//                    "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+//        } catch (ValidacionException e) {
+//            System.err.println("El usuario ya existe en el sistema");
+//
+//        }
+//
+//
+//        var usuarioNombre = controlador.consultarUsuarioNombreUsuario("kaisquest");
+//
+//        System.out.println(usuarioNombre.get().getNombreUsuario());
+//
+//        var usuarioId = controlador.consultarUsuarioId(1l);
+//
+//        System.out.println(usuarioId.get().getNombreUsuario());
+//
+//        var usuarioSaldo = controlador.consultarSaldo(1L);
+//        System.out.println(usuarioSaldo.get().getNombreUsuario() + " " + usuarioSaldo.get().getCreditoSteam());
+//
+//        //TODO - A la hora de añadir el saldo no se está actualizando, siempre sale el saldo antiguo
+//        usuarioSaldo = controlador.anhadirSaldo(1L, 20.0f);
+//
+//        System.out.println(usuarioSaldo.get().getNombreUsuario() + " " + usuarioSaldo.get().getCreditoSteam());
+//        System.out.println(usuarioNombre.get().getEstadoCuenta().toString());
+//
+//        try {
+//            usuarioSaldo = controlador.anhadirSaldo(1L, 3f);
+//        } catch (ValidacionException e) {
+//            System.err.println("Saldo a introducir demasiado bajo");
+//        }
+//
+//
+//    }
 }

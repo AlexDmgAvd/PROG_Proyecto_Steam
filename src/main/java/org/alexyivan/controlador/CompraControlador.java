@@ -312,7 +312,7 @@ public class CompraControlador implements ICompraControlador {
         var root = Path.of("resources/facturas/");
         var path = Path.of(root.toString(), nombreFactura);
         if (!Files.exists(root)) {
-            Files.createDirectory(root);
+            Files.createDirectories(root);
         }
 
         Files.write(path, List.of(
@@ -333,6 +333,7 @@ public class CompraControlador implements ICompraControlador {
                 "Total: " + (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
                         (compra.get().getDescuentoAplicado() / DESCUENTO)),
                 "Método de pago: " + compra.get().getMetodoDePago().toString(),
+                "Fecha :" + LocalDateTime.now(),
                 "",
                 "=================================================",
                 "==========            Steam©          ===========",
@@ -346,43 +347,48 @@ public class CompraControlador implements ICompraControlador {
         return "";
     }
 
-//    public static void main(String[] args) {
-//        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
-//        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
-//        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
-//        ICompraRepo iCompraRepo = new CompraRepoInMemory();
-//
-//        CompraControlador compraControlador = new CompraControlador(iCompraRepo, iUsuarioRepo, iBibliotecaRepo, iJuegoRepo, ITransactionManager);
-//
-//        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
-//                "Spain", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
-//                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
-//        iJuegoRepo.crear(new JuegoForm("Marvel Rivals", "Heroe shooter en tercera persona en el que controlas" +
-//                "a los personajes del universo marvel", "NetEast", LocalDate.of(2025, 01, 01),
-//                5.0f, 0, "Heroe Shooter", PegiEnum.PEGI_12, "Español, Inglés", EstadoJuegoEnum.DISPONIBLE));
-//
-//        var formularioCompra = new CompraForm(iUsuarioRepo.obtenerPorNombreUsuario("kaisquest").get().getId(),
-//                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getId(),
-//                LocalDateTime.of(2026, 4, 20, 20, 50), MetodoPagoEnum.CARTERA_STEAM, iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase(),
-//                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual(),
-//                Double.valueOf(iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()) - ((iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()
-//                        * (iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual() * 100))), null);
-//        compraControlador.realizarCompra(formularioCompra);
-//
-//
-//        var compra = compraControlador.consultarDetallesCompra(1, formularioCompra);
-//        compraControlador.procesarPago(compra.get().getId());
-//        System.out.println(compra.get().getEstado().toString());
-//
-//
-//        try {
-//            compraControlador.generarFactura(1L);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//    }
+    public static void main(String[] args) {
+        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
+        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
+        ICompraRepo iCompraRepo = new CompraRepoInMemory();
+
+        CompraControlador compraControlador = new CompraControlador(iCompraRepo, iUsuarioRepo, iBibliotecaRepo, iJuegoRepo, null);
+
+        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+                "Spain", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+        iJuegoRepo.crear(new JuegoForm("Marvel Rivals", "Heroe shooter en tercera persona en el que controlas" +
+                "a los personajes del universo marvel", "NetEast", LocalDate.of(2025, 01, 01),
+                5.0f, 0, "Heroe Shooter", PegiEnum.PEGI_12, "Español, Inglés", EstadoJuegoEnum.DISPONIBLE));
+
+        var formularioCompra = new CompraForm(iUsuarioRepo.obtenerPorNombreUsuario("kaisquest").get().getId(),
+                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getId(),
+                LocalDateTime.of(2026, 4, 20, 20, 50), MetodoPagoEnum.CARTERA_STEAM, iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase(),
+                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual(),
+                Double.valueOf(iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()) - ((iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()
+                        * (iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual() * 100))), null);
+        compraControlador.realizarCompra(formularioCompra);
+
+
+        var compra = compraControlador.consultarDetallesCompra(1, formularioCompra);
+        compraControlador.procesarPago(compra.get().getId());
+        System.out.println(compra.get().getEstado().toString());
+
+
+        try {
+            compraControlador.generarFactura(1L);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            compraControlador.generarFactura(1L);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 
 }
