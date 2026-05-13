@@ -28,14 +28,14 @@ public class ResenhaControlador implements IResenhaControlador {
     private final IJuegoRepo juegoRepo;
     private final IUsuarioRepo usuarioRepo;
     private final IBibliotecaRepo bibliotecaRepo;
+    private ITransactionManager tm;
 
-
-    public ResenhaControlador(IResenhaRepo resenhaRepo, IJuegoRepo juegoRepo,
-                              IUsuarioRepo usuarioRepo, IBibliotecaRepo bibliotecaRepo) {
-        this.resenhaRepo = resenhaRepo;
-        this.juegoRepo = juegoRepo;
-        this.usuarioRepo = usuarioRepo;
+    public ResenhaControlador(ITransactionManager tm, IBibliotecaRepo bibliotecaRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, IResenhaRepo resenhaRepo) {
+        this.tm = tm;
         this.bibliotecaRepo = bibliotecaRepo;
+        this.usuarioRepo = usuarioRepo;
+        this.juegoRepo = juegoRepo;
+        this.resenhaRepo = resenhaRepo;
     }
 
     @Override

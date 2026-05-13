@@ -19,6 +19,7 @@ import org.alexyivan.repositorio.interfaces.IBibliotecaRepo;
 import org.alexyivan.repositorio.interfaces.ICompraRepo;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
+import org.alexyivan.transaction.ITransactionManager;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,12 +35,14 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     private final IJuegoRepo juegoRepo;
     private final ICompraRepo compraRepo;
     private int estadisticasId = 1;
+    private ITransactionManager tm;
 
-    public BibliotecaControlador(IBibliotecaRepo bibliotecaRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, ICompraRepo compraRepo) {
+    public BibliotecaControlador(IBibliotecaRepo bibliotecaRepo, IUsuarioRepo usuarioRepo, IJuegoRepo juegoRepo, ICompraRepo compraRepo, ITransactionManager tm) {
         this.bibliotecaRepo = bibliotecaRepo;
         this.usuarioRepo = usuarioRepo;
         this.juegoRepo = juegoRepo;
         this.compraRepo = compraRepo;
+        this.tm = tm;
     }
 
     @Override
@@ -372,30 +375,30 @@ public class BibliotecaControlador implements IBibliotecaControlador {
     }
 
 
-    public static void main(String[] args) {
-        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
-        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
-        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
-        ICompraRepo iCompraRepo = new CompraRepoInMemory();
-
-
-        BibliotecaControlador biblioteca = new BibliotecaControlador(iBibliotecaRepo, iUsuarioRepo, iJuegoRepo, iCompraRepo);
-
-        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
-                "Spain", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
-                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
-
-        iJuegoRepo.crear(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
-                "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
-                "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
-                LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
-                "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
-
-
-        biblioteca.verBibliotecaPersonal(1, OrdenBusquedaBibliotecaEnum.ALFABETICO);
-
-
-    }
+//    public static void main(String[] args) {
+//        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
+//        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+//        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
+//        ICompraRepo iCompraRepo = new CompraRepoInMemory();
+//
+//
+//        BibliotecaControlador biblioteca = new BibliotecaControlador(iBibliotecaRepo, iUsuarioRepo, iJuegoRepo, iCompraRepo);
+//
+//        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+//                "Spain", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+//                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+//
+//        iJuegoRepo.crear(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
+//                "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
+//                "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
+//                LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
+//                "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
+//
+//
+//        biblioteca.verBibliotecaPersonal(1, OrdenBusquedaBibliotecaEnum.ALFABETICO);
+//
+//
+//    }
 
 
 }
