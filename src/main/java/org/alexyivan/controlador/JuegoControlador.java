@@ -214,54 +214,54 @@ public class JuegoControlador implements IJuegoControlador {
         return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoActualizado.orElse(null)));
     }
 
-    static void main(String[] args) {
-        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
-        ITransactionManager tm = new NoOpTransactionManager();
-        JuegoControlador controlador = new JuegoControlador(iJuegoRepo, tm);
-
-        var juegoCreado = controlador.anhadirJuegoCatalogo(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
-                "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
-                "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
-                LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
-                "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
-
-        System.out.println(juegoCreado.get().getTitulo() + " " + juegoCreado.get().getDescuentoActual() + juegoCreado.get().getEstado());
-
-// TODO - Preguntar por esta línea Exception in thread "main" java.lang.IllegalStateException:
-//  stream has already been operated upon or closed
-        //var juegoEntontrados = controlador.buscarJuegos
-        //        (new BusquedaJuegosForm("Clair Obscure: Expedition 33", "", null, "", null));
+//    static void main(String[] args) {
+//        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
+//        ITransactionManager tm = new NoOpTransactionManager();
+//        JuegoControlador controlador = new JuegoControlador(iJuegoRepo, tm);
 //
-        //System.out.println(juegoEntontrados.getFirst().getTitulo());
+//        var juegoCreado = controlador.anhadirJuegoCatalogo(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
+//                "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
+//                "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
+//                LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
+//                "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
 //
-        //TODO - Salta un error relacionado con la inmutabilidad de las listas
-        //controlador.listarTodosJuegos(OrdenBusquedaJuegoEnum.PRECIO);
-
-        var juegoConsultado = controlador.consultarJuego(1l);
-
-        System.out.println(juegoConsultado.get().getTitulo());
-
-        var juegoNuevoDescuento = controlador.actualizarDescuento(1l, 15);
-
-        System.out.println(juegoNuevoDescuento.get().getTitulo() + " " + juegoNuevoDescuento.get().getDescuentoActual());
-
-        //TODO - Preguntar si me está mostrando el mismo descuento porque está almacenado en memoria
-        System.out.println(juegoCreado.get().getTitulo() + " " + juegoCreado.get().getDescuentoActual());
-
-        var juegoNuevoEstado = controlador.cambiarEstado(1l, EstadoJuegoEnum.NO_DISPONIBLE);
-
-        System.out.println(juegoNuevoEstado.get().getTitulo() + " " + juegoNuevoEstado.get().getEstado());
-
-        try {
-            controlador.anhadirJuegoCatalogo(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
-                    "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
-                    "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
-                    LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
-                    "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
-        } catch (IllegalStateException e) {
-            System.err.println("Juego ya creado");
-        }
-
-
-    }
+//        System.out.println(juegoCreado.get().getTitulo() + " " + juegoCreado.get().getDescuentoActual() + juegoCreado.get().getEstado());
+//
+//// TODO - Preguntar por esta línea Exception in thread "main" java.lang.IllegalStateException:
+////  stream has already been operated upon or closed
+//        //var juegoEntontrados = controlador.buscarJuegos
+//        //        (new BusquedaJuegosForm("Clair Obscure: Expedition 33", "", null, "", null));
+////
+//        //System.out.println(juegoEntontrados.getFirst().getTitulo());
+////
+//        //TODO - Salta un error relacionado con la inmutabilidad de las listas
+//        //controlador.listarTodosJuegos(OrdenBusquedaJuegoEnum.PRECIO);
+//
+//        var juegoConsultado = controlador.consultarJuego(1l);
+//
+//        System.out.println(juegoConsultado.get().getTitulo());
+//
+//        var juegoNuevoDescuento = controlador.actualizarDescuento(1l, 15);
+//
+//        System.out.println(juegoNuevoDescuento.get().getTitulo() + " " + juegoNuevoDescuento.get().getDescuentoActual());
+//
+//        //TODO - Preguntar si me está mostrando el mismo descuento porque está almacenado en memoria
+//        System.out.println(juegoCreado.get().getTitulo() + " " + juegoCreado.get().getDescuentoActual());
+//
+//        var juegoNuevoEstado = controlador.cambiarEstado(1l, EstadoJuegoEnum.NO_DISPONIBLE);
+//
+//        System.out.println(juegoNuevoEstado.get().getTitulo() + " " + juegoNuevoEstado.get().getEstado());
+//
+//        try {
+//            controlador.anhadirJuegoCatalogo(new JuegoForm("Clair Obscure: Expedition 33", "Guía a la expedición 33 en su viaje " +
+//                    "para destruir a la Peintresse para que no pinte la muerte. Explora un mundo inspirado por la Francia de la Belle Époque y " +
+//                    "combate enemigos únicos" + " en este juego de rol por turnos con mecánicas en tiempo real.", "Sandfall Interactive",
+//                    LocalDate.of(2025, 04, 24), 44.99f, 20, "RPG, TBS", PegiEnum.PEGI_18,
+//                    "Español, Francés, Inglés", EstadoJuegoEnum.DISPONIBLE));
+//        } catch (IllegalStateException e) {
+//            System.err.println("Juego ya creado");
+//        }
+//
+//
+//    }
 }

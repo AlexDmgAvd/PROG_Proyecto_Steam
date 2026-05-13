@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.alexyivan.modelo.dto.UsuarioDto;
+import org.alexyivan.transaction.ITransactionManager;
 
 import static org.alexyivan.repositorio.inmemory.UsuarioRepoInMemory.listaPaises;
 
@@ -26,10 +27,12 @@ public class UsuarioControlador implements IUsuarioControlador {
     public static final double SALDO_MINIMO = 5.00;
     public static final double SALDO_MAXIMO = 500.00;
     private final IUsuarioRepo usuarioRepo;
+    private ITransactionManager tm;
 
 
-    public UsuarioControlador(IUsuarioRepo usuarioRepo) {
+    public UsuarioControlador(IUsuarioRepo usuarioRepo, ITransactionManager tm) {
         this.usuarioRepo = usuarioRepo;
+        this.tm = tm;
     }
 
 
@@ -162,7 +165,7 @@ public class UsuarioControlador implements IUsuarioControlador {
 
     public static void main(String[] args) {
         IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
-        UsuarioControlador controlador = new UsuarioControlador(iUsuarioRepo);
+        UsuarioControlador controlador = new UsuarioControlador();
 
 
         var usuario2 = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com", "1234ABcd!", "Iván",
