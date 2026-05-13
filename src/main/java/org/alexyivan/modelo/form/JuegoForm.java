@@ -107,7 +107,7 @@ public class JuegoForm {
 
 
         // Descripcion
-        if (descripcion.length() > LONGITUD_MAX_CARACTERES_DESCRIP) {
+        if (descripcion != null && descripcion.length() > LONGITUD_MAX_CARACTERES_DESCRIP) {
             errores.add(new ErrorDto("descripcion", ErrorType.LONGITUD_INVALIDA));
         }
 

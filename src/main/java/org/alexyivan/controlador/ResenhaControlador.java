@@ -153,7 +153,7 @@ public class ResenhaControlador implements IResenhaControlador {
 
         if (orden.isPresent()) {
             if (orden.equals(OrdenResenhasEnum.RECIENTES)) {
-                resenhas.sorted((a, b) -> a.getFechaPublicacion().compareTo(b.getFechaPublicacion())).toList();
+                resenhas.sorted((a, b) -> a.getFechaPublicacion().compareTo(b.getFechaPublicacion()));
 
             }
             if (orden.equals(OrdenResenhasEnum.UTILES)) {

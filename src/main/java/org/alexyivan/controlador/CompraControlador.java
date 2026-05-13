@@ -307,7 +307,12 @@ public class CompraControlador implements ICompraControlador {
 
         //Todo comprobar si antes de crear la facturas existe la carpeta "resources" y crearla si no existe
 
-        var path = Path.of("resources/", nombreFactura);
+        var root = Path.of("resources/facturas/");
+        var path = Path.of(root.toString(), nombreFactura);
+        if (!Files.exists(root)) {
+            Files.createDirectory(root);
+        }
+
         Files.write(path, List.of(
                 "=================================================",
                 "==========            Steam©          ===========",
@@ -326,6 +331,7 @@ public class CompraControlador implements ICompraControlador {
                 "Total: " + (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
                         (compra.get().getDescuentoAplicado() / DESCUENTO)),
                 "Método de pago: " + compra.get().getMetodoDePago().toString(),
+                "Fecha: " + LocalDateTime.now(),
                 "",
                 "=================================================",
                 "==========            Steam©          ===========",
@@ -373,6 +379,12 @@ public class CompraControlador implements ICompraControlador {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        try {
+            compraControlador.generarFactura(1L);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
 
     }
