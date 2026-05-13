@@ -75,65 +75,73 @@ public class JuegoControlador implements IJuegoControlador {
             throw new ValidacionException(errores);
         }
 
+        //todo revisar
+        var juegoFiltrado = tm.inTransaction(() -> {
 
-        var jf = juegoRepo.obtenerTodos().stream();
-
-
-        if (!busquedaJuegos.getTitulo().isEmpty() || busquedaJuegos.getTitulo() == null) {
-            jf.filter(j -> j.getTitulo().contains(busquedaJuegos.getTitulo()));
-        }
-
-        if (!busquedaJuegos.getGenero().isEmpty() || busquedaJuegos.getGenero() == null) {
-            jf.filter(j -> j.getGenero().equals(busquedaJuegos.getGenero()));
-
-        }
-        if (busquedaJuegos.getPrecio() != null) {
-            jf.filter(j -> j.getPrecioBase() <= busquedaJuegos.getPrecio());
-
-        }
-        if (!busquedaJuegos.getPegi().isEmpty() || busquedaJuegos.getPegi() == null) {
-            jf.filter(j -> j.getRangoEdad().toString().equals(busquedaJuegos.getPegi()));
-        }
-
-        if (busquedaJuegos.getEstado() == null) {
-            jf.filter(j -> j.getEstado().toString().equals(busquedaJuegos.getEstado()));
-        }
+            var jf = juegoRepo.obtenerTodos().stream();
 
 
-        return jf.map(Mapper::mapJuegoEntidadADto).toList();
+            if (!busquedaJuegos.getTitulo().isEmpty() || busquedaJuegos.getTitulo() == null) {
+                jf.filter(j -> j.getTitulo().contains(busquedaJuegos.getTitulo()));
+            }
+
+            if (!busquedaJuegos.getGenero().isEmpty() || busquedaJuegos.getGenero() == null) {
+                jf.filter(j -> j.getGenero().equals(busquedaJuegos.getGenero()));
+
+            }
+            if (busquedaJuegos.getPrecio() != null) {
+                jf.filter(j -> j.getPrecioBase() <= busquedaJuegos.getPrecio());
+
+            }
+            if (!busquedaJuegos.getPegi().isEmpty() || busquedaJuegos.getPegi() == null) {
+                jf.filter(j -> j.getRangoEdad().toString().equals(busquedaJuegos.getPegi()));
+            }
+
+            if (busquedaJuegos.getEstado() == null) {
+                jf.filter(j -> j.getEstado().toString().equals(busquedaJuegos.getEstado()));
+            }
+
+            return jf;
+        });
+
+
+
+        return juegoFiltrado.map(Mapper::mapJuegoEntidadADto).toList();
     }
 
     @Override
     public List<JuegoDto> listarTodosJuegos(OrdenBusquedaJuegoEnum orden) throws ValidacionException {
 
-        var jf = juegoRepo.obtenerTodos().stream();
+        var juegoFiltrado = tm.inTransaction(() -> {
+
+            var jf = juegoRepo.obtenerTodos().stream();
+
+            if (orden.equals(OrdenBusquedaJuegoEnum.ALFABETICO)) {
+                return jf.sorted(Comparator.comparing(JuegoEntidad::getTitulo))
+                        .map(Mapper::mapJuegoEntidadADto);
 
 
-        if (orden.equals(OrdenBusquedaJuegoEnum.ALFABETICO)) {
-            return jf.sorted(Comparator.comparing(JuegoEntidad::getTitulo))
-                    .map(Mapper::mapJuegoEntidadADto).toList();
+            }
+
+            if (orden.equals(OrdenBusquedaJuegoEnum.PRECIO)) {
+
+                return jf.sorted(Comparator.comparing(JuegoEntidad::getPrecioBase))
+                        .map(Mapper::mapJuegoEntidadADto);
+
+            }
+
+            if (orden.equals(OrdenBusquedaJuegoEnum.FECHA)) {
 
 
-        }
+                return jf.sorted(Comparator.comparing(JuegoEntidad::getFechaPublicacion))
+                        .map(Mapper::mapJuegoEntidadADto);
 
+            }
 
-        if (orden.equals(OrdenBusquedaJuegoEnum.PRECIO)) {
+            return jf.map(Mapper::mapJuegoEntidadADto);
+        });
 
-            return jf.sorted(Comparator.comparing(JuegoEntidad::getPrecioBase))
-                    .map(Mapper::mapJuegoEntidadADto).toList();
-
-        }
-
-        if (orden.equals(OrdenBusquedaJuegoEnum.FECHA)) {
-
-
-            return jf.sorted(Comparator.comparing(JuegoEntidad::getFechaPublicacion))
-                    .map(Mapper::mapJuegoEntidadADto).toList();
-
-        }
-
-
-        return jf.map(Mapper::mapJuegoEntidadADto).toList();
+        return juegoFiltrado.toList();
 
     }
 
