@@ -73,6 +73,13 @@ public class CompraControlador implements ICompraControlador {
                 errores.add(new ErrorDto("cuenta", ErrorType.USUARIO_SIN_PERMISO));
             }
 
+        if (formularioCompra.getMetodoPago() == MetodoPagoEnum.CARTERA_STEAM &&
+                usuario.get().getCreditoSteam() < juego.get().getDescuentoActual()) {
+            errores.add(new ErrorDto("saldo", ErrorType.SALDO_INSUFICIENTE));
+        }
+        if (formularioCompra.getFechaCompra() == null) {
+            formularioCompra.setFechaCompra(LocalDateTime.now());
+        }
             if (juego.get().getEstado() == EstadoJuegoEnum.NO_DISPONIBLE) {
                 errores.add(new ErrorDto("estado", ErrorType.JUEGO_NO_COMPRABLE));
             }
@@ -103,6 +110,43 @@ public class CompraControlador implements ICompraControlador {
 
     @Override
     public Optional<CompraDto> procesarPago(long id) throws ValidacionException {
+        List<ErrorDto> errores = new ArrayList<>();
+        var compra = compraRepo.obtenerPorId(id);
+
+        if (compra.isEmpty()) {
+            errores.add(new ErrorDto("id", ErrorType.COMRPA_INEXISTENTE));
+        } else {
+            if (compra.get().getEstado() == EstadoCompraEnum.COMPLETADO) {
+                errores.add(new ErrorDto("completado", ErrorType.COMPRA_COMPLETADA));
+            }
+            if (compra.get().getEstado() == EstadoCompraEnum.REEMBOLSADA) {
+                errores.add(new ErrorDto("reembolsado", ErrorType.COMPRA_REEMBOLSADA));
+            }
+        }
+
+
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
+        var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario())
+                .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO))));
+        var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego())
+                .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("juego", ErrorType.NO_ENCONTRADO))));
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario);
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego);
+
+        bibliotecaRepo.crear(new BibliotecaForm(usuario.getId(), juego.getId(), compra.get().getFechaCompra().toLocalDate(),
+                HORAS_COMPRA, null, EstadoInstalacionEnum.NO_INSTALADO));
+
+        var compraActualizada = compraRepo.actualizar(compra.get().getId(), new CompraForm(compra.get().getIdUsuario(), compra.get().getIdJuego(),
+                compra.get().getFechaCompra(), compra.get().getMetodoDePago(), compra.get().getPrecioSinDescuento(), compra.get().getDescuentoAplicado(),
+                (double) (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
+                        ((float) compra.get().getDescuentoAplicado() / DESCUENTO)), EstadoCompraEnum.COMPLETADO
+        ));
+
+
+        return Optional.ofNullable(Mapper.mapCompraEntidadADto(compraActualizada.orElse(null), usuarioDto, juegoDto));
         return tm.inTransaction(() -> {
             List<ErrorDto> errores = new ArrayList<>();
             var compra = compraRepo.obtenerPorId(id);
@@ -329,45 +373,91 @@ public class CompraControlador implements ICompraControlador {
             return nombreFactura;
         });
 
+        String nombreFactura = "factura" + separador + usuario.get().getNombreUsuario() + separador
+                + idCounterFactura + separador + LocalDate.now() + ".txt";
+
+        //Todo comprobar si antes de crear la facturas existe la carpeta "resources" y crearla si no existe
+
+        var root = Path.of("resources/facturas/");
+        var path = Path.of(root.toString(), nombreFactura);
+        if (!Files.exists(root)) {
+            Files.createDirectories(root);
+        }
+
+        Files.write(path, List.of(
+                "=================================================",
+                "==========            Steam©          ===========",
+                "==========    Factura simplificada    ===========",
+                "=================================================",
+                "",
+                "Id de la compra: " + compra.get().getId(),
+                "Fecha de la compra: " + compra.get().getFechaCompra(),
+
+                "Nombre de usuario: " + usuario.get().getNombreUsuario(),
+                "Correo electrónico: " + usuario.get().getEmail(),
+
+                "Título del videojuego : " + juego.get().getTitulo(),
+                "Precio: " + compra.get().getPrecioSinDescuento(),
+                "Descuento: " + compra.get().getDescuentoAplicado(),
+                "Total: " + (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
+                        (compra.get().getDescuentoAplicado() / DESCUENTO)),
+                "Método de pago: " + compra.get().getMetodoDePago().toString(),
+                "Fecha :" + LocalDateTime.now(),
+                "",
+                "=================================================",
+                "==========            Steam©          ===========",
+                "==========             " + LocalDate.now().getYear() + "           ===========",
+                "================================================="
+
+
+        ));
+
+        idCounterFactura++;
+        return "";
     }
 
-//    public static void main(String[] args) {
-//        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
-//        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
-//        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
-//        ICompraRepo iCompraRepo = new CompraRepoInMemory();
-//
-//        CompraControlador compraControlador = new CompraControlador(iCompraRepo, iUsuarioRepo, iBibliotecaRepo, iJuegoRepo, ITransactionManager);
-//
-//        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
-//                "Spain", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
-//                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
-//        iJuegoRepo.crear(new JuegoForm("Marvel Rivals", "Heroe shooter en tercera persona en el que controlas" +
-//                "a los personajes del universo marvel", "NetEast", LocalDate.of(2025, 01, 01),
-//                5.0f, 0, "Heroe Shooter", PegiEnum.PEGI_12, "Español, Inglés", EstadoJuegoEnum.DISPONIBLE));
-//
-//        var formularioCompra = new CompraForm(iUsuarioRepo.obtenerPorNombreUsuario("kaisquest").get().getId(),
-//                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getId(),
-//                LocalDateTime.of(2026, 4, 20, 20, 50), MetodoPagoEnum.CARTERA_STEAM, iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase(),
-//                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual(),
-//                Double.valueOf(iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()) - ((iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()
-//                        * (iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual() * 100))), null);
-//        compraControlador.realizarCompra(formularioCompra);
-//
-//
-//        var compra = compraControlador.consultarDetallesCompra(1, formularioCompra);
-//        compraControlador.procesarPago(compra.get().getId());
-//        System.out.println(compra.get().getEstado().toString());
-//
-//
-//        try {
-//            compraControlador.generarFactura(1L);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//    }
+    public static void main(String[] args) {
+        IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
+        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
+        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
+        ICompraRepo iCompraRepo = new CompraRepoInMemory();
+
+        CompraControlador compraControlador = new CompraControlador(iCompraRepo, iUsuarioRepo, iBibliotecaRepo, iJuegoRepo, null);
+
+        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+                "Spain", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
+                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
+        iJuegoRepo.crear(new JuegoForm("Marvel Rivals", "Heroe shooter en tercera persona en el que controlas" +
+                "a los personajes del universo marvel", "NetEast", LocalDate.of(2025, 01, 01),
+                5.0f, 0, "Heroe Shooter", PegiEnum.PEGI_12, "Español, Inglés", EstadoJuegoEnum.DISPONIBLE));
+
+        var formularioCompra = new CompraForm(iUsuarioRepo.obtenerPorNombreUsuario("kaisquest").get().getId(),
+                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getId(),
+                LocalDateTime.of(2026, 4, 20, 20, 50), MetodoPagoEnum.CARTERA_STEAM, iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase(),
+                iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual(),
+                Double.valueOf(iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()) - ((iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getPrecioBase()
+                        * (iJuegoRepo.obtenerTitulo("Marvel Rivals").get().getDescuentoActual() * 100))), null);
+        compraControlador.realizarCompra(formularioCompra);
+
+
+        var compra = compraControlador.consultarDetallesCompra(1, formularioCompra);
+        compraControlador.procesarPago(compra.get().getId());
+        System.out.println(compra.get().getEstado().toString());
+
+
+        try {
+            compraControlador.generarFactura(1L);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            compraControlador.generarFactura(1L);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 
 }

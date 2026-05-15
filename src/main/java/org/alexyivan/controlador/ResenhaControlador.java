@@ -155,6 +155,9 @@ public class ResenhaControlador implements IResenhaControlador {
                 throw new ValidacionException(erroresTx);
             }
 
+        if (orden.isPresent()) {
+            if (orden.equals(OrdenResenhasEnum.RECIENTES)) {
+                resenhas.sorted((a, b) -> a.getFechaPublicacion().compareTo(b.getFechaPublicacion()));
             var resenhas = resenhaRepo.obtenerTodos().stream()
                     .filter(r -> r.getIdJuego() == id);
 
