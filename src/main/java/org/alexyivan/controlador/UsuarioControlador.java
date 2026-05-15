@@ -8,10 +8,8 @@ import org.alexyivan.modelo.enums.EstadoCuentaEmun;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.modelo.form.UsuarioForm;
-import org.alexyivan.repositorio.inmemory.UsuarioRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,38 +37,35 @@ public class UsuarioControlador implements IUsuarioControlador {
     @Override
     public Optional<UsuarioDto> registrarUsuario(UsuarioForm usuarioForm) throws ValidacionException {
 
-        //Validar formulario
         var errores = usuarioForm.validar();
-
-        //Validación de email en repositorio
-        var usuario = usuarioRepo.obtenerPorEmail(usuarioForm.getEmail());
-        if (usuario.isPresent())
-            errores.add(new ErrorDto("email", ErrorType.EMAIL_INVALIDO));
-
-        //Validación de que el nombre no existe en el repositorio
-        usuario = usuarioRepo.obtenerPorNombreUsuario(usuarioForm.getNombreUsuario());
-        if (usuario.isPresent()) {
-            errores.add(new ErrorDto("nombre", ErrorType.NOMBRE_EXISTENTE));
-        }
-
-        //Validación de que el país está permitido en el repositorio
-        if (!listaPaises.contains(usuarioForm.getPais())) {
-            errores.add(new ErrorDto("pais", ErrorType.PAIS_INEXISTENTE));
-
-        }
-
-        //Si la lista de errores no está vacía manda los errores
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
 
-        //Ejecuta la función
-        var usuarioCreado = usuarioRepo.crear(usuarioForm);
+        var usuarioCreado = tm.inTransaction(() -> {
+            var usuario = usuarioRepo.obtenerPorEmail(usuarioForm.getEmail());
+            if (usuario.isPresent()) {
+                errores.add(new ErrorDto("email", ErrorType.EMAIL_INVALIDO));
+            }
 
+            usuario = usuarioRepo.obtenerPorNombreUsuario(usuarioForm.getNombreUsuario());
+            if (usuario.isPresent()) {
+                errores.add(new ErrorDto("nombre", ErrorType.NOMBRE_EXISTENTE));
+            }
+
+            if (!listaPaises.contains(usuarioForm.getPais())) {
+                errores.add(new ErrorDto("pais", ErrorType.PAIS_INEXISTENTE));
+            }
+
+            if (!errores.isEmpty()) {
+                throw new ValidacionException(errores);
+            }
+
+            return usuarioRepo.crear(usuarioForm);
+        });
 
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuarioCreado.orElse(null)));
     }
-
 
     @Override
     public Optional<UsuarioDto> consultarUsuarioNombreUsuario(String nombreUsuario) throws ValidacionException {
@@ -78,11 +73,18 @@ public class UsuarioControlador implements IUsuarioControlador {
 
         if (nombreUsuario.isEmpty()) {
             errores.add(new ErrorDto("vacio", ErrorType.BUSQUEDA_INVALIDA));
-
         }
-        var usuario = usuarioRepo.obtenerPorNombreUsuario(nombreUsuario);
 
-        return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
+        var usuarioConsultado = tm.inTransaction(() -> {
+            var usuario = usuarioRepo.obtenerPorNombreUsuario(nombreUsuario);
+            return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
+        });
+
+        return usuarioConsultado;
     }
 
     @Override
@@ -91,25 +93,25 @@ public class UsuarioControlador implements IUsuarioControlador {
 
         if (id == null) {
             errores.add(new ErrorDto("vacio", ErrorType.BUSQUEDA_INVALIDA));
-
         }
 
-        var usuario = usuarioRepo.obtenerPorId(id);
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
 
-        return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
+        var usuarioConsultado = tm.inTransaction(() -> {
+            var usuario = usuarioRepo.obtenerPorId(id);
+            return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
+        });
+
+        return usuarioConsultado;
     }
-
 
     @Override
     public Optional<UsuarioDto> anhadirSaldo(long id, float cantidad) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
-        //Validaciones
-
-
-        //Comprobar que el saldo cumple las validaciones
         if (cantidad < CONST_CERO) {
-
             errores.add(new ErrorDto("cantidad", ErrorType.FORMATO_INVALIDO));
         }
 
@@ -117,63 +119,65 @@ public class UsuarioControlador implements IUsuarioControlador {
             errores.add(new ErrorDto("cantidad", ErrorType.SALDO_INVALIDO));
         }
 
-        //Comprobar que el usuario existe en el repositorio
-        var usuario = usuarioRepo.obtenerPorId(id);
-        if (usuario.isEmpty()) {
-            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
-        }
-
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
 
-        if (usuario.get().getEstado() != EstadoCuentaEmun.ACTIVA) {
-            errores.add(new ErrorDto("cuenta", ErrorType.ESTADO_CUENTA));
-        }
+        var usuarioNuevoSaldo = tm.inTransaction(() -> {
+            var usuario = usuarioRepo.obtenerPorId(id);
+            if (usuario.isEmpty()) {
+                errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+            }
 
-        if (!errores.isEmpty()) {
-            throw new ValidacionException(errores);
-        }
+            if (!errores.isEmpty()) {
+                throw new ValidacionException(errores);
+            }
 
+            if (usuario.get().getEstado() != EstadoCuentaEmun.ACTIVA) {
+                errores.add(new ErrorDto("cuenta", ErrorType.ESTADO_CUENTA));
+            }
 
-        var usuarioNuevoSaldo = usuarioRepo.actualizar(id, new UsuarioForm(usuario.get().getNombreUsuario(), usuario.get().getEmail(),
-                usuario.get().getContrasenha(), usuario.get().getNombreReal(), usuario.get().getPais(), usuario.get().getCumpleanhos(), usuario.get().getFechaRegistro(),
-                usuario.get().getAvatar(), (cantidad + usuario.get().getCreditoSteam()), usuario.get().getEstado()));
+            if (!errores.isEmpty()) {
+                throw new ValidacionException(errores);
+            }
+
+            return usuarioRepo.actualizar(id, new UsuarioForm(usuario.get().getNombreUsuario(),
+                    usuario.get().getEmail(), usuario.get().getContrasenha(), usuario.get().getNombreReal(),
+                    usuario.get().getPais(), usuario.get().getCumpleanhos(), usuario.get().getFechaRegistro(),
+                    usuario.get().getAvatar(), (cantidad + usuario.get().getCreditoSteam()),
+                    usuario.get().getEstado()));
+        });
 
         return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuarioNuevoSaldo.orElse(null)));
-
     }
-
 
     @Override
     public Optional<UsuarioDto> consultarSaldo(long id) throws ValidacionException {
-        List<ErrorDto> errores = new ArrayList<>();
+        var usuarioConsultado = tm.inTransaction(() -> {
+            var usuario = usuarioRepo.obtenerPorId(id);
+            if (usuario.isEmpty()) {
+                throw new ValidacionException(List.of(new ErrorDto("id", ErrorType.NO_ENCONTRADO)));
+            }
+            return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
+        });
 
-        var usuario = usuarioRepo.obtenerPorId(id);
-
-        if (usuario.isEmpty()) {
-            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
-        }
-
-        if (!errores.isEmpty()) {
-            throw new ValidacionException(errores);
-        }
-
-
-        return Optional.ofNullable(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
+        return usuarioConsultado;
     }
+
 
 //    public static void main(String[] args) {
 //        IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
 //        UsuarioControlador controlador = new UsuarioControlador();
 //
 //
-//        var usuario2 = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com", "1234ABcd!", "Iván",
+//        var usuario2 = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com",
+//        "1234ABcd!", "Iván",
 //                "España", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
 //                "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
 //
 //        try {
-//            var usuario = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+//            var usuario = controlador.registrarUsuario(new UsuarioForm("kaisquest", "email@email.com",
+//            "1234abcd!", "Iván",
 //                    "España", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
 //                    "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
 //        } catch (ValidacionException e) {
