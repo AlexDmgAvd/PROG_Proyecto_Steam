@@ -55,6 +55,10 @@ public class CompraForm {
         return fechaCompra;
     }
 
+    public void setFechaCompra(LocalDateTime fechaCompra) {
+        this.fechaCompra = fechaCompra;
+    }
+
     public Float getPrecioSinDescuento() {
         return precioSinDescuento;
     }
@@ -86,9 +90,6 @@ public class CompraForm {
         }
 
         // Fecha de compra
-        if (fechaCompra == null) {
-            errores.add(new ErrorDto("fechaCompra", ErrorType.REQUERIDO));
-        }
 
         if (fechaCompra != null && fechaCompra.isAfter(LocalDateTime.now())) {
             errores.add(new ErrorDto("fechaCompra", ErrorType.FECHA_FUTURA));

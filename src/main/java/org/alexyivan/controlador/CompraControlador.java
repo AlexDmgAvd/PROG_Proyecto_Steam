@@ -86,6 +86,9 @@ public class CompraControlador implements ICompraControlador {
                 usuario.get().getCreditoSteam() < juego.get().getDescuentoActual()) {
             errores.add(new ErrorDto("saldo", ErrorType.SALDO_INSUFICIENTE));
         }
+        if (formularioCompra.getFechaCompra() == null) {
+            formularioCompra.setFechaCompra(LocalDateTime.now());
+        }
 
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
@@ -111,13 +114,13 @@ public class CompraControlador implements ICompraControlador {
 
         if (compra.isEmpty()) {
             errores.add(new ErrorDto("id", ErrorType.COMRPA_INEXISTENTE));
-        }
-
-        if (compra.get().getEstado() == EstadoCompraEnum.COMPLETADO) {
-            errores.add(new ErrorDto("completado", ErrorType.COMPRA_COMPLETADA));
-        }
-        if (compra.get().getEstado() == EstadoCompraEnum.REEMBOLSADA) {
-            errores.add(new ErrorDto("reembolsado", ErrorType.COMPRA_REEMBOLSADA));
+        } else {
+            if (compra.get().getEstado() == EstadoCompraEnum.COMPLETADO) {
+                errores.add(new ErrorDto("completado", ErrorType.COMPRA_COMPLETADA));
+            }
+            if (compra.get().getEstado() == EstadoCompraEnum.REEMBOLSADA) {
+                errores.add(new ErrorDto("reembolsado", ErrorType.COMPRA_REEMBOLSADA));
+            }
         }
 
 
@@ -125,12 +128,14 @@ public class CompraControlador implements ICompraControlador {
             throw new ValidacionException(errores);
         }
 
-        var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario());
-        var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego());
-        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
-        var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+        var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario())
+                .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO))));
+        var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego())
+                .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("juego", ErrorType.NO_ENCONTRADO))));
+        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario);
+        var juegoDto = Mapper.mapJuegoEntidadADto(juego);
 
-        bibliotecaRepo.crear(new BibliotecaForm(usuario.get().getId(), juego.get().getId(), compra.get().getFechaCompra().toLocalDate(),
+        bibliotecaRepo.crear(new BibliotecaForm(usuario.getId(), juego.getId(), compra.get().getFechaCompra().toLocalDate(),
                 HORAS_COMPRA, null, EstadoInstalacionEnum.NO_INSTALADO));
 
         var compraActualizada = compraRepo.actualizar(compra.get().getId(), new CompraForm(compra.get().getIdUsuario(), compra.get().getIdJuego(),
