@@ -6,17 +6,13 @@ import org.alexyivan.modelo.dto.JuegoDto;
 import org.alexyivan.modelo.entidad.JuegoEntidad;
 import org.alexyivan.modelo.enums.EstadoJuegoEnum;
 import org.alexyivan.modelo.enums.OrdenBusquedaJuegoEnum;
-import org.alexyivan.modelo.enums.PegiEnum;
 import org.alexyivan.modelo.form.BusquedaJuegosForm;
 import org.alexyivan.modelo.form.ErrorDto;
 import org.alexyivan.modelo.form.ErrorType;
 import org.alexyivan.modelo.form.JuegoForm;
-import org.alexyivan.repositorio.inmemory.JuegoRepoInMemory;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.transaction.ITransactionManager;
-import org.alexyivan.transaction.NoOpTransactionManager;
 
-import java.time.LocalDate;
 import java.util.*;
 
 public class JuegoControlador implements IJuegoControlador {
@@ -34,10 +30,7 @@ public class JuegoControlador implements IJuegoControlador {
     @Override
     public Optional<JuegoDto> anhadirJuegoCatalogo(JuegoForm formulario) throws ValidacionException {
 
-        //Validaciones
         var errores = formulario.validar();
-
-
 
         var juegoCreado = tm.inTransaction(() -> {
 
@@ -67,7 +60,6 @@ public class JuegoControlador implements IJuegoControlador {
 
     @Override
     public List<JuegoDto> buscarJuegos(BusquedaJuegosForm busquedaJuegos) throws ValidacionException {
-
 
         var errores = busquedaJuegos.validar();
 
@@ -101,12 +93,10 @@ public class JuegoControlador implements IJuegoControlador {
                 jf.filter(j -> j.getEstado().toString().equals(busquedaJuegos.getEstado()));
             }
 
-            return jf;
+            return jf.map(Mapper::mapJuegoEntidadADto).toList();
         });
 
-
-
-        return juegoFiltrado.map(Mapper::mapJuegoEntidadADto).toList();
+        return juegoFiltrado;
     }
 
     @Override
@@ -119,15 +109,12 @@ public class JuegoControlador implements IJuegoControlador {
             if (orden.equals(OrdenBusquedaJuegoEnum.ALFABETICO)) {
                 return jf.sorted(Comparator.comparing(JuegoEntidad::getTitulo))
                         .map(Mapper::mapJuegoEntidadADto);
-
-
             }
 
             if (orden.equals(OrdenBusquedaJuegoEnum.PRECIO)) {
 
                 return jf.sorted(Comparator.comparing(JuegoEntidad::getPrecioBase))
                         .map(Mapper::mapJuegoEntidadADto);
-
             }
 
             if (orden.equals(OrdenBusquedaJuegoEnum.FECHA)) {
@@ -135,31 +122,34 @@ public class JuegoControlador implements IJuegoControlador {
 
                 return jf.sorted(Comparator.comparing(JuegoEntidad::getFechaPublicacion))
                         .map(Mapper::mapJuegoEntidadADto);
-
             }
 
             return jf.map(Mapper::mapJuegoEntidadADto);
         });
-
         return juegoFiltrado.toList();
-
     }
 
     @Override
     public Optional<JuegoDto> consultarJuego(long id) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
-        var juego = juegoRepo.obtenerPorId(id);
-        if (juego.isEmpty()) {
+        var juegoFiltrado = tm.inTransaction(() -> {
 
-            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
-        }
+            var juego = juegoRepo.obtenerPorId(id);
+            if (juego.isEmpty()) {
+
+                errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+            }
+
+            return juego;
+        });
+
 
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
 
-        return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juego.orElse(null)));
+        return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoFiltrado.orElse(null)));
     }
 
     @Override
@@ -168,29 +158,25 @@ public class JuegoControlador implements IJuegoControlador {
 
         if (descuento < DESCUENTO_MIN || descuento > DESCUENTO_MAX) {
             errores.add(new ErrorDto("descuento", ErrorType.DESCUENTO_INVALIDO));
-
         }
 
-        var juego = juegoRepo.obtenerPorId(id);
+        var juegoActualizado = tm.inTransaction(() -> {
+            var juego = juegoRepo.obtenerPorId(id);
+            if (juego.isEmpty()) {
+                errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+            }
 
-        if (juego.isEmpty()) {
+            if (!errores.isEmpty()) {
+                throw new ValidacionException(errores);
+            }
 
-            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
-        }
-
-
-        if (!errores.isEmpty()) {
-            throw new ValidacionException(errores);
-        }
-
-
-        var juegoActualizado = juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(), juego.get().getDesarrolladora(),
-                juego.get().getFechaPublicacion(), juego.get().getPrecioBase(), descuento, juego.get().getGenero(),
-                juego.get().getRangoEdad(), juego.get().getIdiomasDisponibles(), juego.get().getEstado()));
+            return juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(),
+                    juego.get().getDesarrolladora(), juego.get().getFechaPublicacion(), juego.get().getPrecioBase(),
+                    descuento, juego.get().getGenero(), juego.get().getRangoEdad(),
+                    juego.get().getIdiomasDisponibles(), juego.get().getEstado()));
+        });
 
         return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoActualizado.orElse(null)));
-
-
     }
 
     @Override
@@ -199,28 +185,27 @@ public class JuegoControlador implements IJuegoControlador {
 
         if (estado == null) {
             errores.add(new ErrorDto("estado", ErrorType.ESTADO_INVALIDO));
-
         }
 
-        var juego = juegoRepo.obtenerPorId(id);
+        var juegoActualizado = tm.inTransaction(() -> {
+            var juego = juegoRepo.obtenerPorId(id);
+            if (juego.isEmpty()) {
+                errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+            }
 
-        if (juego.isEmpty()) {
-            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+            if (!errores.isEmpty()) {
+                throw new ValidacionException(errores);
+            }
 
-        }
+            return juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(),
+                    juego.get().getDesarrolladora(), juego.get().getFechaPublicacion(), juego.get().getPrecioBase(),
+                    juego.get().getDescuentoActual(), juego.get().getGenero(), juego.get().getRangoEdad(),
+                    juego.get().getIdiomasDisponibles(), estado));
+        });
 
-
-        if (!errores.isEmpty()) {
-            throw new ValidacionException(errores);
-
-        }
-
-
-        var juegoActualizado = juegoRepo.actualizar(id, new JuegoForm(juego.get().getTitulo(), juego.get().getDescripcion(), juego.get().getDesarrolladora(),
-                juego.get().getFechaPublicacion(), juego.get().getPrecioBase(), juego.get().getDescuentoActual(), juego.get().getGenero(),
-                juego.get().getRangoEdad(), juego.get().getIdiomasDisponibles(), estado));
         return Optional.ofNullable(Mapper.mapJuegoEntidadADto(juegoActualizado.orElse(null)));
     }
+
 
 //    static void main(String[] args) {
 //        IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();

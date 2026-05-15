@@ -22,7 +22,5 @@ public interface IResenhaControlador {
 
     Optional<ResenhaDto> ocultarResenha(long id, ResenhaForm formularioResenha) throws ValidacionException;
 
-    Optional<EstadisticasResenhaDto> consultarEstadisticas() throws ValidacionException;
-
     List<ResenhaDto> verResenhaUsuario(ResenhaForm formularioResenha, Optional<EstadoResenhaEnum> estado);
 }
