@@ -58,48 +58,49 @@ public class CompraControlador implements ICompraControlador {
             throw new ValidacionException(errores);
         }
 
-        return tm.inTransaction(() -> {
+        var compraRealizada = tm.inTransaction(() -> {
+            List<ErrorDto> erroresTx = new ArrayList<>();
             var usuario = usuarioRepo.obtenerPorId(formularioCompra.getUsuarioId());
             var juego = juegoRepo.obtenerPorId(formularioCompra.getJuegoId());
 
             if (usuario.isEmpty()) {
-                errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+                erroresTx.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
             }
 
             if (juego.isEmpty()) {
-                errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+                erroresTx.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
             }
 
-            if (!errores.isEmpty()) {
-                throw new ValidacionException(errores);
+            if (!erroresTx.isEmpty()) {
+                throw new ValidacionException(erroresTx);
             }
 
             if (usuario.get().getEstado() != EstadoCuentaEmun.ACTIVA) {
-                errores.add(new ErrorDto("cuenta", ErrorType.USUARIO_SIN_PERMISO));
+                erroresTx.add(new ErrorDto("cuenta", ErrorType.USUARIO_SIN_PERMISO));
             }
 
             if (formularioCompra.getMetodoPago() == MetodoPagoEnum.CARTERA_STEAM &&
                     usuario.get().getCreditoSteam() < juego.get().getDescuentoActual()) {
-                errores.add(new ErrorDto("saldo", ErrorType.SALDO_INSUFICIENTE));
+                erroresTx.add(new ErrorDto("saldo", ErrorType.SALDO_INSUFICIENTE));
             }
             if (formularioCompra.getFechaCompra() == null) {
                 formularioCompra.setFechaCompra(LocalDateTime.now());
             }
             if (juego.get().getEstado() == EstadoJuegoEnum.NO_DISPONIBLE) {
-                errores.add(new ErrorDto("estado", ErrorType.JUEGO_NO_COMPRABLE));
+                erroresTx.add(new ErrorDto("estado", ErrorType.JUEGO_NO_COMPRABLE));
             }
 
             if (bibliotecaRepo.buscarJuegoUsuario(formularioCompra.getJuegoId(), formularioCompra.getUsuarioId()).isPresent()) {
-                errores.add(new ErrorDto("duplicado", ErrorType.DUPLICADO));
+                erroresTx.add(new ErrorDto("duplicado", ErrorType.DUPLICADO));
             }
 
             if (formularioCompra.getMetodoPago() == MetodoPagoEnum.CARTERA_STEAM &&
                     usuario.get().getCreditoSteam() < juego.get().getDescuentoActual()) {
-                errores.add(new ErrorDto("saldo", ErrorType.SALDO_INSUFICIENTE));
+                erroresTx.add(new ErrorDto("saldo", ErrorType.SALDO_INSUFICIENTE));
             }
 
-            if (!errores.isEmpty()) {
-                throw new ValidacionException(errores);
+            if (!erroresTx.isEmpty()) {
+                throw new ValidacionException(erroresTx);
             }
 
             var compra = compraRepo.crear(new CompraForm(formularioCompra.getUsuarioId(), formularioCompra.getJuegoId(), formularioCompra.getFechaCompra(),
@@ -111,27 +112,29 @@ public class CompraControlador implements ICompraControlador {
 
             return Optional.ofNullable(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto));
         });
+
+        return compraRealizada;
     }
 
     @Override
     public Optional<CompraDto> procesarPago(long id) throws ValidacionException {
-        return tm.inTransaction(() -> {
-            List<ErrorDto> errores = new ArrayList<>();
+        var compraProcesada = tm.inTransaction(() -> {
+            List<ErrorDto> erroresTx = new ArrayList<>();
             var compra = compraRepo.obtenerPorId(id);
 
             if (compra.isEmpty()) {
-                errores.add(new ErrorDto("id", ErrorType.COMRPA_INEXISTENTE));
+                erroresTx.add(new ErrorDto("id", ErrorType.COMRPA_INEXISTENTE));
             } else {
                 if (compra.get().getEstado() == EstadoCompraEnum.COMPLETADO) {
-                    errores.add(new ErrorDto("completado", ErrorType.COMPRA_COMPLETADA));
+                    erroresTx.add(new ErrorDto("completado", ErrorType.COMPRA_COMPLETADA));
                 }
                 if (compra.get().getEstado() == EstadoCompraEnum.REEMBOLSADA) {
-                    errores.add(new ErrorDto("reembolsado", ErrorType.COMPRA_REEMBOLSADA));
+                    erroresTx.add(new ErrorDto("reembolsado", ErrorType.COMPRA_REEMBOLSADA));
                 }
             }
 
-            if (!errores.isEmpty()) {
-                throw new ValidacionException(errores);
+            if (!erroresTx.isEmpty()) {
+                throw new ValidacionException(erroresTx);
             }
 
             var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario())
@@ -152,6 +155,8 @@ public class CompraControlador implements ICompraControlador {
 
             return Optional.ofNullable(Mapper.mapCompraEntidadADto(compraActualizada.orElse(null), usuarioDto, juegoDto));
         });
+
+        return compraProcesada;
     }
 
     @Override
@@ -161,8 +166,15 @@ public class CompraControlador implements ICompraControlador {
         var erroresBusqueda = opcionesBusqueda.validar();
         List<ErrorDto> errores = Stream.concat(erroresBusqueda.stream(), erroresCompra.stream()).toList();
 
-        return tm.inTransaction(() -> {
+        var compraFiltrada = tm.inTransaction(() -> {
             var compra = compraRepo.obtenerPorId(id);
+            var usuario = usuarioRepo.obtenerPorId(formularioCompra.getUsuarioId())
+                    .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO))));
+            ;
+            var juego = juegoRepo.obtenerPorId(formularioCompra.getJuegoId())
+                    .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("juego", ErrorType.NO_ENCONTRADO))));
+            ;
+
             if (compra.isEmpty()) {
                 errores.add(new ErrorDto("id", ErrorType.COMRPA_INEXISTENTE));
             }
@@ -171,8 +183,44 @@ public class CompraControlador implements ICompraControlador {
                 throw new ValidacionException(errores);
             }
 
-            return List.<CompraDto>of();
+            if (compra.get().getIdUsuario() != usuario.getId()) {
+                errores.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
+            }
+
+            if (compra.get().getIdJuego() != juego.getId()) {
+                errores.add(new ErrorDto("jueg", ErrorType.JUEGO_NO_COINCIDENTE));
+            }
+
+            var cf = compraRepo.obtenerTodos().stream();
+
+            if (opcionesBusqueda.getEstadoCompra() == EstadoCompraEnum.COMPLETADO) {
+                cf.filter(e -> e.getEstado() == EstadoCompraEnum.COMPLETADO);
+            }
+
+            if (opcionesBusqueda.getEstadoCompra() == EstadoCompraEnum.REEMBOLSADA) {
+                cf.filter(e -> e.getEstado() == EstadoCompraEnum.REEMBOLSADA);
+            }
+
+            if (opcionesBusqueda.getEstadoCompra() == EstadoCompraEnum.PENDIENTE) {
+                cf.filter(e -> e.getEstado() == EstadoCompraEnum.PENDIENTE);
+            }
+
+            if (opcionesBusqueda.getFechaMinima() != null) {
+                cf.filter(e -> e.getFechaCompra().toLocalDate().isAfter(opcionesBusqueda.getFechaMinima()));
+            }
+
+            if (opcionesBusqueda.getFechaMaxima() != null) {
+                cf.filter(e -> e.getFechaCompra().toLocalDate().isBefore(opcionesBusqueda.getFechaMaxima()));
+            }
+
+            var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario);
+            var juegoDto = Mapper.mapJuegoEntidadADto(juego);
+
+
+            return Optional.of(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto)).stream().toList();
         });
+
+        return compraFiltrada;
     }
 
     @Override
@@ -200,14 +248,14 @@ public class CompraControlador implements ICompraControlador {
 
         var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego());
 
-        return tm.inTransaction(() -> {
-
-            if (juego.isEmpty()){
-                errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+        var detallesCompra = tm.inTransaction(() -> {
+            List<ErrorDto> erroresTx = new ArrayList<>();
+            if (juego.isEmpty()) {
+                erroresTx.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             }
 
             if (usuario.isEmpty()) {
-                errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+                erroresTx.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
             }
 
             if (!errores.isEmpty()) {
@@ -215,15 +263,15 @@ public class CompraControlador implements ICompraControlador {
             }
 
             if (compra.get().getIdUsuario() != usuario.get().getId()) {
-                errores.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
+                erroresTx.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
             }
             if (compra.get().getIdJuego() != juego.get().getId()) {
-                errores.add(new ErrorDto("juego", ErrorType.JUEGO_NO_COINCIDENTE));
+                erroresTx.add(new ErrorDto("juego", ErrorType.JUEGO_NO_COINCIDENTE));
             }
 
 
-            if (!errores.isEmpty()) {
-                throw new ValidacionException(errores);
+            if (!erroresTx.isEmpty()) {
+                throw new ValidacionException(erroresTx);
             }
 
 
@@ -232,17 +280,18 @@ public class CompraControlador implements ICompraControlador {
 
             return Optional.of(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto));
         });
+        return detallesCompra;
     }
 
     @Override
     public Optional<CompraDto> solicitarReembolso(long idCompra, OpcionesReembolsoEnum opcionesReembolso) throws ValidacionException {
-        return tm.inTransaction(() -> {
-            List<ErrorDto> errores = new ArrayList<>();
+        var reembolsoSolicitado = tm.inTransaction(() -> {
+            List<ErrorDto> erroresTx = new ArrayList<>();
             var compra = compraRepo.obtenerPorId(idCompra);
 
             if (compra.isEmpty()) {
-                errores.add(new ErrorDto("id", ErrorType.COMPRA_NO_EXISTENTE));
-                throw new ValidacionException(errores);
+                erroresTx.add(new ErrorDto("id", ErrorType.COMPRA_NO_EXISTENTE));
+                throw new ValidacionException(erroresTx);
             }
 
             var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario());
@@ -253,43 +302,43 @@ public class CompraControlador implements ICompraControlador {
             LocalDate fechaCompra = compra.get().getFechaCompra().toLocalDate();
 
             if (usuario.isEmpty()) {
-                errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+                erroresTx.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
             }
             if (juego.isEmpty()) {
-                errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+                erroresTx.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             }
             if (bibloteca.isEmpty()) {
-                errores.add(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO));
+                erroresTx.add(new ErrorDto("biblioteca", ErrorType.NO_ENCONTRADO));
             }
 
-            if (!errores.isEmpty()) {
-                throw new ValidacionException(errores);
+            if (!erroresTx.isEmpty()) {
+                throw new ValidacionException(erroresTx);
             }
 
             if (compra.get().getEstado() != EstadoCompraEnum.COMPLETADO) {
-                errores.add(new ErrorDto("estado", ErrorType.COMPRA_NO_COMPLETADA));
+                erroresTx.add(new ErrorDto("estado", ErrorType.COMPRA_NO_COMPLETADA));
             }
             if (fechaActual.isAfter(fechaCompra.plusDays(DIAS_MAXIMOS))) {
-                errores.add(new ErrorDto("plazo", ErrorType.PLAZO_EXPIRADO));
+                erroresTx.add(new ErrorDto("plazo", ErrorType.PLAZO_EXPIRADO));
             }
             if (usuario.get().getId() != compra.get().getIdUsuario()) {
-                errores.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
+                erroresTx.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
             }
             if (juego.get().getId() != compra.get().getIdJuego()) {
-                errores.add(new ErrorDto("id", ErrorType.JUEGO_NO_COINCIDENTE));
+                erroresTx.add(new ErrorDto("id", ErrorType.JUEGO_NO_COINCIDENTE));
             }
             if (bibloteca.get().getIdUsuario() != compra.get().getIdUsuario()) {
-                errores.add(new ErrorDto("id", ErrorType.BIBLIOTECA_NO_COINCIDENTE));
+                erroresTx.add(new ErrorDto("id", ErrorType.BIBLIOTECA_NO_COINCIDENTE));
             }
             if (bibloteca.get().getHorasJugadasTotal() > MAX_HORAS_JUGADAS) {
-                errores.add(new ErrorDto("compra", ErrorType.COMPRA_NO_REEMBOLSABLE));
+                erroresTx.add(new ErrorDto("compra", ErrorType.COMPRA_NO_REEMBOLSABLE));
             }
             if (opcionesReembolso == null) {
-                errores.add(new ErrorDto("opciones", ErrorType.OPCIONES_VACIAS));
+                erroresTx.add(new ErrorDto("opciones", ErrorType.OPCIONES_VACIAS));
             }
 
-            if (!errores.isEmpty()) {
-                throw new ValidacionException(errores);
+            if (!erroresTx.isEmpty()) {
+                throw new ValidacionException(erroresTx);
             }
 
             usuarioRepo.actualizar(usuario.get().getId(), new UsuarioForm(usuario.get().getNombreUsuario(), usuario.get().getEmail(),
@@ -310,6 +359,7 @@ public class CompraControlador implements ICompraControlador {
 
             return Optional.ofNullable(Mapper.mapCompraEntidadADto(compraActualizada.orElse(null), usuarioDto, juegoDto));
         });
+        return reembolsoSolicitado;
     }
 
     @Override
@@ -364,32 +414,32 @@ public class CompraControlador implements ICompraControlador {
 
     private Optional<CompraDto> busquedaCompra(long idCompra) {
 
-        return tm.inTransaction(() -> {
-            List<ErrorDto> errores = new ArrayList<>();
+        var compraBuscada = tm.inTransaction(() -> {
+            List<ErrorDto> erroresTx = new ArrayList<>();
             var compra = compraRepo.obtenerPorId(idCompra);
 
             if (compra.isEmpty()) {
-                errores.add(new ErrorDto("id", ErrorType.COMPRA_NO_EXISTENTE));
-                throw new ValidacionException(errores);
+                erroresTx.add(new ErrorDto("id", ErrorType.COMPRA_NO_EXISTENTE));
+                throw new ValidacionException(erroresTx);
             }
 
             var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario());
             var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego());
 
             if (compra.get().getEstado() != EstadoCompraEnum.COMPLETADO) {
-                errores.add(new ErrorDto("estado", ErrorType.COMPRA_NO_COMPLETADA));
+                erroresTx.add(new ErrorDto("estado", ErrorType.COMPRA_NO_COMPLETADA));
             }
 
             if (usuario.isEmpty() || usuario.get().getId() != compra.get().getIdUsuario()) {
-                errores.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
+                erroresTx.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
             }
 
             if (juego.isEmpty() || juego.get().getId() != compra.get().getIdJuego()) {
-                errores.add(new ErrorDto("id", ErrorType.JUEGO_NO_COINCIDENTE));
+                erroresTx.add(new ErrorDto("id", ErrorType.JUEGO_NO_COINCIDENTE));
             }
 
-            if (!errores.isEmpty()) {
-                throw new ValidacionException(errores);
+            if (!erroresTx.isEmpty()) {
+                throw new ValidacionException(erroresTx);
             }
 
             var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
@@ -397,49 +447,49 @@ public class CompraControlador implements ICompraControlador {
 
             return Optional.of(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto));
         });
-
+        return compraBuscada;
     }
 
     private Optional<UsuarioDto> busquedaUsuario(long id) {
 
-        return tm.inTransaction(() -> {
-            List<ErrorDto> errores = new ArrayList<>();
+        var usuarioBuscado = tm.inTransaction(() -> {
+            List<ErrorDto> erroresTx = new ArrayList<>();
 
             var usuario = usuarioRepo.obtenerPorId(id);
             if (usuario.isEmpty()) {
-                errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
-                throw new ValidacionException(errores);
+                erroresTx.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+                throw new ValidacionException(erroresTx);
             }
 
-            if (!errores.isEmpty()) {
-                throw new ValidacionException(errores);
+            if (!erroresTx.isEmpty()) {
+                throw new ValidacionException(erroresTx);
             }
 
 
             return Optional.of(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
         });
-
+        return usuarioBuscado;
     }
 
     private Optional<JuegoDto> busquedaJuego(long id) {
 
-        return tm.inTransaction(() -> {
-            List<ErrorDto> errores = new ArrayList<>();
+        var juegoBuscado = tm.inTransaction(() -> {
+            List<ErrorDto> erroresTx = new ArrayList<>();
 
             var juego = juegoRepo.obtenerPorId(id);
             if (juego.isEmpty()) {
-                errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
-                throw new ValidacionException(errores);
+                erroresTx.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+                throw new ValidacionException(erroresTx);
             }
 
-            if (!errores.isEmpty()) {
-                throw new ValidacionException(errores);
+            if (!erroresTx.isEmpty()) {
+                throw new ValidacionException(erroresTx);
             }
 
 
             return Optional.of(Mapper.mapJuegoEntidadADto(juego.orElse(null)));
         });
-
+        return juegoBuscado;
     }
 
 
