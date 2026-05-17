@@ -3,6 +3,8 @@ package org.alexyivan.controlador;
 
 import org.alexyivan.exception.ValidacionException;
 import org.alexyivan.mapper.Mapper;
+import org.alexyivan.modelo.dto.JuegoDto;
+import org.alexyivan.modelo.dto.UsuarioDto;
 import org.alexyivan.modelo.entidad.CompraEntidad;
 import org.alexyivan.modelo.enums.*;
 import org.alexyivan.modelo.form.*;
@@ -15,17 +17,20 @@ import org.alexyivan.repositorio.interfaces.ICompraRepo;
 import org.alexyivan.modelo.dto.CompraDto;
 import org.alexyivan.repositorio.interfaces.IJuegoRepo;
 import org.alexyivan.repositorio.interfaces.IUsuarioRepo;
+import org.alexyivan.transaction.HibernateTransactionManager;
 import org.alexyivan.transaction.ITransactionManager;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
 public class CompraControlador implements ICompraControlador {
 
+    public static final int CONS_CERO = 0;
     public static final int DIAS_MAXIMOS = 30;
     public static final float MAX_HORAS_JUGADAS = 2.0f;
     public static final int DESCUENTO = 100;
@@ -73,13 +78,13 @@ public class CompraControlador implements ICompraControlador {
                 errores.add(new ErrorDto("cuenta", ErrorType.USUARIO_SIN_PERMISO));
             }
 
-        if (formularioCompra.getMetodoPago() == MetodoPagoEnum.CARTERA_STEAM &&
-                usuario.get().getCreditoSteam() < juego.get().getDescuentoActual()) {
-            errores.add(new ErrorDto("saldo", ErrorType.SALDO_INSUFICIENTE));
-        }
-        if (formularioCompra.getFechaCompra() == null) {
-            formularioCompra.setFechaCompra(LocalDateTime.now());
-        }
+            if (formularioCompra.getMetodoPago() == MetodoPagoEnum.CARTERA_STEAM &&
+                    usuario.get().getCreditoSteam() < juego.get().getDescuentoActual()) {
+                errores.add(new ErrorDto("saldo", ErrorType.SALDO_INSUFICIENTE));
+            }
+            if (formularioCompra.getFechaCompra() == null) {
+                formularioCompra.setFechaCompra(LocalDateTime.now());
+            }
             if (juego.get().getEstado() == EstadoJuegoEnum.NO_DISPONIBLE) {
                 errores.add(new ErrorDto("estado", ErrorType.JUEGO_NO_COMPRABLE));
             }
@@ -110,43 +115,6 @@ public class CompraControlador implements ICompraControlador {
 
     @Override
     public Optional<CompraDto> procesarPago(long id) throws ValidacionException {
-        List<ErrorDto> errores = new ArrayList<>();
-        var compra = compraRepo.obtenerPorId(id);
-
-        if (compra.isEmpty()) {
-            errores.add(new ErrorDto("id", ErrorType.COMRPA_INEXISTENTE));
-        } else {
-            if (compra.get().getEstado() == EstadoCompraEnum.COMPLETADO) {
-                errores.add(new ErrorDto("completado", ErrorType.COMPRA_COMPLETADA));
-            }
-            if (compra.get().getEstado() == EstadoCompraEnum.REEMBOLSADA) {
-                errores.add(new ErrorDto("reembolsado", ErrorType.COMPRA_REEMBOLSADA));
-            }
-        }
-
-
-        if (!errores.isEmpty()) {
-            throw new ValidacionException(errores);
-        }
-
-        var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario())
-                .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO))));
-        var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego())
-                .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("juego", ErrorType.NO_ENCONTRADO))));
-        var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario);
-        var juegoDto = Mapper.mapJuegoEntidadADto(juego);
-
-        bibliotecaRepo.crear(new BibliotecaForm(usuario.getId(), juego.getId(), compra.get().getFechaCompra().toLocalDate(),
-                HORAS_COMPRA, null, EstadoInstalacionEnum.NO_INSTALADO));
-
-        var compraActualizada = compraRepo.actualizar(compra.get().getId(), new CompraForm(compra.get().getIdUsuario(), compra.get().getIdJuego(),
-                compra.get().getFechaCompra(), compra.get().getMetodoDePago(), compra.get().getPrecioSinDescuento(), compra.get().getDescuentoAplicado(),
-                (double) (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
-                        ((float) compra.get().getDescuentoAplicado() / DESCUENTO)), EstadoCompraEnum.COMPLETADO
-        ));
-
-
-        return Optional.ofNullable(Mapper.mapCompraEntidadADto(compraActualizada.orElse(null), usuarioDto, juegoDto));
         return tm.inTransaction(() -> {
             List<ErrorDto> errores = new ArrayList<>();
             var compra = compraRepo.obtenerPorId(id);
@@ -166,12 +134,14 @@ public class CompraControlador implements ICompraControlador {
                 throw new ValidacionException(errores);
             }
 
-            var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario());
-            var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego());
-            var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
-            var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+            var usuario = usuarioRepo.obtenerPorId(compra.get().getIdUsuario())
+                    .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO))));
+            var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego())
+                    .orElseThrow(() -> new ValidacionException(List.of(new ErrorDto("juego", ErrorType.NO_ENCONTRADO))));
+            var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario);
+            var juegoDto = Mapper.mapJuegoEntidadADto(juego);
 
-            bibliotecaRepo.crear(new BibliotecaForm(usuario.get().getId(), juego.get().getId(), compra.get().getFechaCompra().toLocalDate(),
+            bibliotecaRepo.crear(new BibliotecaForm(usuario.getId(), juego.getId(), compra.get().getFechaCompra().toLocalDate(),
                     HORAS_COMPRA, null, EstadoInstalacionEnum.NO_INSTALADO));
 
             var compraActualizada = compraRepo.actualizar(compra.get().getId(), new CompraForm(compra.get().getIdUsuario(), compra.get().getIdJuego(),
@@ -206,28 +176,61 @@ public class CompraControlador implements ICompraControlador {
     }
 
     @Override
-    public Optional<CompraDto> consultarDetallesCompra(long idCompra, CompraForm formularioCompra) throws ValidacionException {
-        var errores = formularioCompra.validar();
+    public Optional<CompraDto> consultarDetallesCompra(long idCompra, long idUsuario) throws ValidacionException {
+        List<ErrorDto> errores = new ArrayList<>();
+
+        var compra = compraRepo.obtenerPorId(idCompra);
+        var usuario = usuarioRepo.obtenerPorId(idUsuario);
+
+        if (idCompra <= CONS_CERO) {
+            errores.add(new ErrorDto("id", ErrorType.BUSQUEDA_INVALIDA));
+        }
+
+        if (idUsuario <= CONS_CERO) {
+            errores.add(new ErrorDto("id", ErrorType.BUSQUEDA_INVALIDA));
+        }
+
+        if (compra.isEmpty()) {
+            errores.add(new ErrorDto("id", ErrorType.COMRPA_INEXISTENTE));
+
+        }
+        if (!errores.isEmpty()) {
+            throw new ValidacionException(errores);
+        }
+
+        var juego = juegoRepo.obtenerPorId(compra.get().getIdJuego());
 
         return tm.inTransaction(() -> {
-            var compra = compraRepo.obtenerPorId(idCompra);
 
-            if (compra.isEmpty()) {
-                errores.add(new ErrorDto("id", ErrorType.COMRPA_INEXISTENTE));
-            } else if (compra.get().getIdUsuario() != formularioCompra.getUsuarioId()) {
-                errores.add(new ErrorDto("id", ErrorType.COMPRA_NO_COINCIDENTE));
+            if (juego.isEmpty()){
+                errores.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
+            }
+
+            if (usuario.isEmpty()) {
+                errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
             }
 
             if (!errores.isEmpty()) {
                 throw new ValidacionException(errores);
             }
 
-            var usuario = usuarioRepo.obtenerPorId(formularioCompra.getUsuarioId());
-            var juego = juegoRepo.obtenerPorId(formularioCompra.getJuegoId());
+            if (compra.get().getIdUsuario() != usuario.get().getId()) {
+                errores.add(new ErrorDto("usuario", ErrorType.USUARIO_NO_COINCIDENTE));
+            }
+            if (compra.get().getIdJuego() != juego.get().getId()) {
+                errores.add(new ErrorDto("juego", ErrorType.JUEGO_NO_COINCIDENTE));
+            }
+
+
+            if (!errores.isEmpty()) {
+                throw new ValidacionException(errores);
+            }
+
+
             var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
             var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-            return Optional.ofNullable(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto));
+            return Optional.of(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto));
         });
     }
 
@@ -310,7 +313,56 @@ public class CompraControlador implements ICompraControlador {
     }
 
     @Override
-    public String generarFactura(long idCompra) throws ValidacionException, IOException {
+    public Path generarFactura(long idCompra) throws ValidacionException, IOException {
+
+        var compra = busquedaCompra(idCompra);
+        var usuario = busquedaUsuario(compra.get().getIdUsuario());
+        var juego = busquedaJuego(compra.get().getIdJuego());
+
+
+        String nombreFactura = "factura" + separador + usuario.get().getNombreUsuario() + separador
+                + idCounterFactura + separador + LocalDate.now() + ".txt";
+
+        var root = Path.of("resources/facturas/");
+        var path = Path.of(root.toString(), nombreFactura);
+        if (!Files.exists(root)) {
+            Files.createDirectories(root);
+        }
+
+        Files.write(path, List.of(
+                "=================================================",
+                "==========            Steam©          ===========",
+                "==========    Factura simplificada    ===========",
+                "=================================================",
+                "",
+                "Id de la compra: " + compra.get().getId(),
+                "Fecha de la compra: " + compra.get().getFechaCompra(),
+
+                "Nombre de usuario: " + usuario.get().getNombreUsuario(),
+                "Correo electrónico: " + usuario.get().getEmail(),
+
+                "Título del videojuego : " + juego.get().getTitulo(),
+                "Precio: " + compra.get().getPrecioSinDescuento(),
+                "Descuento: " + compra.get().getDescuentoAplicado(),
+                "Total: " + (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
+                        (compra.get().getDescuentoAplicado() / DESCUENTO)),
+                "Método de pago: " + compra.get().getMetodoDePago().toString(),
+                "Fecha : " + LocalDateTime.now(),
+                "",
+                "=================================================",
+                "==========            Steam©          ===========",
+                "==========             " + LocalDate.now().getYear() + "           ===========",
+                "================================================="
+
+
+        ));
+
+        idCounterFactura++;
+        return root;
+    }
+
+
+    private Optional<CompraDto> busquedaCompra(long idCompra) {
 
         return tm.inTransaction(() -> {
             List<ErrorDto> errores = new ArrayList<>();
@@ -340,94 +392,70 @@ public class CompraControlador implements ICompraControlador {
                 throw new ValidacionException(errores);
             }
 
-            String nombreFactura = "factura" + separador + usuario.get().getNombreUsuario() + separador
-                    + idCounterFactura + separador + LocalDate.now() + ".txt";
+            var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+            var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
-            var path = Path.of("resources/", nombreFactura);
-            Files.write(path, List.of(
-                    "=================================================",
-                    "==========            Steam©          ===========",
-                    "==========    Factura simplificada    ===========",
-                    "=================================================",
-                    "",
-                    "Id de la compra: " + compra.get().getId(),
-                    "Fecha de la compra: " + compra.get().getFechaCompra(),
-                    "",
-                    "Nombre de usuario: " + usuario.get().getNombreUsuario(),
-                    "Correo electrónico: " + usuario.get().getEmail(),
-                    "",
-                    "Título del videojuego : " + juego.get().getTitulo(),
-                    "Precio: " + compra.get().getPrecioSinDescuento(),
-                    "Descuento: " + compra.get().getDescuentoAplicado(),
-                    "Total: " + (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
-                            (compra.get().getDescuentoAplicado() / DESCUENTO)),
-                    "Método de pago: " + compra.get().getMetodoDePago().toString(),
-                    "",
-                    "=================================================",
-                    "==========            Steam©          ===========",
-                    "==========             " + LocalDate.now().getYear() + "           ===========",
-                    "================================================="
-            ));
-
-            idCounterFactura++;
-            return nombreFactura;
+            return Optional.of(Mapper.mapCompraEntidadADto(compra.orElse(null), usuarioDto, juegoDto));
         });
 
-        String nombreFactura = "factura" + separador + usuario.get().getNombreUsuario() + separador
-                + idCounterFactura + separador + LocalDate.now() + ".txt";
-
-        //Todo comprobar si antes de crear la facturas existe la carpeta "resources" y crearla si no existe
-
-        var root = Path.of("resources/facturas/");
-        var path = Path.of(root.toString(), nombreFactura);
-        if (!Files.exists(root)) {
-            Files.createDirectories(root);
-        }
-
-        Files.write(path, List.of(
-                "=================================================",
-                "==========            Steam©          ===========",
-                "==========    Factura simplificada    ===========",
-                "=================================================",
-                "",
-                "Id de la compra: " + compra.get().getId(),
-                "Fecha de la compra: " + compra.get().getFechaCompra(),
-
-                "Nombre de usuario: " + usuario.get().getNombreUsuario(),
-                "Correo electrónico: " + usuario.get().getEmail(),
-
-                "Título del videojuego : " + juego.get().getTitulo(),
-                "Precio: " + compra.get().getPrecioSinDescuento(),
-                "Descuento: " + compra.get().getDescuentoAplicado(),
-                "Total: " + (compra.get().getPrecioSinDescuento() - compra.get().getPrecioSinDescuento() *
-                        (compra.get().getDescuentoAplicado() / DESCUENTO)),
-                "Método de pago: " + compra.get().getMetodoDePago().toString(),
-                "Fecha :" + LocalDateTime.now(),
-                "",
-                "=================================================",
-                "==========            Steam©          ===========",
-                "==========             " + LocalDate.now().getYear() + "           ===========",
-                "================================================="
-
-
-        ));
-
-        idCounterFactura++;
-        return "";
     }
+
+    private Optional<UsuarioDto> busquedaUsuario(long id) {
+
+        return tm.inTransaction(() -> {
+            List<ErrorDto> errores = new ArrayList<>();
+
+            var usuario = usuarioRepo.obtenerPorId(id);
+            if (usuario.isEmpty()) {
+                errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+                throw new ValidacionException(errores);
+            }
+
+            if (!errores.isEmpty()) {
+                throw new ValidacionException(errores);
+            }
+
+
+            return Optional.of(Mapper.mapUsuarioEntidadADto(usuario.orElse(null)));
+        });
+
+    }
+
+    private Optional<JuegoDto> busquedaJuego(long id) {
+
+        return tm.inTransaction(() -> {
+            List<ErrorDto> errores = new ArrayList<>();
+
+            var juego = juegoRepo.obtenerPorId(id);
+            if (juego.isEmpty()) {
+                errores.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+                throw new ValidacionException(errores);
+            }
+
+            if (!errores.isEmpty()) {
+                throw new ValidacionException(errores);
+            }
+
+
+            return Optional.of(Mapper.mapJuegoEntidadADto(juego.orElse(null)));
+        });
+
+    }
+
 
     public static void main(String[] args) {
         IBibliotecaRepo iBibliotecaRepo = new BibliotecaRepoInMemory();
         IUsuarioRepo iUsuarioRepo = new UsuarioRepoInMemory();
         IJuegoRepo iJuegoRepo = new JuegoRepoInMemory();
         ICompraRepo iCompraRepo = new CompraRepoInMemory();
+        ITransactionManager tm = new HibernateTransactionManager();
 
-        CompraControlador compraControlador = new CompraControlador(iCompraRepo, iUsuarioRepo, iBibliotecaRepo, iJuegoRepo, null);
+        CompraControlador compraControlador = new CompraControlador(iCompraRepo, iUsuarioRepo, iBibliotecaRepo, iJuegoRepo, tm);
 
-        iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
+        var user = iUsuarioRepo.crear(new UsuarioForm("kaisquest", "email@email.com", "1234abcd!", "Iván",
                 "Spain", LocalDate.of(1998, 03, 05), LocalDate.of(2026, 04, 21),
                 "Avatar", 50.0f, EstadoCuentaEmun.ACTIVA));
-        iJuegoRepo.crear(new JuegoForm("Marvel Rivals", "Heroe shooter en tercera persona en el que controlas" +
+        var juego = iJuegoRepo.crear(new JuegoForm("Marvel Rivals", "Heroe shooter en tercera persona en el que controlas" +
                 "a los personajes del universo marvel", "NetEast", LocalDate.of(2025, 01, 01),
                 5.0f, 0, "Heroe Shooter", PegiEnum.PEGI_12, "Español, Inglés", EstadoJuegoEnum.DISPONIBLE));
 
@@ -440,7 +468,7 @@ public class CompraControlador implements ICompraControlador {
         compraControlador.realizarCompra(formularioCompra);
 
 
-        var compra = compraControlador.consultarDetallesCompra(1, formularioCompra);
+        var compra = compraControlador.consultarDetallesCompra(1, user.get().getId());
         compraControlador.procesarPago(compra.get().getId());
         System.out.println(compra.get().getEstado().toString());
 
@@ -456,6 +484,16 @@ public class CompraControlador implements ICompraControlador {
             e.printStackTrace();
         }
 
+
+        System.out.println(user.get().getNombreUsuario() + user.get().getCreditoSteam());
+        var cr = compraControlador.solicitarReembolso(1L, OpcionesReembolsoEnum.NO_GUSTA);
+        System.out.println(cr.get().getEstado());
+        System.out.println(compraControlador.busquedaCompra(1L).get().getEstado());
+        user = iUsuarioRepo.obtenerPorId(1L);
+        System.out.println(user.get().getNombreUsuario() + user.get().getCreditoSteam());
+
+        var detalles = compraControlador.consultarDetallesCompra(1L, user.get().getId());
+        System.out.println(detalles.get().getId());
 
     }
 

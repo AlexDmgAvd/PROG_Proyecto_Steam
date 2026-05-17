@@ -81,6 +81,10 @@ public class ResenhaForm {
         return estado;
     }
 
+    public void setEstado(EstadoResenhaEnum estado) {
+        this.estado = estado;
+    }
+
     /**
      * Valida los datos del formulario de Reseña.
      *

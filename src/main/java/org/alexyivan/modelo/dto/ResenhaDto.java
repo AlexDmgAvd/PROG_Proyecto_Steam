@@ -20,7 +20,7 @@ public class ResenhaDto {
 
     public ResenhaDto(long id, long idUsuario, Optional<UsuarioDto> usuario, long idJuego,
                       Optional<JuegoDto> juego, boolean recomendado, String textoAnalisis, float horasJugadas,
-                      LocalDate fechaPublicacion, LocalDate ultimaFechaEdicion) {
+                      LocalDate fechaPublicacion, LocalDate ultimaFechaEdicion, EstadoResenhaEnum estado) {
         this.id = id;
         this.idUsuario = idUsuario;
         this.usuario = usuario.orElse(null);
@@ -31,6 +31,7 @@ public class ResenhaDto {
         this.horasJugadas = horasJugadas;
         this.fechaPublicacion = fechaPublicacion;
         this.ultimaFechaEdicion = ultimaFechaEdicion;
+        this.estado = estado;
     }
 
     public long getId() {
@@ -116,4 +117,6 @@ public class ResenhaDto {
     public void setUltimaFechaEdicion(LocalDate ultimaFechaEdicion) {
         this.ultimaFechaEdicion = ultimaFechaEdicion;
     }
+
+
 }

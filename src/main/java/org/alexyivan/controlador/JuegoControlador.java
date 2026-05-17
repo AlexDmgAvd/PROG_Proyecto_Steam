@@ -39,7 +39,6 @@ public class JuegoControlador implements IJuegoControlador {
             if (juego.isPresent()) {
 
                 errores.add(new ErrorDto("existe", ErrorType.JUEGO_EXISTENTE));
-                throw new IllegalStateException();
             }
 
             //Si la lista de errores no está vacía manda los errores
@@ -67,17 +66,17 @@ public class JuegoControlador implements IJuegoControlador {
             throw new ValidacionException(errores);
         }
 
-        //todo revisar
+
         var juegoFiltrado = tm.inTransaction(() -> {
 
             var jf = juegoRepo.obtenerTodos().stream();
 
 
-            if (!busquedaJuegos.getTitulo().isEmpty() || busquedaJuegos.getTitulo() == null) {
+            if (!busquedaJuegos.getTitulo().isEmpty() && busquedaJuegos.getTitulo() != null) {
                 jf.filter(j -> j.getTitulo().contains(busquedaJuegos.getTitulo()));
             }
 
-            if (!busquedaJuegos.getGenero().isEmpty() || busquedaJuegos.getGenero() == null) {
+            if (!busquedaJuegos.getGenero().isEmpty() && busquedaJuegos.getGenero() != null) {
                 jf.filter(j -> j.getGenero().equals(busquedaJuegos.getGenero()));
 
             }
@@ -85,11 +84,11 @@ public class JuegoControlador implements IJuegoControlador {
                 jf.filter(j -> j.getPrecioBase() <= busquedaJuegos.getPrecio());
 
             }
-            if (!busquedaJuegos.getPegi().isEmpty() || busquedaJuegos.getPegi() == null) {
+            if (!busquedaJuegos.getPegi().isEmpty() && busquedaJuegos.getPegi() != null) {
                 jf.filter(j -> j.getRangoEdad().toString().equals(busquedaJuegos.getPegi()));
             }
 
-            if (busquedaJuegos.getEstado() == null) {
+            if (busquedaJuegos.getEstado() != null) {
                 jf.filter(j -> j.getEstado().toString().equals(busquedaJuegos.getEstado()));
             }
 

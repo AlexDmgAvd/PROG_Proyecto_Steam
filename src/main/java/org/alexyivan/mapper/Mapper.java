@@ -78,7 +78,8 @@ public class Mapper {
                 entidad.getTextoAnalisis(),
                 entidad.getHorasJugadas(),
                 entidad.getFechaPublicacion(),
-                entidad.getUltimaFechaEdicion()
+                entidad.getUltimaFechaEdicion(),
+                entidad.getEstado()
         );
     }
 

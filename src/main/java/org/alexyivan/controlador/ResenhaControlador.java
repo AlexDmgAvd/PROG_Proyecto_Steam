@@ -15,11 +15,13 @@ import org.alexyivan.repositorio.inmemory.*;
 import org.alexyivan.repositorio.interfaces.*;
 import org.alexyivan.transaction.ITransactionManager;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
 
 public class ResenhaControlador implements IResenhaControlador {
 
+    public static final int CONS_CERO = 0;
     private final IResenhaRepo resenhaRepo;
     private final IJuegoRepo juegoRepo;
     private final IUsuarioRepo usuarioRepo;
@@ -54,6 +56,7 @@ public class ResenhaControlador implements IResenhaControlador {
                     .filter(r -> r.getTextoAnalisis()
                             .equalsIgnoreCase(formularioResenha.getTextoAnalisis())).findFirst();
 
+
             if (usuario.isEmpty()) {
                 erroresTx.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
             }
@@ -86,15 +89,25 @@ public class ResenhaControlador implements IResenhaControlador {
     }
 
     @Override
-    public Optional<ResenhaDto> eliminarResenha(long id, ResenhaForm formularioResenha) throws ValidacionException {
-        var errores = formularioResenha.validar();
+    public Optional<ResenhaDto> eliminarResenha(long idResenha, long idUsuario) throws ValidacionException {
+        List<ErrorDto> errores = new ArrayList<>();
+
+        if (idResenha <= CONS_CERO) {
+            errores.add(new ErrorDto("id", ErrorType.BUSQUEDA_INVALIDA));
+        }
+
+        if (idUsuario <= CONS_CERO) {
+            errores.add(new ErrorDto("id", ErrorType.BUSQUEDA_INVALIDA));
+        }
+
+
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
 
         var resenhaEliminada = tm.inTransaction(() -> {
             List<ErrorDto> erroresTx = new ArrayList<>();
-            var resenha = resenhaRepo.obtenerPorId(id);
+            var resenha = resenhaRepo.obtenerPorId(idResenha);
 
             if (resenha.isEmpty()) {
                 erroresTx.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
@@ -102,7 +115,7 @@ public class ResenhaControlador implements IResenhaControlador {
             if (!erroresTx.isEmpty()) {
                 throw new ValidacionException(erroresTx);
             }
-            if (resenha.get().getIdUsuario() == formularioResenha.getIdUsuario()) {
+            if (resenha.get().getIdUsuario() != idUsuario) {
                 erroresTx.add(new ErrorDto("id", ErrorType.RESENHA_NO_PERTENECE));
             }
             if (resenha.get().getEstado() == EstadoResenhaEnum.BORRADA) {
@@ -112,17 +125,21 @@ public class ResenhaControlador implements IResenhaControlador {
                 throw new ValidacionException(erroresTx);
             }
 
-            var resenhaActualizada = resenhaRepo.actualizar(resenha.get().getId(),
-                    new ResenhaForm(formularioResenha.getIdUsuario(), formularioResenha.getUsuario(),
-                    formularioResenha.getIdJuego(), formularioResenha.getJuego(), formularioResenha.isRecomendado(),
-                    formularioResenha.getTextoAnalisis(), formularioResenha.getHorasJugadas(),
-                            formularioResenha.getFechaPublicacion(),
-                    formularioResenha.getUltimaFechaEdicion(), EstadoResenhaEnum.BORRADA));
 
-            var usuario = usuarioRepo.obtenerPorId(formularioResenha.getIdUsuario());
-            var juego = juegoRepo.obtenerPorId(formularioResenha.getIdJuego());
+            var usuario = usuarioRepo.obtenerPorId(idUsuario);
+            var juego = juegoRepo.obtenerPorId(resenha.get().getIdJuego());
             var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
             var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+
+            usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
+            juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
+
+            var resenhaActualizada = resenhaRepo.actualizar(resenha.get().getId(),
+                    new ResenhaForm(resenha.get().getIdUsuario(), usuarioDto,
+                            resenha.get().getIdJuego(), juegoDto, resenha.get().isRecomendado(),
+                            resenha.get().getTextoAnalisis(), resenha.get().getHorasJugadas(),
+                            resenha.get().getFechaPublicacion(),
+                            resenha.get().getUltimaFechaEdicion(), EstadoResenhaEnum.BORRADA));
 
             return Optional.ofNullable
                     (Mapper.mapResenhaEntidadADto(resenhaActualizada.orElse(null), usuarioDto, juegoDto));
@@ -137,8 +154,8 @@ public class ResenhaControlador implements IResenhaControlador {
                                              Optional<OrdenResenhasEnum> orden) throws ValidacionException {
         List<ErrorDto> errores = new ArrayList<>();
 
-        if (id <= 0) {
-            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+        if (id <= CONS_CERO) {
+            errores.add(new ErrorDto("id", ErrorType.BUSQUEDA_INVALIDA));
         }
 
         if (!errores.isEmpty()) {
@@ -155,11 +172,10 @@ public class ResenhaControlador implements IResenhaControlador {
                 throw new ValidacionException(erroresTx);
             }
 
-        if (orden.isPresent()) {
-            if (orden.equals(OrdenResenhasEnum.RECIENTES)) {
-                resenhas.sorted((a, b) -> a.getFechaPublicacion().compareTo(b.getFechaPublicacion()));
-            var resenhas = resenhaRepo.obtenerTodos().stream()
-                    .filter(r -> r.getIdJuego() == id);
+            var resenhas = resenhaRepo.obtenerTodos().stream().filter(r ->
+                    r.getIdJuego() == id && r.getEstado() == EstadoResenhaEnum.PUBLICADA
+
+            );
 
             if (valoracion.isPresent()) {
                 if (valoracion.get().equals(BusquedaResenhasValoracionEnum.POSITIVA)) {
@@ -195,24 +211,60 @@ public class ResenhaControlador implements IResenhaControlador {
     }
 
     @Override
-    public Optional<ResenhaDto> ocultarResenha(long id, ResenhaForm formularioResenha) throws ValidacionException {
-        var errores = formularioResenha.validar();
+    public Optional<ResenhaDto> ocultarResenha(long idResenha, long idUsuario) throws
+            ValidacionException {
+
+        List<ErrorDto> errores = new ArrayList<>();
+
+        var resenha = resenhaRepo.obtenerPorId(idResenha);
+
+        if (idResenha <= CONS_CERO) {
+            errores.add(new ErrorDto("id", ErrorType.BUSQUEDA_INVALIDA));
+        }
+
+        if (idUsuario <= CONS_CERO) {
+            errores.add(new ErrorDto("id", ErrorType.BUSQUEDA_INVALIDA));
+        }
+
+
+        if (resenha.isEmpty()) {
+            errores.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+        }
         if (!errores.isEmpty()) {
             throw new ValidacionException(errores);
         }
 
+
+        var usuario = usuarioRepo.obtenerPorId(idUsuario);
+        var juego = juegoRepo.obtenerPorId(resenha.get().getIdJuego());
+
+
         var resenhaOcultada = tm.inTransaction(() -> {
 
             List<ErrorDto> erroresTx = new ArrayList<>();
-            var resenha = resenhaRepo.obtenerPorId(id);
 
-            if (resenha.isEmpty()) {
-                erroresTx.add(new ErrorDto("id", ErrorType.NO_ENCONTRADO));
+            if (juego.isEmpty()){
+                erroresTx.add(new ErrorDto("juego", ErrorType.NO_ENCONTRADO));
             }
+
+
+            if (usuario.isEmpty()) {
+                erroresTx.add(new ErrorDto("usuario", ErrorType.NO_ENCONTRADO));
+            }
+
             if (!erroresTx.isEmpty()) {
                 throw new ValidacionException(erroresTx);
             }
-            if (resenha.get().getIdUsuario() == formularioResenha.getIdUsuario()) {
+
+            if (resenha.get().getIdUsuario() != usuario.get().getId()) {
+                erroresTx.add(new ErrorDto("id", ErrorType.RESENHA_NO_PERTENECE));
+
+            }
+
+            if (resenha.get().getIdJuego() != juego.get().getId()){
+                erroresTx.add(new ErrorDto("juego", ErrorType.JUEGO_NO_COINCIDENTE));
+            }
+            if (resenha.get().getIdUsuario() != idUsuario) {
                 erroresTx.add(new ErrorDto("id", ErrorType.RESENHA_NO_PERTENECE));
             }
             if (resenha.get().getEstado() == EstadoResenhaEnum.BORRADA) {
@@ -225,18 +277,16 @@ public class ResenhaControlador implements IResenhaControlador {
                 throw new ValidacionException(erroresTx);
             }
 
-            var resenhaActualizada = resenhaRepo.actualizar(resenha.get().getId(),
-                    new ResenhaForm(formularioResenha.getIdUsuario(), formularioResenha.getUsuario(),
-                    formularioResenha.getIdJuego(), formularioResenha.getJuego(), formularioResenha.isRecomendado(),
-                    formularioResenha.getTextoAnalisis(), formularioResenha.getHorasJugadas(),
-                            formularioResenha.getFechaPublicacion(),
-                    formularioResenha.getUltimaFechaEdicion(), EstadoResenhaEnum.OCULTA));
 
-            var usuario = usuarioRepo.obtenerPorId(formularioResenha.getIdUsuario());
-            var juego = juegoRepo.obtenerPorId(formularioResenha.getIdJuego());
             var usuarioDto = Mapper.mapUsuarioEntidadADto(usuario.orElse(null));
             var juegoDto = Mapper.mapJuegoEntidadADto(juego.orElse(null));
 
+            var resenhaActualizada = resenhaRepo.actualizar(resenha.get().getId(),
+                    new ResenhaForm(resenha.get().getIdUsuario(), usuarioDto,
+                            resenha.get().getIdJuego(), juegoDto, resenha.get().isRecomendado(),
+                            resenha.get().getTextoAnalisis(), resenha.get().getHorasJugadas(),
+                            resenha.get().getFechaPublicacion(),
+                            resenha.get().getUltimaFechaEdicion(), EstadoResenhaEnum.OCULTA));
             return Optional.ofNullable
                     (Mapper.mapResenhaEntidadADto(resenhaActualizada.orElse(null), usuarioDto, juegoDto));
         });
@@ -246,7 +296,8 @@ public class ResenhaControlador implements IResenhaControlador {
 
 
     @Override
-    public List<ResenhaDto> verResenhaUsuario(ResenhaForm formularioResenha, Optional<EstadoResenhaEnum> estado) {
+    public List<ResenhaDto> verResenhaUsuario(ResenhaForm
+                                                      formularioResenha, Optional<EstadoResenhaEnum> estado) {
 
         var errores = formularioResenha.validar();
         if (!errores.isEmpty()) {
@@ -289,9 +340,7 @@ public class ResenhaControlador implements IResenhaControlador {
                 .sorted((a, b) -> Float.compare(a.getHorasJugadas(), b.getHorasJugadas()))
                 .filter(r -> r.isRecomendado());
     }
-
-
-
+}
 
 
 //    static void main() {
@@ -334,5 +383,4 @@ public class ResenhaControlador implements IResenhaControlador {
 //
 //        var resenha = resenhaControlador.verResenhasJuego(1l, null, null);
 //        System.out.println(resenha.getFirst().getId()+"   " + resenha.getFirst().getTextoAnalisis());
-//    }
-}
+//
