@@ -43,7 +43,7 @@ public class  UsuarioRepoHibernate implements IUsuarioRepo {
         CriteriaQuery<UsuarioEntidad> criteriaQuery = criteriaBuilder.createQuery(UsuarioEntidad.class);
         Root<UsuarioEntidad> root = criteriaQuery.from(UsuarioEntidad.class);
 
-        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("nombre"), nombre));
+        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("nombreUsuario"), nombre));
 
         return  session.createQuery(criteriaQuery).getResultStream().findFirst();
     }
